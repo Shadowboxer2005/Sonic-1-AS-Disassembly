@@ -6444,8 +6444,16 @@ LevelSizeArray:	binclude	misc/lvl_size.bin
 		align 2
 
 EndingStLocArray:
-		binclude	misc/sloc_end.bin
-		align 2
+		binclude	"startpos\ghz1 (Credits demo 1).bin"
+		binclude	"startpos\mz2 (Credits demo).bin"
+		binclude	"startpos\syz3 (Credits demo).bin"
+		binclude	"startpos\lz3 (Credits demo).bin"
+		binclude	"startpos\slz3 (Credits demo).bin"
+		binclude	"startpos\sbz1 (Credits demo).bin"
+		binclude	"startpos\sbz2 (Credits demo).bin"
+		binclude	"startpos\ghz1 (Credits demo 2).bin"
+		even
+
 
 ; ===========================================================================
 
@@ -6512,8 +6520,44 @@ loc_60F8:
 ; ---------------------------------------------------------------------------
 ; Sonic	start location array
 ; ---------------------------------------------------------------------------
-StartLocArray:	binclude	misc/sloc_lev.bin
-		align 2
+StartLocArray:
+		binclude	"startpos\ghz1.bin"
+		binclude	"startpos\ghz2.bin"
+		binclude	"startpos\ghz3.bin"
+		dc.w	$80,$A8
+
+		binclude	"startpos\lz1.bin"
+		binclude	"startpos\lz2.bin"
+		binclude	"startpos\lz3.bin"
+		binclude	"startpos\sbz3.bin"
+
+		binclude	"startpos\mz1.bin"
+		binclude	"startpos\mz2.bin"
+		binclude	"startpos\mz3.bin"
+		dc.w	$80,$A8
+
+		binclude	"startpos\slz1.bin"
+		binclude	"startpos\slz2.bin"
+		binclude	"startpos\slz3.bin"
+		dc.w	$80,$A8
+
+		binclude	"startpos\syz1.bin"
+		binclude	"startpos\syz2.bin"
+		binclude	"startpos\syz3.bin"
+		dc.w	$80,$A8
+
+		binclude	"startpos\sbz1.bin"
+		binclude	"startpos\sbz2.bin"
+		binclude	"startpos\fz.bin"
+		dc.w	$80,$A8
+
+		binclude	"startpos\end1.bin"
+		binclude	"startpos\end2.bin"
+		dc.w	$80,$A8
+		dc.w	$80,$A8
+
+		even
+
 
 ; ---------------------------------------------------------------------------
 ; Which	256x256	tiles contain loops or roll-tunnels
@@ -35246,8 +35290,14 @@ SS_LayoutIndex:
 ; ---------------------------------------------------------------------------
 ; Special stage	start locations
 ; ---------------------------------------------------------------------------
-SS_StartLoc:	binclude	misc/sloc_ss.bin
-		align 2
+SS_StartLoc:
+		binclude	"startpos\ss1.bin"
+		binclude	"startpos\ss2.bin"
+		binclude	"startpos\ss3.bin"
+		binclude	"startpos\ss4.bin"
+		binclude	"startpos\ss5.bin"
+		binclude	"startpos\ss6.bin"
+		even
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	load special stage layout
