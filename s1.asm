@@ -5513,8 +5513,13 @@ Obj81_ShowRun:				; XREF: Obj81_Run
 		jsr	(Sonic_Animate).l
 		jmp	(LoadSonicDynPLC).l
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Sonic on the continue screen
+; ---------------------------------------------------------------------------
 Ani_obj81:
-		include	"_anim/obj81.asm"
+		dc.w byte_504A-Ani_obj81
+byte_504A:	dc.b 4,	1, 1, 1, 1, 2, 2, 2, 3,	3, $FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Continue screen
@@ -5866,8 +5871,17 @@ Obj87_Leap:				; XREF: Obj87_Index
 Obj87_Wait4:				; XREF: Obj87_Leap
 		rts	
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Sonic on the ending sequence
+; ---------------------------------------------------------------------------
 Ani_obj87:
-		include	"_anim/obj87.asm"
+		dc.w byte_551C-Ani_obj87
+		dc.w byte_552A-Ani_obj87
+		dc.w byte_5534-Ani_obj87
+byte_551C:	dc.b 3,	1, 0, 1, 0, 1, 0, 1, 0,	1, 0, 1, 2, $FA
+byte_552A:	dc.b 5,	3, 4, 3, 4, 3, 4, 3, $FA, 0
+byte_5534:	dc.b 3,	5, 5, 5, 6, 7, $FE, 1
+		align 2
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -6269,8 +6283,17 @@ loc_5A8E:				; XREF: Obj8B_Index
 locret_5AA0:
 		rts	
 ; ===========================================================================
-Ani_obj8B:
-		include	"_anim/obj8B.asm"
+; ---------------------------------------------------------------------------
+; Animation script - Eggman on the "TRY AGAIN" and "END" screens
+; ---------------------------------------------------------------------------
+Ani_obj8B
+		dc.w byte_5AA8-Ani_obj8B
+		dc.w byte_5AAC-Ani_obj8B
+		dc.w byte_5AB0-Ani_obj8B
+byte_5AA8:	dc.b 5,	0, $FC,	1
+byte_5AAC:	dc.b 5,	2, $FC,	3
+byte_5AB0:	dc.b 7,	4, 5, 6, 5, 4, 5, 6, 5,	4, 5, 6, 5, 7, 5, 6, 5,	$FF
+		align 2
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -10567,9 +10590,15 @@ Obj2A_Animate:				; XREF: Obj2A_OpenShut; loc_899A
 Obj2A_MarkAsUsed:
 		bra.w	MarkObjGone
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - doors (SBZ)
+; ---------------------------------------------------------------------------
 Ani_obj2A:
-		include	"_anim/obj2A.asm"
-
+		dc.w Ani_obj2A_Shut-Ani_obj2A
+		dc.w Ani_obj2A_Open-Ani_obj2A
+Ani_obj2A_Shut:	dc.b 0,	8, 7, 6, 5, 4, 3, 2, 1,	0, $FE,	1
+Ani_obj2A_Open:	dc.b 0,	0, 1, 2, 3, 4, 5, 6, 7,	8, $FE,	1
+		align 2
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - doors (SBZ)
 ; ---------------------------------------------------------------------------
@@ -10961,8 +10990,14 @@ Obj3F_Main:				; XREF: Obj3F_Index
 		move.w	#$C4,d0
 		jmp	(PlaySound_Special).l ;	play exploding bomb sound
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - doors (SBZ)
+; ---------------------------------------------------------------------------
 Ani_obj1E:
-		include	"_anim/obj1E.asm"
+		dc.w byte_8E4A-Ani_obj1E
+byte_8E4A:	dc.b 9,	0, 0, 2, 2, 3, 2, 0, 0,	2, 2, 3, 2, 0
+		dc.b 0, 2, 2, 3, 2, 0, 0, 1, $FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Ball Hog enemy (SBZ)
@@ -11667,8 +11702,22 @@ Obj1F_BallMove:				; XREF: Obj1F_Index
 Obj1F_Delete2:
 		bra.w	DeleteObject
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Crabmeat enemy
+; ---------------------------------------------------------------------------
 Ani_obj1F:
-		include	"_anim/obj1F.asm"
+		dc.w byte_972A-Ani_obj1F, byte_972E-Ani_obj1F, byte_9732-Ani_obj1F
+		dc.w byte_9736-Ani_obj1F, byte_973C-Ani_obj1F, byte_9742-Ani_obj1F
+		dc.w byte_9748-Ani_obj1F, byte_974C-Ani_obj1F
+byte_972A:	dc.b $F, 0, $FF, 0
+byte_972E:	dc.b $F, 2, $FF, 0
+byte_9732:	dc.b $F, $22, $FF, 0
+byte_9736:	dc.b $F, 1, $21, 0, $FF, 0
+byte_973C:	dc.b $F, $21, 3, 2, $FF, 0
+byte_9742:	dc.b $F, 1, $23, $22, $FF, 0
+byte_9748:	dc.b $F, 4, $FF, 0
+byte_974C:	dc.b 1,	5, 6, $FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Crabmeat enemy (GHZ, SYZ)
@@ -11893,11 +11942,27 @@ Obj23_Animate2:				; XREF: Obj23_Main
 		bsr.w	DisplaySprite
 		rts	
 ; ===========================================================================
-Ani_obj22:
-		include	"_anim/obj22.asm"
-
+; ---------------------------------------------------------------------------
+; Animation script - Buzz Bomber enemy
+; ---------------------------------------------------------------------------
+Ani_obj22
+		dc.w byte_9A1E-Ani_obj22
+		dc.w byte_9A22-Ani_obj22
+		dc.w byte_9A26-Ani_obj22
+byte_9A1E:	dc.b 1,	0, 1, $FF
+byte_9A22:	dc.b 1,	2, 3, $FF
+byte_9A26:	dc.b 1,	4, 5, $FF
+		align 2
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - missile that Buzz Bomber throws
+; ---------------------------------------------------------------------------
 Ani_obj23:
-		include	"_anim/obj23.asm"
+		dc.w byte_9A2E-Ani_obj23
+		dc.w byte_9A32-Ani_obj23
+byte_9A2E:	dc.b 7,	0, 1, $FC
+byte_9A32:	dc.b 1,	2, 3, $FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Buzz Bomber	enemy
@@ -12339,8 +12404,13 @@ Obj7C_End:				; XREF: Obj7C_Collect
 Obj7C_Delete:				; XREF: Obj7C_Index
 		bra.w	DeleteObject
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - ring
+; ---------------------------------------------------------------------------
 Ani_obj25:
-		include	"_anim/obj25.asm"
+		dc.w byte_9F8C-Ani_obj25
+byte_9F8C:	dc.b 5,	4, 5, 6, 7, $FC
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - rings
@@ -12737,8 +12807,25 @@ loc_A4EA:
 ; End of function Obj26_SolidSides
 
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - monitors
+; ---------------------------------------------------------------------------
 Ani_obj26:
-		include	"_anim/obj26.asm"
+		dc.w byte_A51C-Ani_obj26, byte_A522-Ani_obj26, byte_A52E-Ani_obj26
+		dc.w byte_A53A-Ani_obj26, byte_A546-Ani_obj26, byte_A552-Ani_obj26
+		dc.w byte_A55E-Ani_obj26, byte_A56A-Ani_obj26, byte_A576-Ani_obj26
+		dc.w byte_A582-Ani_obj26
+byte_A51C:	dc.b 1,	0, 1, 2, $FF, 0
+byte_A522:	dc.b 1,	0, 3, 3, 1, 3, 3, 2, 3,	3, $FF,	0
+byte_A52E:	dc.b 1,	0, 4, 4, 1, 4, 4, 2, 4,	4, $FF,	0
+byte_A53A:	dc.b 1,	0, 5, 5, 1, 5, 5, 2, 5,	5, $FF,	0
+byte_A546:	dc.b 1,	0, 6, 6, 1, 6, 6, 2, 6,	6, $FF,	0
+byte_A552:	dc.b 1,	0, 7, 7, 1, 7, 7, 2, 7,	7, $FF,	0
+byte_A55E:	dc.b 1,	0, 8, 8, 1, 8, 8, 2, 8,	8, $FF,	0
+byte_A56A:	dc.b 1,	0, 9, 9, 1, 9, 9, 2, 9,	9, $FF,	0
+byte_A576:	dc.b 1,	0, $A, $A, 1, $A, $A, 2, $A, $A, $FF, 0
+byte_A582:	dc.b 2,	0, 1, 2, $B, $FE, 1, 0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - monitors
@@ -12843,11 +12930,21 @@ Obj0F_PrsStart:				; XREF: Obj0F_Index
 		lea	(Ani_obj0F).l,a1
 		bra.w	AnimateSprite
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Sonic on the title screen
+; ---------------------------------------------------------------------------
 Ani_obj0E:
-		include	"_anim/obj0E.asm"
-
+		dc.w byte_A706-Ani_obj0E
+byte_A706:	dc.b 7,	0, 1, 2, 3, 4, 5, 6, 7,	$FE, 2,	0
+		align 2
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - "TM" and "PRESS START BUTTON" on the title screen
+; ---------------------------------------------------------------------------
 Ani_obj0F:
-		include	"_anim/obj0F.asm"
+		dc.w byte_A714-Ani_obj0F
+byte_A714:	dc.b $1F, 0, 1,	$FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	animate	a sprite using an animation script
@@ -12999,8 +13096,17 @@ Obj2B_ChgAni:
 locret_ABB6:
 		rts	
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Chopper enemy
+; ---------------------------------------------------------------------------
 Ani_obj2B:
-		include	"_anim/obj2B.asm"
+		dc.w byte_ABBE-Ani_obj2B
+		dc.w byte_ABC2-Ani_obj2B
+		dc.w byte_ABC6-Ani_obj2B
+byte_ABBE:	dc.b 7,	0, 1, $FF
+byte_ABC2:	dc.b 3,	0, 1, $FF
+byte_ABC6:	dc.b 7,	0, $FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Chopper enemy (GHZ)
@@ -13056,8 +13162,13 @@ Obj2C_Animate:
 		bsr.w	SpeedToPos
 		bra.w	MarkObjGone
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Jaws enemy
+; ---------------------------------------------------------------------------
 Ani_obj2C:
-		include	"_anim/obj2C.asm"
+		dc.w byte_AC6A-Ani_obj2C
+byte_AC6A:	dc.b 7,	0, 1, 2, 3, $FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Jaws enemy (LZ)
@@ -13221,8 +13332,19 @@ loc_AE40:
 ; End of function Obj2D_ChkSonic2
 
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Burrobot enemy
+; ---------------------------------------------------------------------------
 Ani_obj2D:
-		include	"_anim/obj2D.asm"
+		dc.w byte_AE4C-Ani_obj2D
+		dc.w byte_AE50-Ani_obj2D
+		dc.w byte_AE54-Ani_obj2D
+		dc.w byte_AE58-Ani_obj2D
+byte_AE4C:	dc.b 3,	0, 6, $FF
+byte_AE50:	dc.b 3,	0, 1, $FF
+byte_AE54:	dc.b 3,	2, 3, $FF
+byte_AE58:	dc.b 3,	4, $FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Burrobot enemy (LZ)
@@ -13586,8 +13708,13 @@ Obj35_Animate:				; XREF: loc_B238
 		bsr.w	AnimateSprite
 		bra.w	DisplaySprite
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - fireball that sits on the	floor (MZ)
+; ---------------------------------------------------------------------------
 Ani_obj35:
-		include	"_anim/obj35.asm"
+		dc.w byte_B2CE-Ani_obj35
+byte_B2CE:	dc.b 5,	0, $20,	1, $21,	$FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - large moving platforms (MZ)
@@ -17269,8 +17396,15 @@ Obj41_ResetDwn:				; XREF: Obj41_Index
 		subq.b	#4,routine(a0)	; goto "Obj41_Dwn" routine
 		rts	
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - springs
+; ---------------------------------------------------------------------------
 Ani_obj41:
-		include	"_anim/obj41.asm"
+		dc.w byte_DD02-Ani_obj41
+		dc.w byte_DD0E-Ani_obj41
+byte_DD02:	dc.b 0,	1, 0, 0, 2, 2, 2, 2, 2,	2, 0, $FC
+byte_DD0E:	dc.b 0,	4, 3, 3, 5, 5, 5, 5, 5,	5, 3, $FC
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - springs
@@ -17442,8 +17576,21 @@ locret_DF14:
 Obj42_Delete:				; XREF: Obj42_Index
 		bra.w	DeleteObject
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Newtron enemy
+; ---------------------------------------------------------------------------
 Ani_obj42:
-		include	"_anim/obj42.asm"
+		dc.w byte_DF24-Ani_obj42
+		dc.w byte_DF28-Ani_obj42
+		dc.w byte_DF30-Ani_obj42
+		dc.w byte_DF34-Ani_obj42
+		dc.w byte_DF38-Ani_obj42
+byte_DF24:	dc.b $F, $A, $FF, 0
+byte_DF28:	dc.b $13, 0, 1,	3, 4, 5, $FE, 1
+byte_DF30:	dc.b 2,	6, 7, $FF
+byte_DF34:	dc.b 2,	8, 9, $FF
+byte_DF38:	dc.b $13, 0, 1,	1, 2, 1, 1, 0, $FC, 0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Newtron enemy (GHZ)
@@ -17612,8 +17759,17 @@ locret_E188:
 ; End of function Obj43_Stop
 
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Roller enemy
+; ---------------------------------------------------------------------------
 Ani_obj43:
-		include	"_anim/obj43.asm"
+		dc.w byte_E190-Ani_obj43
+		dc.w byte_E196-Ani_obj43
+		dc.w byte_E19C-Ani_obj43
+byte_E190:	dc.b $F, 2, 1, 0, $FE, 1
+byte_E196:	dc.b $F, 1, 2, $FD, 2, 0
+byte_E19C:	dc.b 3,	3, 4, 2, $FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Roller enemy (SYZ)
@@ -17885,8 +18041,19 @@ Obj14_Type08:				; XREF: Obj14_TypeIndex
 Obj14_Delete:				; XREF: Obj14_Index
 		bra.w	DeleteObject
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - lava balls
+; ---------------------------------------------------------------------------
 Ani_obj14:
-		include	"_anim/obj14.asm"
+		dc.w byte_E4CC-Ani_obj14
+		dc.w byte_E4D2-Ani_obj14
+		dc.w byte_E4D6-Ani_obj14
+		dc.w byte_E4DC-Ani_obj14
+byte_E4CC:	dc.b 5,	0, $20,	1, $21,	$FF
+byte_E4D2:	dc.b 5,	2, $FC,	0
+byte_E4D6:	dc.b 5,	3, $43,	4, $44,	$FF
+byte_E4DC:	dc.b 5,	5, $FC,	0
+		align 2
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -17956,8 +18123,19 @@ Obj6D_ChkDel:
 		bhi.w	DeleteObject
 		bra.w	DisplaySprite
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - flamethrower (SBZ)
+; ---------------------------------------------------------------------------
 Ani_obj6D:
-		include	"_anim/obj6D.asm"
+		dc.w byte_E5C4-Ani_obj6D
+		dc.w byte_E5D2-Ani_obj6D
+		dc.w byte_E5DC-Ani_obj6D
+		dc.w byte_E5EA-Ani_obj6D
+byte_E5C4:	dc.b 3,	0, 1, 2, 3, 4, 5, 6, 7,	8, 9, $A, $FE, 2
+byte_E5D2:	dc.b 0,	9, 7, 5, 3, 1, 0, $FE, 1, 0
+byte_E5DC:	dc.b 3,	$B, $C,	$D, $E,	$F, $10, $11, $12, $13,	$14, $15, $FE, 2
+byte_E5EA:	dc.b 0,	$14, $12, $11, $F, $D, $B, $FE,	1, 0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - flame thrower (SBZ)
@@ -18230,8 +18408,15 @@ Obj47_ChkHit:				; XREF: Obj47_Display
 Obj47_Delete:
 		bra.w	DeleteObject
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - flamethrower (SBZ)
+; ---------------------------------------------------------------------------
 Ani_obj47:
-		include	"_anim/obj47.asm"
+		dc.w byte_EAF4-Ani_obj47
+		dc.w byte_EAF8-Ani_obj47
+byte_EAF4:	dc.b $F, 0, $FF, 0
+byte_EAF8:	dc.b 3,	1, 2, 1, 2, $FD, 0, 0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - pinball bumper (SYZ)
@@ -18412,8 +18597,19 @@ TimeBonuses:	dc.w 5000, 5000, 1000, 500, 400, 400, 300, 300,	200, 200
 locret_ED1A:				; XREF: Obj0D_Index
 		rts	
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - signpost
+; ---------------------------------------------------------------------------
 Ani_obj0D:
-		include	"_anim/obj0D.asm"
+		dc.w byte_ED24-Ani_obj0D
+		dc.w byte_ED28-Ani_obj0D
+		dc.w byte_ED2E-Ani_obj0D
+		dc.w byte_ED34-Ani_obj0D
+byte_ED24:	dc.b $F, 0, $FF, 0
+byte_ED28:	dc.b 1,	0, 1, 2, 3, $FF
+byte_ED2E:	dc.b 1,	4, 1, 2, 3, $FF
+byte_ED34:	dc.b $F, 4, $FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - signpost
@@ -18865,18 +19061,42 @@ Obj54_ChkDel:				; XREF: Obj54_Index
 Map_obj54:
 		include	"_maps/obj54.asm"
 
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - geyser of lava (MZ)
+; ---------------------------------------------------------------------------
 Ani_obj4C:
-		include	"_anim/obj4C.asm"
+		dc.w byte_F220-Ani_obj4C
+		dc.w byte_F22A-Ani_obj4C
+		dc.w byte_F22E-Ani_obj4C
+		dc.w byte_F232-Ani_obj4C
+		dc.w byte_F23A-Ani_obj4C
+		dc.w byte_F23E-Ani_obj4C
+byte_F220:	dc.b 2,	0, 1, 0, 1, 4, 5, 4, 5,	$FC
+byte_F22A:	dc.b 2,	2, 3, $FF
+byte_F22E:	dc.b 2,	6, 7, $FF
+byte_F232:	dc.b 2,	2, 3, 0, 1, 0, 1, $FC
+byte_F23A:	dc.b $F, $13, $FF, 0
+byte_F23E:	dc.b 2,	$11, $12, $FF
+		align 2
 
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - advancing wall of lava (MZ)
+; ---------------------------------------------------------------------------
 Ani_obj4E:
-		include	"_anim/obj4E.asm"
+		dc.w byte_F244-Ani_obj4E
+byte_F244:	dc.b 9,	0, 1, 2, 3, $FF
+		align 2
 
+; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - lava geyser / lava that falls from the ceiling (MZ)
 ; ---------------------------------------------------------------------------
 Map_obj4C:
 		include	"_maps/obj4C.asm"
 
+; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - advancing wall of lava (MZ)
 ; ---------------------------------------------------------------------------
@@ -19022,8 +19242,17 @@ Obj40_Animate:				; XREF: Obj40_Index
 Obj40_Delete:				; XREF: Obj40_Index
 		bra.w	DeleteObject
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Motobug enemy
+; ---------------------------------------------------------------------------
 Ani_obj40:
-		include	"_anim/obj40.asm"
+		dc.w byte_F788-Ani_obj40
+		dc.w byte_F78C-Ani_obj40
+		dc.w byte_F792-Ani_obj40
+byte_F788:	dc.b $F, 2, $FF, 0
+byte_F78C:	dc.b 7,	0, 1, 0, 2, $FF
+byte_F792:	dc.b 1,	3, 6, 3, 6, 4, 6, 4, 6,	4, 6, 5, $FC, 0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Moto Bug enemy (GHZ)
@@ -19155,8 +19384,15 @@ Obj50_Pause:				; XREF: Obj50_FixToFloor
 		move.b	#0,anim(a0)
 		rts	
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Yadrin enemy
+; ---------------------------------------------------------------------------
 Ani_obj50:
-		include	"_anim/obj50.asm"
+		dc.w byte_F920-Ani_obj50
+		dc.w byte_F924-Ani_obj50
+byte_F920:	dc.b 7,	0, $FF,	0
+byte_F924:	dc.b 7,	0, 3, 1, 4, 0, 3, 2, 5,	$FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Yadrin enemy (SYZ)
@@ -19994,8 +20230,17 @@ loc_10214:
 		bpl.w	DeleteObject
 		rts	
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Basaran enemy
+; ---------------------------------------------------------------------------
 Ani_obj55:
-		include	"_anim/obj55.asm"
+		dc.w byte_10230-Ani_obj55
+		dc.w byte_10234-Ani_obj55
+		dc.w byte_10238-Ani_obj55
+byte_10230:	dc.b $F, 0, $FF, 0
+byte_10234:	dc.b $F, 1, $FF, 0
+byte_10238:	dc.b 3,	1, 2, 3, 2, $FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Basaran enemy (MZ)
@@ -21617,8 +21862,15 @@ Obj0C_Solid:
 Obj0C_Display:
 		bra.w	MarkObjGone
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - flapping door (LZ)
+; ---------------------------------------------------------------------------
 Ani_obj0C:
-		include	"_anim/obj0C.asm"
+		dc.w byte_113E6-Ani_obj0C
+		dc.w byte_113EC-Ani_obj0C
+byte_113E6:	dc.b 3,	0, 1, 2, $FE, 1
+byte_113EC:	dc.b 3,	2, 1, 0, $FE, 1
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - flapping door (LZ)
@@ -22277,8 +22529,21 @@ Obj5F_End:				; XREF: Obj5F_Index
 ; ===========================================================================
 Obj5F_ShrSpeed:	dc.w $FE00, $FD00, $FF00, $FE00, $200, $FD00, $100, $FE00
 
+; ---------------------------------------------------------------------------
+; Animation script - Bomb enemy
+; ---------------------------------------------------------------------------
 Ani_obj5F:
-		include	"_anim/obj5F.asm"
+		dc.w byte_11C12-Ani_obj5F
+		dc.w byte_11C16-Ani_obj5F
+		dc.w byte_11C1C-Ani_obj5F
+		dc.w byte_11C20-Ani_obj5F
+		dc.w byte_11C24-Ani_obj5F
+byte_11C12:	dc.b $13, 1, 0,	$FF
+byte_11C16:	dc.b $13, 5, 4,	3, 2, $FF
+byte_11C1C:	dc.b $13, 7, 6,	$FF
+byte_11C20:	dc.b 3,	8, 9, $FF
+byte_11C24:	dc.b 3,	$A, $B,	$FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - walking bomb enemy (SLZ, SBZ)
@@ -22481,8 +22746,15 @@ Obj60_ChkDel2:				; XREF: Obj60_Index
 		bpl.w	DeleteObject
 		bra.w	DisplaySprite
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Orbinaut enemy
+; ---------------------------------------------------------------------------
 Ani_obj60:
-		include	"_anim/obj60.asm"
+		dc.w byte_11EDA-Ani_obj60
+		dc.w byte_11EDE-Ani_obj60
+byte_11EDA:	dc.b $F, 0, $FF, 0
+byte_11EDE:	dc.b $F, 1, 2, $FE, 1, 0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Orbinaut enemy (LZ,	SLZ, SBZ)
@@ -22537,8 +22809,19 @@ Obj16_Wait:				; XREF: Obj16_Index
 Obj16_ChkDel:
 		bra.w	MarkObjGone
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - harpoon (LZ)
+; ---------------------------------------------------------------------------
 Ani_obj16:
-		include	"_anim/obj16.asm"
+		dc.w byte_11F8A-Ani_obj16
+		dc.w byte_11F8E-Ani_obj16
+		dc.w byte_11F92-Ani_obj16
+		dc.w byte_11F96-Ani_obj16
+byte_11F8A:	dc.b 3,	1, 2, $FC
+byte_11F8E:	dc.b 3,	1, 0, $FC
+byte_11F92:	dc.b 3,	4, 5, $FC
+byte_11F96:	dc.b 3,	4, 3, $FC
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - harpoon (LZ)
@@ -23419,8 +23702,24 @@ loc_12998:
 		moveq	#0,d0
 		rts	
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - bubbles (LZ)
+; ---------------------------------------------------------------------------
 Ani_obj64:
-		include	"_anim/obj64.asm"
+		dc.w byte_129AA-Ani_obj64
+		dc.w byte_129B0-Ani_obj64
+		dc.w byte_129B6-Ani_obj64
+		dc.w byte_129BE-Ani_obj64
+		dc.w byte_129BE-Ani_obj64
+		dc.w byte_129C0-Ani_obj64
+		dc.w byte_129C6-Ani_obj64
+byte_129AA:	dc.b $E, 0, 1, 2, $FC, 0
+byte_129B0:	dc.b $E, 1, 2, 3, 4, $FC
+byte_129B6:	dc.b $E, 2, 3, 4, 5, 6,	$FC, 0
+byte_129BE:	dc.b 4,	$FC
+byte_129C0:	dc.b 4,	6, 7, 8, $FC, 0
+byte_129C6:	dc.b $F, $13, $14, $15,	$FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - bubbles (LZ)
@@ -23497,8 +23796,13 @@ loc_12B36:				; XREF: Obj65_Index
 Obj65_Animate2:
 		bra.s	Obj65_Animate
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - waterfall (LZ)
+; ---------------------------------------------------------------------------
 Ani_obj65:
-		include	"_anim/obj65.asm"
+		dc.w byte_12B4E-Ani_obj65
+byte_12B4E:	dc.b 5,	9, $A, $B, $FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - waterfalls (LZ)
@@ -25246,8 +25550,74 @@ loc_13B26:
 ; End of function Sonic_Animate
 
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Sonic
+; ---------------------------------------------------------------------------
 SonicAniData:
-		include	"_anim/Sonic.asm"
+		dc.w SonAni_Walk-SonicAniData
+		dc.w SonAni_Run-SonicAniData
+		dc.w SonAni_Roll-SonicAniData
+		dc.w SonAni_Roll2-SonicAniData
+		dc.w SonAni_Push-SonicAniData
+		dc.w SonAni_Wait-SonicAniData
+		dc.w SonAni_Balance-SonicAniData
+		dc.w SonAni_LookUp-SonicAniData
+		dc.w SonAni_Duck-SonicAniData
+		dc.w SonAni_Warp1-SonicAniData
+		dc.w SonAni_Warp2-SonicAniData
+		dc.w SonAni_Warp3-SonicAniData
+		dc.w SonAni_Warp4-SonicAniData
+		dc.w SonAni_Stop-SonicAniData
+		dc.w SonAni_Float1-SonicAniData
+		dc.w SonAni_Float2-SonicAniData
+		dc.w SonAni_Spring-SonicAniData
+		dc.w SonAni_LZHang-SonicAniData
+		dc.w SonAni_Leap1-SonicAniData
+		dc.w SonAni_Leap2-SonicAniData
+		dc.w SonAni_Surf-SonicAniData
+		dc.w SonAni_Bubble-SonicAniData
+		dc.w SonAni_Death1-SonicAniData
+		dc.w SonAni_Drown-SonicAniData
+		dc.w SonAni_Death2-SonicAniData
+		dc.w SonAni_Shrink-SonicAniData
+		dc.w SonAni_Hurt-SonicAniData
+		dc.w SonAni_LZSlide-SonicAniData
+		dc.w SonAni_Blank-SonicAniData
+		dc.w SonAni_Float3-SonicAniData
+		dc.w SonAni_Float4-SonicAniData
+SonAni_Walk:	dc.b $FF, 8, 9,	$A, $B,	6, 7, $FF
+SonAni_Run:	dc.b $FF, $1E, $1F, $20, $21, $FF, $FF,	$FF
+SonAni_Roll:	dc.b $FE, $2E, $2F, $30, $31, $32, $FF,	$FF
+SonAni_Roll2:	dc.b $FE, $2E, $2F, $32, $30, $31, $32,	$FF
+SonAni_Push:	dc.b $FD, $45, $46, $47, $48, $FF, $FF,	$FF
+SonAni_Wait:	dc.b $17, 1, 1,	1, 1, 1, 1, 1, 1, 1, 1,	1, 1, 3
+		dc.b 2, 2, 2, 3, 4, $FE, 2, 0
+SonAni_Balance:	dc.b $1F, $3A, $3B, $FF
+SonAni_LookUp:	dc.b $3F, 5, $FF, 0
+SonAni_Duck:	dc.b $3F, $39, $FF, 0
+SonAni_Warp1:	dc.b $3F, $33, $FF, 0
+SonAni_Warp2:	dc.b $3F, $34, $FF, 0
+SonAni_Warp3:	dc.b $3F, $35, $FF, 0
+SonAni_Warp4:	dc.b $3F, $36, $FF, 0
+SonAni_Stop:	dc.b 7,	$37, $38, $FF
+SonAni_Float1:	dc.b 7,	$3C, $3F, $FF
+SonAni_Float2:	dc.b 7,	$3C, $3D, $53, $3E, $54, $FF, 0
+SonAni_Spring:	dc.b $2F, $40, $FD, 0
+SonAni_LZHang:	dc.b 4,	$41, $42, $FF
+SonAni_Leap1:	dc.b $F, $43, $43, $43,	$FE, 1
+SonAni_Leap2:	dc.b $F, $43, $44, $FE,	1, 0
+SonAni_Surf:	dc.b $3F, $49, $FF, 0
+SonAni_Bubble:	dc.b $B, $56, $56, $A, $B, $FD,	0, 0
+SonAni_Death1:	dc.b $20, $4B, $FF, 0
+SonAni_Drown:	dc.b $2F, $4C, $FF, 0
+SonAni_Death2:	dc.b 3,	$4D, $FF, 0
+SonAni_Shrink:	dc.b 3,	$4E, $4F, $50, $51, $52, 0, $FE, 1, 0
+SonAni_Hurt:	dc.b 3,	$55, $FF, 0
+SonAni_LZSlide:	dc.b 7, $55, $57, $FF
+SonAni_Blank:	dc.b $77, 0, $FD, 0
+SonAni_Float3:	dc.b 3,	$3C, $3D, $53, $3E, $54, $FF, 0
+SonAni_Float4:	dc.b 3,	$3C, $FD, 0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sonic	pattern	loading	subroutine
@@ -25620,8 +25990,41 @@ loc_140AC:
 ; End of function ResumeMusic
 
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - countdown numbers and bubbles (LZ)
+; ---------------------------------------------------------------------------
 Ani_obj0A:
-		include	"_anim/obj0A.asm"
+		dc.w byte_140D6-Ani_obj0A
+		dc.w byte_140E0-Ani_obj0A
+		dc.w byte_140EA-Ani_obj0A
+		dc.w byte_140F4-Ani_obj0A
+		dc.w byte_140FE-Ani_obj0A
+		dc.w byte_14108-Ani_obj0A
+		dc.w byte_14112-Ani_obj0A
+		dc.w byte_14118-Ani_obj0A
+		dc.w byte_14120-Ani_obj0A
+		dc.w byte_14128-Ani_obj0A
+		dc.w byte_14130-Ani_obj0A
+		dc.w byte_14138-Ani_obj0A
+		dc.w byte_14140-Ani_obj0A
+		dc.w byte_14148-Ani_obj0A
+		dc.w byte_1414A-Ani_obj0A
+byte_140D6:	dc.b 5,	0, 1, 2, 3, 4, 9, $D, $FC, 0
+byte_140E0:	dc.b 5,	0, 1, 2, 3, 4, $C, $12,	$FC, 0
+byte_140EA:	dc.b 5,	0, 1, 2, 3, 4, $C, $11,	$FC, 0
+byte_140F4:	dc.b 5,	0, 1, 2, 3, 4, $B, $10,	$FC, 0
+byte_140FE:	dc.b 5,	0, 1, 2, 3, 4, 9, $F, $FC, 0
+byte_14108:	dc.b 5,	0, 1, 2, 3, 4, $A, $E, $FC, 0
+byte_14112:	dc.b $E, 0, 1, 2, $FC, 0
+byte_14118:	dc.b 7,	$16, $D, $16, $D, $16, $D, $FC
+byte_14120:	dc.b 7,	$16, $12, $16, $12, $16, $12, $FC
+byte_14128:	dc.b 7,	$16, $11, $16, $11, $16, $11, $FC
+byte_14130:	dc.b 7,	$16, $10, $16, $10, $16, $10, $FC
+byte_14138:	dc.b 7,	$16, $F, $16, $F, $16, $F, $FC
+byte_14140:	dc.b 7,	$16, $E, $16, $E, $16, $E, $FC
+byte_14148:	dc.b $E, $FC
+byte_1414A:	dc.b $E, 1, 2, 3, 4, $FC
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - drowning countdown numbers (LZ)
@@ -25826,8 +26229,24 @@ Obj08_Display:				; XREF: Obj08_Index
 Obj08_Delete:				; XREF: Obj08_Index
 		jmp	(DeleteObject).l	; delete when animation	is complete
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - shield and invincibility stars
+; ---------------------------------------------------------------------------
 Ani_obj38:
-		include	"_anim/obj38.asm"
+		dc.w byte_14356-Ani_obj38
+		dc.w byte_1435E-Ani_obj38
+		dc.w byte_14364-Ani_obj38
+		dc.w byte_1437E-Ani_obj38
+		dc.w byte_14398-Ani_obj38
+byte_14356:	dc.b 1,	1, 0, 2, 0, 3, 0, $FF
+byte_1435E:	dc.b 5,	4, 5, 6, 7, $FF
+byte_14364:	dc.b 0,	4, 4, 0, 4, 4, 0, 5, 5,	0, 5, 5, 0, 6, 6, 0, 6
+		dc.b 6,	0, 7, 7, 0, 7, 7, 0, $FF
+byte_1437E:	dc.b 0,	4, 4, 0, 4, 0, 0, 5, 5,	0, 5, 0, 0, 6, 6, 0, 6
+		dc.b 0,	0, 7, 7, 0, 7, 0, 0, $FF
+byte_14398:	dc.b 0,	4, 0, 0, 4, 0, 0, 5, 0,	0, 5, 0, 0, 6, 0, 0, 6
+		dc.b 0,	0, 7, 0, 0, 7, 0, 0, $FF
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - shield and invincibility stars
@@ -25835,8 +26254,13 @@ Ani_obj38:
 Map_obj38:
 		include	"_maps/obj38.asm"
 
+; ---------------------------------------------------------------------------
+; Animation script - special stage entry effect from beta
+; ---------------------------------------------------------------------------
 Ani_obj4A:
-		include	"_anim/obj4A.asm"
+		dc.w byte_14458-Ani_obj4A
+byte_14458:	dc.b 5,	0, 1, 0, 1, 0, 7, 1, 7,	2, 7, 3, 7, 4, 7, 5, 7, 6, 7, $FC
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage entry	from beta
@@ -25844,8 +26268,13 @@ Ani_obj4A:
 Map_obj4A:
 		include	"_maps/obj4A.asm"
 
+; ---------------------------------------------------------------------------
+; Animation script - water splash (LZ)
+; ---------------------------------------------------------------------------
 Ani_obj08:
-		include	"_anim/obj08.asm"
+		dc.w byte_145C6-Ani_obj08
+byte_145C6:	dc.b 4,	0, 1, 2, $FC, 0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - water splash (LZ)
@@ -27720,8 +28149,21 @@ Obj69_NotSolid2:
 Obj69_Display2:
 		bra.w	MarkObjGone
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - trapdoor (SBZ)
+; ---------------------------------------------------------------------------
 Ani_obj69:
-		include	"_anim/obj69.asm"
+		dc.w byte_158AC-Ani_obj69
+		dc.w byte_158B2-Ani_obj69
+		dc.w byte_158B8-Ani_obj69
+		dc.w byte_158CC-Ani_obj69
+byte_158AC:	dc.b 3,	0, 1, 2, $FE, 1
+byte_158B2:	dc.b 3,	2, 1, 0, $FE, 1
+byte_158B8:	dc.b 1,	0, 1, 2, 3, 4, $43, $42, $41, $40, $61,	$62, $63
+		dc.b $64, $23, $22, $21, 0, $FE, 1
+byte_158CC:	dc.b 1,	0, 1, 2, 3, 4, $43, $42, $41, $40, $61,	$62, $63
+		dc.b $64, $23, $22, $21, 0, $FE, 1
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - trapdoor (SBZ)
@@ -28382,8 +28824,15 @@ Obj6C_NotSolid:				; XREF: Obj6C_Vanish
 Obj6C_Display:
 		bra.w	MarkObjGone
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - vanishing platforms (SBZ)
+; ---------------------------------------------------------------------------
 Ani_obj6C:
-		include	"_anim/obj6C.asm"
+		dc.w byte_1611A-Ani_obj6C
+		dc.w byte_16122-Ani_obj6C
+byte_1611A:	dc.b 7,	0, 1, 2, 3, $FE, 1, 0
+byte_16122:	dc.b 7,	3, 2, 1, 0, $FE, 1, 0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - vanishing platforms	(SBZ)
@@ -28439,8 +28888,15 @@ Obj6E_Animate:
 Obj6E_Display:
 		bra.w	MarkObjGone
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - electrocution orbs (SBZ)
+; ---------------------------------------------------------------------------
 Ani_obj6E:
-		include	"_anim/obj6E.asm"
+		dc.w byte_161CC-Ani_obj6E
+		dc.w byte_161D0-Ani_obj6E
+byte_161CC:	dc.b 7,	0, $FF,	0
+byte_161D0:	dc.b 0,	1, 1, 1, 2, 3, 3, 4, 4,	4, 5, 5, 5, 0, $FD, 0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - electrocution orbs (SBZ)
@@ -28653,8 +29109,16 @@ loc_16480:
 loc_16484:
 		jmp	(SpeedToPos).l
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - platform on conveyor belt (SBZ)
+; ---------------------------------------------------------------------------
 Ani_obj6F:
-		include	"_anim/obj6F.asm"
+		dc.w byte_1648E-Ani_obj6F
+		dc.w byte_164A2-Ani_obj6F
+byte_1648E:	dc.b 0,	0, 1, 2, 3, 4, $43, $42, $41, $40, $61,	$62, $63
+		dc.b $64, $23, $22, $21, 0, $FF, 0
+byte_164A2:	dc.b $F, 0, $FF
+		align 2
 
 off_164A6:	dc.w word_164B2-off_164A6, word_164C6-off_164A6, word_164DA-off_164A6
 		dc.w word_164EE-off_164A6, word_16502-off_164A6, word_16516-off_164A6
@@ -29336,8 +29800,19 @@ loc_16CE0:
 		bpl.w	Obj78_ChkGone
 		jmp	(DisplaySprite).l
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Caterkiller enemy (uses non-standard format)
+; ---------------------------------------------------------------------------
 Ani_obj78:
-		include	"_anim/obj78.asm"
+	dc.b 0,	0, 0, 0, 0, 0, 0, 0, 0,	0, 0, 0, 0, 0, 0, 1
+	dc.b 1,	1, 1, 1, 1, 1, 2, 2, 2,	2, 2, 3, 3, 3, 3, 3
+	dc.b 4,	4, 4, 4, 4, 4, 5, 5, 5,	5, 5, 6, 6, 6, 6, 6
+	dc.b 6,	6, 7, 7, 7, 7, 7, 7, 7,	7, 7, 7, $FF, 7, 7, $FF
+	dc.b 7,	7, 7, 7, 7, 7, 7, 7, 7,	7, 7, 7, 7, 7, 7, 6
+	dc.b 6,	6, 6, 6, 6, 6, 5, 5, 5,	5, 5, 4, 4, 4, 4, 4
+	dc.b 4,	3, 3, 3, 3, 3, 2, 2, 2,	2, 2, 1, 1, 1, 1, 1
+	dc.b 1,	1, 0, 0, 0, 0, 0, 0, 0,	0, 0, 0, $FF, 0, 0, $FF
+	align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Caterkiller	enemy (MZ, SBZ)
@@ -30274,8 +30749,35 @@ Obj48_Vanish:
 Obj48_Display4:
 		jmp	(DisplaySprite).l
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Eggman (bosses)
+; ---------------------------------------------------------------------------
 Ani_Eggman:
-		include	"_anim/Eggman.asm"
+		dc.w byte_17CD4-Ani_Eggman
+		dc.w byte_17CD8-Ani_Eggman
+		dc.w byte_17CDC-Ani_Eggman
+		dc.w byte_17CE0-Ani_Eggman
+		dc.w byte_17CE4-Ani_Eggman
+		dc.w byte_17CE8-Ani_Eggman
+		dc.w byte_17CEC-Ani_Eggman
+		dc.w byte_17CF0-Ani_Eggman
+		dc.w byte_17CF4-Ani_Eggman
+		dc.w byte_17CF8-Ani_Eggman
+		dc.w byte_17CFC-Ani_Eggman
+		dc.w byte_17D00-Ani_Eggman
+byte_17CD4:	dc.b $F, 0, $FF, 0
+byte_17CD8:	dc.b 5,	1, 2, $FF
+byte_17CDC:	dc.b 3,	1, 2, $FF
+byte_17CE0:	dc.b 1,	1, 2, $FF
+byte_17CE4:	dc.b 4,	3, 4, $FF
+byte_17CE8:	dc.b $1F, 5, 1,	$FF
+byte_17CEC:	dc.b 3,	6, 1, $FF
+byte_17CF0:	dc.b $F, $A, $FF, 0
+byte_17CF4:	dc.b 3,	8, 9, $FF
+byte_17CF8:	dc.b 1,	8, 9, $FF
+byte_17CFC:	dc.b $F, 7, $FF, 0
+byte_17D00:	dc.b 2,	9, 8, $B, $C, $B, $C, 9, 8, $FE, 2, 0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Eggman (boss levels)
@@ -33044,8 +33546,25 @@ loc_199E6:				; XREF: Obj82_SwIndex
 Obj82_SwDisplay:			; XREF: Obj82_SwIndex
 		jmp	(DisplaySprite).l
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Eggman (SBZ2)
+; ---------------------------------------------------------------------------
 Ani_obj82:
-		include	"_anim/obj82.asm"
+		dc.w byte_19A10-Ani_obj82
+		dc.w byte_19A14-Ani_obj82
+		dc.w byte_19A18-Ani_obj82
+		dc.w byte_19A20-Ani_obj82
+		dc.w byte_19A24-Ani_obj82
+		dc.w byte_19A2A-Ani_obj82
+		dc.w byte_19A30-Ani_obj82
+byte_19A10:	dc.b $7E, 0, $FF, 0
+byte_19A14:	dc.b 6,	1, 2, $FF
+byte_19A18:	dc.b $E, 3, 4, 4, 0, 0,	0, $FF
+byte_19A20:	dc.b 0,	5, 9, $FF
+byte_19A24:	dc.b 6,	7, 4, 8, 4, $FF
+byte_19A2A:	dc.b $F, 4, 3, 3, $FF, 0
+byte_19A30:	dc.b $7E, 6, $FF, 0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - Eggman (SBZ2)
@@ -33788,12 +34307,25 @@ loc_1A3AC:				; XREF: Obj85_Index
 loc_1A3D0:
 		bra.w	loc_1A2A6
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - Eggman (FZ)
+; ---------------------------------------------------------------------------
 Ani_obj85:
-		include	"_anim/obj85.asm"
+		dc.w byte_1A3D6-Ani_obj85
+byte_1A3D6:	dc.b 3,	0, 1, $FF
+		align 2
 
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Mappings - Eggman 2
+; ---------------------------------------------------------------------------
 Map_Eggman2:
 		include	"_maps/Eggman2.asm"
 
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Mappings - Eggman (FZ)
+; ---------------------------------------------------------------------------
 Map_FZBoss:
 		include	"_maps/FZ boss.asm"
 
@@ -34204,18 +34736,39 @@ loc_1AA34:
 		subq.w	#1,$38(a1)
 		bra.w	Obj84_Delete
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - energy ball launcher (FZ)
+; ---------------------------------------------------------------------------
 Ani_obj86:
-		include	"_anim/obj86.asm"
+		dc.w byte_1AA46-Ani_obj86
+		dc.w byte_1AA4A-Ani_obj86
+		dc.w byte_1AA50-Ani_obj86
+byte_1AA46:	dc.b $7E, 0, $FF, 0
+byte_1AA4A:	dc.b 1,	0, 2, 0, 3, $FF
+byte_1AA50:	dc.b 1,	1, 2, 1, 3, $FF
+		align 2
 
+; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - energy ball	launcher (FZ)
 ; ---------------------------------------------------------------------------
 Map_obj86:
 		include	"_maps/obj86.asm"
 
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - energy balls (FZ)
+; ---------------------------------------------------------------------------
 Ani_obj86a:
-		include	"_anim/obj86a.asm"
+		dc.w byte_1AA7A-Ani_obj86a
+		dc.w byte_1AA9C-Ani_obj86a
+byte_1AA7A:	dc.b 1,	0, $A, 8, $A, 1, $A, 9,	$A, 6, $A, 7, $A, 0, $A
+		dc.b 8,	$A, 1, $A, 9, $A, 6, $A, 7, $A,	2, $A, 3, $A, 4
+		dc.b $A, 5, $FF, 0
+byte_1AA9C:	dc.b 0,	6, 5, 1, 5, 7, 5, 1, 5,	$FF
+		align 2
 
+; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - energy balls (FZ)
 ; ---------------------------------------------------------------------------
@@ -34431,9 +34984,16 @@ Obj3E_FindObj28:
 Obj3E_Obj28Found:
 		rts	
 ; ===========================================================================
+; ---------------------------------------------------------------------------
+; Animation script - prison capsule
+; ---------------------------------------------------------------------------
 Ani_obj3E:
-		include	"_anim/obj3E.asm"
+		dc.w byte_1AD70-Ani_obj3E
+		dc.w byte_1AD70-Ani_obj3E
+byte_1AD70:	dc.b 2,	1, 3, $FF
+		align 2
 
+; ===========================================================================3
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - prison capsule
 ; ---------------------------------------------------------------------------
