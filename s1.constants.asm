@@ -236,7 +236,7 @@ Current_ZoneAndAct =		ramaddr( $FFFFFE10 )	; 2 bytes
 Current_Zone =			ramaddr( $FFFFFE10 )
 Current_Act =			ramaddr( $FFFFFE11 )
 Life_count =			ramaddr( $FFFFFE12 )
-Level_started_flag =		ramaddr( $FFFFFE13 )
+				; $FFFFFE13 unused
 Air_left =			ramaddr( $FFFFFE14 )
 				; $FFFFFE15 unused
 Current_Special_Stage =		ramaddr( $FFFFFE16 )
@@ -307,6 +307,12 @@ Debug_options_flag =		ramaddr( $FFFFFFE2 )	; if set, allows you to enable debug 
 Hidden_credits_flag =		ramaddr( $FFFFFFE3 )
 Correct_cheat_entries =		ramaddr( $FFFFFFE4 )
 Correct_cheat_entries_2 =	ramaddr( $FFFFFFE6 )
+
+unk_FFEA =			ramaddr( $FFFFFFEA )	; Cleared at title screen, never read from
+unk_FFEC =			ramaddr( $FFFFFFEC )	; Written to at Sonic_Floor, never read from
+unk_FFED =			ramaddr( $FFFFFFED )	; Written to at Sonic_Floor, never read from
+unk_FFEE =			ramaddr( $FFFFFFEE )	; Written to at Sonic_Floor, never read from
+unk_FFEF =			ramaddr( $FFFFFFEF )	; Written to at Sonic_Floor, never read from
 
 Demo_mode_flag =		ramaddr( $FFFFFFF0 )	; 1 if a demo is playing (2 bytes)
 Demo_number =			ramaddr( $FFFFFFF2 )	; which demo will play next (2 bytes)
