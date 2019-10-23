@@ -1624,6 +1624,7 @@ RunPLC_ROM:
 		move.l	d0,(VDP_control_port).l	; put the VRAM address into VDP
 		bsr.w	NemDec		; decompress
 		dbf	d1,-		; loop for number of entries
+
 		rts	
 ; End of function RunPLC_ROM
 
@@ -2249,10 +2250,60 @@ Pal_SYZCyc1:	binclude	pallet/c_syz_1.bin
 Pal_SYZCyc2:	binclude	pallet/c_syz_2.bin
 
 Pal_SBZCycList:
-		include	"_inc/SBZ pallet script 1.asm"
+	dc.w 8			; number of entries - 1
+	dc.b 7,	8		; duration in frames, number of	colours
+	dc.w Pal_SBZCyc1	; pallet pointer
+	dc.w $FB50		; RAM address
+	dc.b $D, 8
+	dc.w Pal_SBZCyc2
+	dc.w $FB52
+	dc.b $E, 8
+	dc.w Pal_SBZCyc3
+	dc.w $FB6E
+	dc.b $B, 8
+	dc.w Pal_SBZCyc5
+	dc.w $FB70
+	dc.b 7,	8
+	dc.w Pal_SBZCyc6
+	dc.w $FB72
+	dc.b $1C, $10
+	dc.w Pal_SBZCyc7
+	dc.w $FB7E
+	dc.b 3,	3
+	dc.w Pal_SBZCyc8
+	dc.w $FB78
+	dc.b 3,	3
+	dc.w Pal_SBZCyc8+2
+	dc.w $FB7A
+	dc.b 3,	3
+	dc.w Pal_SBZCyc8+4
+	dc.w $FB7C
+	align 2
 
 Pal_SBZCycList2:
-		include	"_inc/SBZ pallet script 2.asm"
+	dc.w 6
+	dc.b 7,	8
+	dc.w Pal_SBZCyc1
+	dc.w $FB50
+	dc.b $D, 8
+	dc.w Pal_SBZCyc2
+	dc.w $FB52
+	dc.b 9,	8
+	dc.w Pal_SBZCyc9
+	dc.w $FB70
+	dc.b 7,	8
+	dc.w Pal_SBZCyc6
+	dc.w $FB72
+	dc.b 3,	3
+	dc.w Pal_SBZCyc8
+	dc.w $FB78
+	dc.b 3,	3
+	dc.w Pal_SBZCyc8+2
+	dc.w $FB7A
+	dc.b 3,	3
+	dc.w Pal_SBZCyc8+4
+	dc.w $FB7C
+	align 2
 
 Pal_SBZCyc1:	binclude	pallet/c_sbz_1.bin
 Pal_SBZCyc2:	binclude	pallet/c_sbz_2.bin
@@ -2824,10 +2875,69 @@ loc_2160:
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
-; Pallet pointers
+; Palette pointers
 ; ---------------------------------------------------------------------------
 PalPointers:
-		include	"_inc/Pallet pointers.asm"
+	dc.l Pal_SegaBG		; pallet address
+	dc.w $FB00		; RAM address
+	dc.w $1F		; (pallet length / 2) - 1
+	dc.l Pal_Title
+	dc.w $FB00
+	dc.w $1F
+	dc.l Pal_LevelSel
+	dc.w $FB00
+	dc.w $1F
+	dc.l Pal_Sonic
+	dc.w $FB00
+	dc.w 7
+	dc.l Pal_GHZ
+	dc.w $FB20
+	dc.w $17
+	dc.l Pal_LZ
+	dc.w $FB20
+	dc.w $17
+	dc.l Pal_MZ
+	dc.w $FB20
+	dc.w $17
+	dc.l Pal_SLZ
+	dc.w $FB20
+	dc.w $17
+	dc.l Pal_SYZ
+	dc.w $FB20
+	dc.w $17
+	dc.l Pal_SBZ1
+	dc.w $FB20
+	dc.w $17
+	dc.l Pal_Special
+	dc.w $FB00
+	dc.w $1F
+	dc.l Pal_LZWater
+	dc.w $FB00
+	dc.w $1F
+	dc.l Pal_SBZ3
+	dc.w $FB20
+	dc.w $17
+	dc.l Pal_SBZ3Water
+	dc.w $FB00
+	dc.w $1F
+	dc.l Pal_SBZ2
+	dc.w $FB20
+	dc.w $17
+	dc.l Pal_LZSonWater
+	dc.w $FB00
+	dc.w 7
+	dc.l Pal_SBZ3SonWat
+	dc.w $FB00
+	dc.w 7
+	dc.l Pal_SpeResult
+	dc.w $FB00
+	dc.w $1F
+	dc.l Pal_SpeContinue
+	dc.w $FB00
+	dc.w $F
+	dc.l Pal_Ending
+	dc.w $FB00
+	dc.w $1F
 
 ; ---------------------------------------------------------------------------
 ; Pallet data
@@ -4526,10 +4636,24 @@ locret_407E:
 ; Demo sequence	pointers
 ; ---------------------------------------------------------------------------
 Demo_Index:
-		include	"_inc/Demo pointers for intro.asm"
+		dc.l Demo_GHZ
+		dc.l Demo_GHZ
+		dc.l Demo_MZ
+		dc.l Demo_MZ
+		dc.l Demo_SYZ
+		dc.l Demo_SYZ
+		dc.l Demo_SS
+		dc.l Demo_SS
 
 Demo_EndIndex:
-		include	"_inc/Demo pointers for ending.asm"
+		dc.l Demo_EndGHZ1
+		dc.l Demo_EndMZ
+		dc.l Demo_EndSYZ
+		dc.l Demo_EndLZ
+		dc.l Demo_EndSLZ
+		dc.l Demo_EndSBZ1
+		dc.l Demo_EndSBZ2
+		dc.l Demo_EndGHZ2
 
 		dc.b 0,	$8B, 8,	$37, 0,	$42, 8,	$5C, 0,	$6A, 8,	$5F, 0,	$2F, 8,	$2C
 		dc.b 0,	$21, 8,	3, $28,	$30, 8,	8, 0, $2E, 8, $15, 0, $F, 8, $46
@@ -4556,7 +4680,12 @@ ColIndexLoad:				; XREF: Level
 ; Collision index pointers
 ; ---------------------------------------------------------------------------
 ColPointers:
-		include	"_inc/Collision index pointers.asm"
+	dc.l Col_GHZ
+	dc.l Col_LZ
+	dc.l Col_MZ
+	dc.l Col_SLZ
+	dc.l Col_SYZ
+	dc.l Col_SBZ
 
 ; ---------------------------------------------------------------------------
 ; Oscillating number subroutine
@@ -5476,7 +5605,7 @@ Obj81_ChkLand:				; XREF: Obj81_Index
 ; ===========================================================================
 
 Obj81_ShowFall:				; XREF: Obj81_ChkLand
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		jsr	(Sonic_Animate).l
 		jmp	(LoadSonicDynPLC).l
 ; ===========================================================================
@@ -5509,7 +5638,7 @@ Obj81_AddSpeed:				; XREF: Obj81_Run
 		addi.w	#$20,inertia(a0)	; increase "run	speed"
 
 Obj81_ShowRun:				; XREF: Obj81_Run
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		jsr	(Sonic_Animate).l
 		jmp	(LoadSonicDynPLC).l
 ; ===========================================================================
@@ -10112,7 +10241,7 @@ locret_8308:
 ; ===========================================================================
 
 Obj1A_TimeZero:				; XREF: Obj1A_Display
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		bsr.w	DisplaySprite
 		tst.b	1(a0)
 		bpl.s	Obj1A_Delete
@@ -10231,7 +10360,7 @@ locret_843A:
 ; ===========================================================================
 
 Obj53_TimeZero:				; XREF: Obj53_Display
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		bsr.w	DisplaySprite
 		tst.b	1(a0)
 		bpl.s	Obj53_Delete
@@ -10750,7 +10879,7 @@ Obj1E_Main:				; XREF: Obj1E_Index
 		move.b	#4,priority(a0)
 		move.b	#5,collision_flags(a0)
 		move.b	#$C,width_pixels(a0)
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	locret_8BAC
@@ -10832,7 +10961,7 @@ Obj20_Main:				; XREF: Obj20_Index
 		move.b	#4,mapping_frame(a0)
 
 Obj20_Bounce:				; XREF: Obj20_Index
-		jsr	(ObjectFall).l
+		jsr	(ObjectMoveAndFall).l
 		tst.w	y_vel(a0)
 		bmi.s	Obj20_ChkExplode
 		jsr	(ObjHitFloor).l
@@ -11179,7 +11308,7 @@ loc_911C:
 loc_912A:				; XREF: Obj28_Index
 		tst.b	1(a0)
 		bpl.w	DeleteObject
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		tst.w	y_vel(a0)
 		bmi.s	loc_9180
 		jsr	(ObjHitFloor).l
@@ -11205,7 +11334,7 @@ loc_9180:
 ; ===========================================================================
 
 loc_9184:				; XREF: Obj28_Index
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		move.b	#1,mapping_frame(a0)
 		tst.w	y_vel(a0)
 		bmi.s	loc_91AE
@@ -11225,7 +11354,7 @@ loc_91AE:
 ; ===========================================================================
 
 loc_91C0:				; XREF: Obj28_Index
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)
 		tst.w	y_vel(a0)
 		bmi.s	loc_91FC
@@ -11299,7 +11428,7 @@ loc_9280:				; XREF: Obj28_Index
 		bpl.s	loc_92B6
 		clr.w	x_vel(a0)
 		clr.w	$32(a0)
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)
 		bsr.w	loc_93C4
 		bsr.w	loc_93EC
@@ -11323,7 +11452,7 @@ loc_92BA:				; XREF: Obj28_Index
 ; ===========================================================================
 
 loc_92D6:				; XREF: Obj28_Index
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		move.b	#1,mapping_frame(a0)
 		tst.w	y_vel(a0)
 		bmi.s	loc_9310
@@ -11349,7 +11478,7 @@ loc_9314:				; XREF: Obj28_Index
 		bpl.s	loc_932E
 		clr.w	x_vel(a0)
 		clr.w	$32(a0)
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		bsr.w	loc_93C4
 		bsr.w	loc_93EC
 
@@ -11360,7 +11489,7 @@ loc_932E:
 loc_9332:				; XREF: Obj28_Index
 		bsr.w	sub_9404
 		bpl.s	loc_936C
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		move.b	#1,mapping_frame(a0)
 		tst.w	y_vel(a0)
 		bmi.s	loc_936C
@@ -11380,7 +11509,7 @@ loc_936C:
 loc_9370:				; XREF: Obj28_Index
 		bsr.w	sub_9404
 		bpl.s	loc_93C0
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)
 		tst.w	y_vel(a0)
 		bmi.s	loc_93AA
@@ -11470,7 +11599,7 @@ Obj29_Main:				; XREF: Obj29_Index
 Obj29_Slower:				; XREF: Obj29_Index
 		tst.w	y_vel(a0)		; is object moving?
 		bpl.w	DeleteObject	; if not, branch
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)	; reduce object	speed
 		rts	
 ; ===========================================================================
@@ -11519,7 +11648,7 @@ Obj1F_Main:				; XREF: Obj1F_Index
 		move.b	#3,priority(a0)
 		move.b	#6,collision_flags(a0)
 		move.b	#$15,width_pixels(a0)
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	locret_955A
@@ -11597,7 +11726,7 @@ locret_9618:
 Obj1F_WalkOnFloor:			; XREF: Obj1F_Index2
 		subq.w	#1,$30(a0)
 		bmi.s	loc_966E
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		bchg	#0,$32(a0)
 		bne.s	loc_9654
 		move.w	x_pos(a0),d3
@@ -11690,7 +11819,7 @@ Obj1F_BallMain:				; XREF: Obj1F_Index
 Obj1F_BallMove:				; XREF: Obj1F_Index
 		lea	(Ani_obj1F).l,a1
 		bsr.w	AnimateSprite
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		bsr.w	DisplaySprite
 		move.w	(Camera_Max_Y_pos_now).w,d0
 		addi.w	#$E0,d0
@@ -11811,7 +11940,7 @@ locret_98D0:
 Obj22_ChkNrSonic:			; XREF: Obj22_Index2
 		subq.w	#1,$32(a0)	; subtract 1 from time delay
 		bmi.s	Obj22_ChgDir
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		tst.b	$34(a0)
 		bne.s	locret_992A
 		move.w	(Object_RAM+x_pos).w,d0
@@ -11909,7 +12038,7 @@ Obj23_FromBuzz:				; XREF: Obj23_Index
 		bne.s	Obj23_Explode
 		move.b	#$87,collision_flags(a0)
 		move.b	#1,anim(a0)
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		lea	(Ani_obj23).l,a1
 		bsr.w	AnimateSprite
 		bsr.w	DisplaySprite
@@ -11934,7 +12063,7 @@ Obj23_Delete:				; XREF: Obj23_Index
 Obj23_FromNewt:				; XREF: Obj23_Index
 		tst.b	1(a0)
 		bpl.s	Obj23_Delete
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 
 Obj23_Animate2:				; XREF: Obj23_Main
 		lea	(Ani_obj23).l,a1
@@ -12220,7 +12349,7 @@ Obj37_ResetCounter:			; XREF: Obj37_Loop
 
 Obj37_Bounce:				; XREF: Obj37_Index
 		move.b	(Ring_spill_anim_frame).w,mapping_frame(a0)
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)
 		bmi.s	Obj37_ChkDel
 		move.b	($FFFFFE0F).w,d0
@@ -12495,7 +12624,7 @@ loc_A1BC:				; XREF: Obj26_Solid
 ; ===========================================================================
 
 Obj26_Fall:				; XREF: Obj26_Solid
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.w	Obj26_Animate
@@ -12638,7 +12767,7 @@ Obj2E_Main:				; XREF: Obj2E_Index
 Obj2E_Move:				; XREF: Obj2E_Index
 		tst.w	y_vel(a0)		; is object moving?
 		bpl.w	Obj2E_ChkEggman	; if not, branch
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)	; reduce object	speed
 		rts	
 ; ===========================================================================
@@ -13075,7 +13204,7 @@ Obj2B_Main:				; XREF: Obj2B_Index
 Obj2B_ChgSpeed:				; XREF: Obj2B_Index
 		lea	(Ani_obj2B).l,a1
 		bsr.w	AnimateSprite
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)	; reduce speed
 		move.w	$30(a0),d0
 		cmp.w	y_pos(a0),d0
@@ -13159,7 +13288,7 @@ Obj2C_Turn:				; XREF: Obj2C_Index
 Obj2C_Animate:
 		lea	(Ani_obj2C).l,a1
 		bsr.w	AnimateSprite
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		bra.w	MarkObjGone
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -13237,7 +13366,7 @@ locret_AD42:
 Obj2D_Move:				; XREF: Obj2D_Index2
 		subq.w	#1,$30(a0)
 		bmi.s	loc_AD84
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		bchg	#0,$32(a0)
 		bne.s	loc_AD78
 		move.w	x_pos(a0),d3
@@ -13277,7 +13406,7 @@ loc_ADA4:
 ; ===========================================================================
 
 Obj2D_Jump:				; XREF: Obj2D_Index2
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)
 		bmi.s	locret_ADF0
 		move.b	#3,anim(a0)
@@ -14772,7 +14901,7 @@ loc_C046:				; XREF: loc_BF6E
 		move.w	x_pos(a0),-(sp)
 		cmpi.b	#4,routine_secondary(a0)
 		bcc.s	loc_C056
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 
 loc_C056:
 		btst	#1,status(a0)
@@ -14910,7 +15039,7 @@ loc_C1A4:
 loc_C1AA:
 		subq.b	#2,d0
 		bne.s	loc_C1F2
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)
 		jsr	(ObjHitFloor).l
 		tst.w	d1
@@ -14933,7 +15062,7 @@ locret_C1F0:
 ; ===========================================================================
 
 loc_C1F2:
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		move.w	x_pos(a0),d0
 		andi.w	#$C,d0
 		bne.w	locret_C2E4
@@ -16307,7 +16436,7 @@ Obj3C_Smash:
 		bsr.s	SmashObject
 
 Obj3C_FragMove:				; XREF: Obj3C_Index
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$70,y_vel(a0)	; make fragment	fall faster
 		bsr.w	DisplaySprite
 		tst.b	1(a0)
@@ -16356,7 +16485,7 @@ Smash_LoadFrag:				; XREF: SmashObject
 		bcc.s	loc_D268
 		move.l	a0,-(sp)
 		movea.l	a1,a0
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		add.w	d2,y_vel(a0)
 		movea.l	(sp)+,a0
 		bsr.w	DisplaySprite2
@@ -16450,54 +16579,92 @@ loc_D37C:
 ; Object pointers
 ; ---------------------------------------------------------------------------
 Obj_Index:
-		include	"_inc/Object pointers.asm"
+	dc.l Obj01, ObjectMoveAndFall,	ObjectMoveAndFall, ObjectMoveAndFall
+	dc.l ObjectMoveAndFall, ObjectMoveAndFall, ObjectMoveAndFall, Obj08
+	dc.l Obj09, Obj0A, Obj0B, Obj0C
+	dc.l Obj0D, Obj0E, Obj0F, Obj10
+	dc.l Obj11, Obj12, Obj13, Obj14
+	dc.l Obj15, Obj16, Obj17, Obj18
+	dc.l Obj19, Obj1A, Obj1B, Obj1C
+	dc.l Obj1D, Obj1E, Obj1F, Obj20
+	dc.l Obj21, Obj22, Obj23, Obj24
+	dc.l Obj25, Obj26, Obj27, Obj28
+	dc.l Obj29, Obj2A, Obj2B, Obj2C
+	dc.l Obj2D, Obj2E, Obj2F, Obj30
+	dc.l Obj31, Obj32, Obj33, Obj34
+	dc.l Obj35, Obj36, Obj37, Obj38
+	dc.l Obj39, Obj3A, Obj3B, Obj3C
+	dc.l Obj3D, Obj3E, Obj3F, Obj40
+	dc.l Obj41, Obj42, Obj43, Obj44
+	dc.l Obj45, Obj46, Obj47, Obj48
+	dc.l Obj49, Obj4A, Obj4B, Obj4C
+	dc.l Obj4D, Obj4E, Obj4F, Obj50
+	dc.l Obj51, Obj52, Obj53, Obj54
+	dc.l Obj55, Obj56, Obj57, Obj58
+	dc.l Obj59, Obj5A, Obj5B, Obj5C
+	dc.l Obj5D, Obj5E, Obj5F, Obj60
+	dc.l Obj61, Obj62, Obj63, Obj64
+	dc.l Obj65, Obj66, Obj67, Obj68
+	dc.l Obj69, Obj6A, Obj6B, Obj6C
+	dc.l Obj6D, Obj6E, Obj6F, Obj70
+	dc.l Obj71, Obj72, Obj73, Obj74
+	dc.l Obj75, Obj76, Obj77, Obj78
+	dc.l Obj79, Obj7A, Obj7B, Obj7C
+	dc.l Obj7D, Obj7E, Obj7F, Obj80
+	dc.l Obj81, Obj82, Obj83, Obj84
+	dc.l Obj85, Obj86, Obj87, Obj88
+	dc.l Obj89, Obj8A, Obj8B, Obj8C
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	make an	object fall downwards, increasingly fast
+; This moves the object horizontally and vertically
+; and also applies gravity to its speed
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-ObjectFall:
-		move.l	x_pos(a0),d2
-		move.l	y_pos(a0),d3
-		move.w	x_vel(a0),d0
+; ObjectFall:
+ObjectMoveAndFall:
+		move.l	x_pos(a0),d2	; load x position
+		move.l	y_pos(a0),d3	; load y position
+		move.w	x_vel(a0),d0	; load x speed
 		ext.l	d0
-		asl.l	#8,d0
-		add.l	d0,d2
-		move.w	y_vel(a0),d0
-		addi.w	#$38,y_vel(a0)	; increase vertical speed
+		asl.l	#8,d0		; shift velocity to line up with the middle 16 bits of the 32-bit position
+		add.l	d0,d2		; add x speed to x position	; note this affects the subpixel position x_sub(a0) = 2+x_pos(a0)
+		move.w	y_vel(a0),d0	; load y speed
+		addi.w	#$38,y_vel(a0)	; increase vertical speed (apply gravity)
 		ext.l	d0
-		asl.l	#8,d0
-		add.l	d0,d3
-		move.l	d2,x_pos(a0)
-		move.l	d3,y_pos(a0)
+		asl.l	#8,d0		; shift velocity to line up with the middle 16 bits of the 32-b
+		add.l	d0,d3		; add old y speed to y position	; note this affects the subpixel position y_sub(a0) = 2+y_pos(a0)
+		move.l	d2,x_pos(a0)	; store new x position
+		move.l	d3,y_pos(a0)	; store new y position
 		rts	
-; End of function ObjectFall
+; End of function ObjectMoveAndFall
 
 ; ---------------------------------------------------------------------------
 ; Subroutine translating object	speed to update	object position
+; This moves the object horizontally and vertically
+; but does not apply gravity to it
 ; ---------------------------------------------------------------------------
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-SpeedToPos:
-		move.l	x_pos(a0),d2
-		move.l	y_pos(a0),d3
-		move.w	x_vel(a0),d0	; load horizontal speed
+; SpeedToPos:
+ObjectMove:
+		move.l	x_pos(a0),d2	; load x position
+		move.l	y_pos(a0),d3	; load y position
+		move.w	x_vel(a0),d0	; load x speed
 		ext.l	d0
-		asl.l	#8,d0		; multiply speed by $100
-		add.l	d0,d2		; add to x-axis	position
-		move.w	y_vel(a0),d0	; load vertical	speed
+		asl.l	#8,d0		; shift velocity to line up with the middle 16 bits of the 32-bit position
+		add.l	d0,d2		; add x speed to x position	; note this affects the subpixel position x_sub(a0) = 2+x_pos(a0)
+		move.w	y_vel(a0),d0	; load y speed
 		ext.l	d0
-		asl.l	#8,d0		; multiply by $100
-		add.l	d0,d3		; add to y-axis	position
-		move.l	d2,x_pos(a0)	; update x-axis	position
-		move.l	d3,y_pos(a0)	; update y-axis	position
+		asl.l	#8,d0		; shift velocity to line up with the middle 16 bits of the 32-b
+		add.l	d0,d3		; add old y speed to y position	; note this affects the subpixel position y_sub(a0) = 2+y_pos(a0)
+		move.l	d2,x_pos(a0)	; store new x position
+		move.l	d3,y_pos(a0)	; store new y position
 		rts	
-; End of function SpeedToPos
+; End of function ObjectMove
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	display	a sprite/object, when a0 is the	object RAM
@@ -17496,7 +17663,7 @@ Obj42_Fall:				; XREF: Obj42_Type00
 		move.b	#$C,collision_flags(a0)
 
 loc_DE42:
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		bsr.w	ObjHitFloor
 		tst.w	d1		; has newtron hit the floor?
 		bpl.s	locret_DE86	; if not, branch
@@ -17520,7 +17687,7 @@ locret_DE86:
 ; ===========================================================================
 
 Obj42_MatchFloor:			; XREF: Obj42_Index2
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		bsr.w	ObjHitFloor
 		cmpi.w	#-8,d1
 		blt.s	loc_DEA2
@@ -17536,7 +17703,7 @@ loc_DEA2:
 ; ===========================================================================
 
 Obj42_Speed:				; XREF: Obj42_Index2
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		rts	
 ; ===========================================================================
 
@@ -17616,7 +17783,7 @@ Obj43_Index:	dc.w Obj43_Main-Obj43_Index
 Obj43_Main:				; XREF: Obj43_Index
 		move.b	#$E,x_radius(a0)
 		move.b	#8,y_radius(a0)
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		bsr.w	ObjHitFloor
 		tst.w	d1
 		bpl.s	locret_E052
@@ -17703,7 +17870,7 @@ loc_E0F8:
 
 Obj43_ChkJump:				; XREF: Obj43_Index2
 		bsr.w	Obj43_Stop
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		bsr.w	ObjHitFloor
 		cmpi.w	#-8,d1
 		blt.s	Obj43_Jump
@@ -17724,7 +17891,7 @@ locret_E12E:
 ; ===========================================================================
 
 Obj43_MatchFloor:			; XREF: Obj43_Index2
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		tst.w	y_vel(a0)
 		bmi.s	locret_E150
 		bsr.w	ObjHitFloor
@@ -17937,7 +18104,7 @@ Obj14_Action:				; XREF: Obj14_Index
 		add.w	d0,d0
 		move.w	Obj14_TypeIndex(pc,d0.w),d1
 		jsr	Obj14_TypeIndex(pc,d1.w)
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		lea	(Ani_obj14).l,a1
 		bsr.w	AnimateSprite
 
@@ -18235,7 +18402,7 @@ loc_E8A8:
 ; ===========================================================================
 
 Obj46_Type03:				; XREF: Obj46_TypeIndex
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)	; increase falling speed
 		bsr.w	ObjHitFloor
 		tst.w	d1		; has the block	hit the	floor?
@@ -18801,7 +18968,7 @@ Obj4D_Action:				; XREF: Obj4D_Index
 		add.w	d0,d0
 		move.w	Obj4D_TypeIndex(pc,d0.w),d1
 		jsr	Obj4D_TypeIndex(pc,d1.w)
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		lea	(Ani_obj4C).l,a1
 		bsr.w	AnimateSprite
 
@@ -18979,7 +19146,7 @@ Obj4E_Animate:
 		bsr.w	AnimateSprite
 		cmpi.b	#4,(Object_RAM+routine).w
 		bcc.s	Obj4E_ChkDel
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 
 Obj4E_ChkDel:
 		bsr.w	DisplaySprite
@@ -19131,7 +19298,7 @@ Obj40_Main:				; XREF: Obj40_Index
 		move.b	#$E,x_radius(a0)
 		move.b	#8,y_radius(a0)
 		move.b	#$C,collision_flags(a0)
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	locret_F68A
@@ -19203,7 +19370,7 @@ locret_F70A:
 ; ===========================================================================
 
 Obj40_FixToFloor:			; XREF: Obj40_Index2
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		jsr	(ObjHitFloor).l
 		cmpi.w	#-8,d1
 		blt.s	Obj40_Pause
@@ -19324,7 +19491,7 @@ Obj50_Main:				; XREF: Obj50_Index
 		move.b	#$11,x_radius(a0)
 		move.b	#8,y_radius(a0)
 		move.b	#$CC,collision_flags(a0)
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		bsr.w	ObjHitFloor
 		tst.w	d1
 		bpl.s	locret_F89E
@@ -19365,7 +19532,7 @@ locret_F8E2:
 ; ===========================================================================
 
 Obj50_FixToFloor:			; XREF: Obj50_Index2
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		bsr.w	ObjHitFloor
 		cmpi.w	#-8,d1
 		blt.s	Obj50_Pause
@@ -19797,7 +19964,7 @@ loc_FD98:
 		move.b	d2,mapping_frame(a1)
 
 Obj51_Display:				; XREF: Obj51_Index
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$38,y_vel(a0)
 		bsr.w	DisplaySprite
 		tst.b	1(a0)
@@ -19976,7 +20143,7 @@ Obj52_05_End:
 ; ===========================================================================
 
 Obj52_Type06:				; XREF: Obj52_TypeIndex
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)	; make the platform fall
 		bsr.w	ObjHitFloor
 		tst.w	d1		; has platform hit the floor?
@@ -20142,7 +20309,7 @@ Obj55_NoDrop:
 ; ===========================================================================
 
 Obj55_DropFly:				; XREF: Obj55_Index2
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)	; make basaran fall
 		move.w	#$80,d2
 		bsr.w	Obj55_ChkSonic
@@ -20174,7 +20341,7 @@ Obj55_PlaySnd:				; XREF: Obj55_Index2
 		jsr	(PlaySound_Special).l ;	play flapping sound
 
 loc_101A0:
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		move.w	(Object_RAM+x_pos).w,d0
 		sub.w	x_pos(a0),d0
 		bcc.s	loc_101B0
@@ -20194,7 +20361,7 @@ locret_101C6:
 ; ===========================================================================
 
 Obj55_FlyUp:				; XREF: Obj55_Index2
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		subi.w	#$18,y_vel(a0)	; make basaran fly upwards
 		bsr.w	ObjHitCeiling
 		tst.w	d1		; has basaran hit the ceiling?
@@ -20224,7 +20391,7 @@ loc_10214:
 		cmp.w	d2,d0
 		rts	
 ; ===========================================================================
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		bsr.w	DisplaySprite
 		tst.b	1(a0)
 		bpl.w	DeleteObject
@@ -22259,19 +22426,19 @@ loc_1185C:
 Obj5E_SpikeFall:			; XREF: Obj5E_Index
 		tst.w	y_vel(a0)
 		bpl.s	loc_1189A
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		move.w	$34(a0),d0
 		subi.w	#$2F,d0
 		cmp.w	y_pos(a0),d0
 		bgt.s	locret_11898
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 
 locret_11898:
 		rts	
 ; ===========================================================================
 
 loc_1189A:				; XREF: Obj5E_SpikeFall
-		bsr.w	ObjectFall
+		bsr.w	ObjectMoveAndFall
 		movea.l	$3C(a0),a1
 		lea	(Obj5E_Speeds).l,a2
 		moveq	#0,d0
@@ -22407,7 +22574,7 @@ Obj5F_Wait:				; XREF: Obj5F_Index2
 		bsr.w	Obj5F_ChkSonic
 		subq.w	#1,$30(a0)	; subtract 1 from time delay
 		bmi.s	loc_11AA8
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		rts	
 ; ===========================================================================
 
@@ -22484,7 +22651,7 @@ Obj5F_Display:				; XREF: Obj5F_Index
 loc_11B70:
 		subq.w	#1,$30(a0)
 		bmi.s	loc_11B7C
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		rts	
 ; ===========================================================================
 
@@ -22519,7 +22686,7 @@ loc_11BCE:
 		move.b	#6,routine(a0)
 
 Obj5F_End:				; XREF: Obj5F_Index
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addi.w	#$18,y_vel(a0)
 		lea	(Ani_obj5F).l,a1
 		bsr.w	AnimateSprite
@@ -22662,7 +22829,7 @@ Obj60_Animate:
 ; ===========================================================================
 
 Obj60_Display:				; XREF: Obj60_Index
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 
 Obj60_ChkDel:				; XREF: Obj60_Animate
 		move.w	x_pos(a0),d0
@@ -22741,7 +22908,7 @@ Obj60_Circle:				; XREF: Obj60_MoveOrb
 ; ===========================================================================
 
 Obj60_ChkDel2:				; XREF: Obj60_Index
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		tst.b	1(a0)
 		bpl.w	DeleteObject
 		bra.w	DisplaySprite
@@ -22936,7 +23103,7 @@ loc_120D6:
 ; ===========================================================================
 
 Obj61_Type02:				; XREF: Obj61_TypeIndex
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		addq.w	#8,y_vel(a0)	; make object fall
 		bsr.w	ObjHitFloor
 		tst.w	d1
@@ -22951,7 +23118,7 @@ locret_12106:
 ; ===========================================================================
 
 Obj61_Type04:				; XREF: Obj61_TypeIndex
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		subq.w	#8,y_vel(a0)	; make object rise
 		bsr.w	ObjHitCeiling
 		tst.w	d1
@@ -23125,7 +23292,7 @@ Obj62_AniFire:				; XREF: Obj62_Index
 		bchg	#0,mapping_frame(a0)	; switch between frame 01 and 02
 
 Obj62_StopFire:
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		btst	#0,status(a0)
 		bne.s	Obj62_StopFire2
 		moveq	#-8,d3
@@ -23361,7 +23528,7 @@ loc_12552:
 		bsr.w	Obj63_ChangeDir
 
 loc_1256A:
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		rts	
 ; End of function sub_12502
 
@@ -23544,7 +23711,7 @@ Obj64_Wobble:				; XREF: Obj64_ChkWater
 ; ===========================================================================
 
 Obj64_Display:				; XREF: Obj64_Wobble
-		bsr.w	SpeedToPos
+		bsr.w	ObjectMove
 		tst.b	1(a0)
 		bpl.s	Obj64_Delete
 		jmp	(DisplaySprite).l
@@ -24039,7 +24206,7 @@ Obj01_MdNormal:
 		bsr.w	Sonic_Move
 		bsr.w	Sonic_Roll
 		bsr.w	Sonic_LevelBound
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		bsr.w	Sonic_AnglePos
 		bsr.w	Sonic_SlopeRepel
 		rts	
@@ -24051,7 +24218,7 @@ Obj01_MdAir:
 		bsr.w	Sonic_JumpHeight
 		bsr.w	Sonic_ChgJumpDir
 		bsr.w	Sonic_LevelBound
-		jsr	(ObjectFall).l
+		jsr	(ObjectMoveAndFall).l
 		btst	#6,status(a0)
 		beq.s	loc_12E5C
 		subi.w	#$28,y_vel(a0)
@@ -24068,7 +24235,7 @@ Obj01_MdRoll:
 		bsr.w	Sonic_RollRepel
 		bsr.w	Sonic_RollSpeed
 		bsr.w	Sonic_LevelBound
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		bsr.w	Sonic_AnglePos
 		bsr.w	Sonic_SlopeRepel
 		rts	
@@ -24082,7 +24249,7 @@ Obj01_MdJump:
 		bsr.w	Sonic_JumpHeight
 		bsr.w	Sonic_ChgJumpDir
 		bsr.w	Sonic_LevelBound
-		jsr	(ObjectFall).l
+		jsr	(ObjectMoveAndFall).l
 		btst	#6,status(a0)
 		beq.s	loc_12EA6
 		subi.w	#$28,y_vel(a0)
@@ -25170,7 +25337,7 @@ Sonic_ResetOnFloor_Part3:
 ; ---------------------------------------------------------------------------
 
 Obj01_Hurt:				; XREF: Obj01_Index
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		addi.w	#$30,y_vel(a0)
 		btst	#6,status(a0)
 		beq.s	loc_1380C
@@ -25218,7 +25385,7 @@ locret_13860:
 ; Obj01_Death:
 Obj01_Dead:
 		bsr.w	CheckGameOver
-		jsr	(ObjectFall).l
+		jsr	(ObjectMoveAndFall).l
 		bsr.w	Sonic_RecordPos
 		bsr.w	Sonic_Animate
 		bsr.w	LoadSonicDynPLC
@@ -25721,7 +25888,7 @@ loc_13D44:
 		add.w	$30(a0),d0
 		move.w	d0,x_pos(a0)
 		bsr.s	Obj0A_ShowNumber
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		tst.b	1(a0)
 		bpl.s	Obj0A_Delete
 		jmp	(DisplaySprite).l
@@ -25872,7 +26039,7 @@ loc_13F86:
 loc_13F94:
 		move.l	a0,-(sp)
 		lea	(Object_RAM).w,a0
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		addi.w	#$10,y_vel(a0)
 		movea.l	(sp)+,a0
 		bra.s	loc_13FAC
@@ -28325,7 +28492,7 @@ locret_15B04:
 ; ===========================================================================
 
 Obj6A_Animate03:			; XREF: ROM:00015AB6j
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		move.w	x_pos(a0),$3A(a0)
 		subq.b	#1,anim_frame_duration(a0)
 		bpl.s	locret_15B24
@@ -28365,7 +28532,7 @@ locret_15B76:
 ; ===========================================================================
 
 Obj6A_Animate04:
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		move.w	x_pos(a0),$3A(a0)
 		subq.b	#1,anim_frame_duration(a0)
 		bpl.s	locret_15B96
@@ -29105,7 +29272,7 @@ loc_16480:
 		bsr.w	Obj63_ChangeDir
 
 loc_16484:
-		jmp	(SpeedToPos).l
+		jmp	(ObjectMove).l
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
 ; Animation script - platform on conveyor belt (SBZ)
@@ -29161,7 +29328,7 @@ Obj70_Action:				; XREF: Obj70_Index
 		bne.s	Obj70_Solid
 
 Obj70_Move:
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		subq.w	#1,$34(a0)	; subtract 1 from movement duration
 		bne.s	Obj70_Solid	; if time remains, branch
 		bsr.w	Obj70_Move2	; if time is zero, branch
@@ -29494,7 +29661,7 @@ locret_16950:
 Obj78_Main:				; XREF: Obj78_Index
 		move.b	#7,x_radius(a0)
 		move.b	#8,y_radius(a0)
-		jsr	(ObjectFall).l
+		jsr	(ObjectMoveAndFall).l
 		jsr	(ObjHitFloor).l
 		tst.w	d1
 		bpl.s	locret_16950
@@ -29784,7 +29951,7 @@ loc_16CAA:
 		andi.b	#-8,mapping_frame(a0)
 
 loc_16CC0:				; XREF: Obj78_Index
-		jsr	(ObjectFall).l
+		jsr	(ObjectMoveAndFall).l
 		tst.w	y_vel(a0)
 		bmi.s	loc_16CE0
 		jsr	(ObjHitFloor).l
@@ -31672,7 +31839,7 @@ Obj74_Action:				; XREF: Obj74_Index
 		move.b	routine_secondary(a0),d0
 		move.w	Obj74_Index2(pc,d0.w),d0
 		jsr	Obj74_Index2(pc,d0.w)
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		lea	(Ani_obj14).l,a1
 		jsr	(AnimateSprite).l
 		cmpi.w	#$2E8,y_pos(a0)
@@ -32296,7 +32463,7 @@ loc_18D68:
 		addq.b	#2,routine(a0)
 
 Obj7B_Fall:				; XREF: Obj7B_Index
-		jsr	(ObjectFall).l
+		jsr	(ObjectMoveAndFall).l
 		movea.l	$3C(a0),a1
 		lea	(word_19018).l,a2
 		moveq	#0,d0
@@ -32478,19 +32645,19 @@ loc_18EC0:
 loc_18F38:
 		tst.w	y_vel(a0)
 		bpl.s	loc_18F5C
-		jsr	(ObjectFall).l
+		jsr	(ObjectMoveAndFall).l
 		move.w	$34(a0),d0
 		subi.w	#$2F,d0
 		cmp.w	y_pos(a0),d0
 		bgt.s	loc_18F58
-		jsr	(ObjectFall).l
+		jsr	(ObjectMoveAndFall).l
 
 loc_18F58:
 		bra.w	loc_18E7A
 ; ===========================================================================
 
 loc_18F5C:
-		jsr	(ObjectFall).l
+		jsr	(ObjectMoveAndFall).l
 		movea.l	$3C(a0),a1
 		lea	(word_19018).l,a2
 		moveq	#0,d0
@@ -32599,7 +32766,7 @@ Obj7B_FragSpeed:dc.w $FF00, $FCC0	; horizontal, vertical
 ; ===========================================================================
 
 Obj7B_MoveFrag:				; XREF: Obj7B_Index
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		move.w	x_pos(a0),$30(a0)
 		move.w	y_pos(a0),$34(a0)
 		addi.w	#$18,y_vel(a0)
@@ -33313,7 +33480,7 @@ Obj76_Display:				; XREF: Obj76_Action
 loc_19762:				; XREF: Obj76_Index
 		tst.b	1(a0)
 		bpl.s	Obj76_Delete
-		jsr	(ObjectFall).l
+		jsr	(ObjectMoveAndFall).l
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
@@ -33463,7 +33630,7 @@ Obj82_ChkSonic:				; XREF: Obj82_EggIndex
 		move.b	#1,anim(a0)
 
 loc_19934:				; XREF: Obj82_EggIndex
-		jmp	(SpeedToPos).l
+		jmp	(ObjectMove).l
 ; ===========================================================================
 
 Obj82_PreLeap:				; XREF: Obj82_EggIndex
@@ -33680,7 +33847,7 @@ loc_19C72:				; XREF: Obj83_Index
 loc_19C80:				; XREF: Obj83_Index
 		tst.b	1(a0)
 		bpl.w	loc_1982C
-		jsr	(ObjectFall).l
+		jsr	(ObjectMoveAndFall).l
 		jmp	(DisplaySprite).l
 ; ===========================================================================
 
@@ -34004,7 +34171,7 @@ loc_1A020:
 loc_1A02A:				; XREF: off_19E80
 		move.b	#$30,y_radius(a0)
 		bset	#0,status(a0)
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		move.b	#6,mapping_frame(a0)
 		addi.w	#$10,y_vel(a0)
 		cmpi.w	#$59C,y_pos(a0)
@@ -34023,7 +34190,7 @@ loc_1A070:
 loc_1A074:				; XREF: off_19E80
 		bset	#0,status(a0)
 		move.b	#4,anim(a0)
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		addi.w	#$10,y_vel(a0)
 		cmpi.w	#$5A3,y_pos(a0)
 		bcs.s	loc_1A09A
@@ -34071,7 +34238,7 @@ loc_1A110:
 ; ===========================================================================
 
 loc_1A112:				; XREF: off_19E80
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		cmpi.w	#$26E0,x_pos(a0)
 		bcs.s	loc_1A124
 		clr.w	x_vel(a0)
@@ -34121,7 +34288,7 @@ loc_1A192:				; XREF: off_19E80
 		move.w	#$400,2(a0)
 		move.b	#0,anim(a0)
 		bset	#0,status(a0)
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		cmpi.w	#$544,y_pos(a0)
 		bcc.s	loc_1A1D0
 		move.w	#$180,x_vel(a0)
@@ -34135,7 +34302,7 @@ loc_1A1D0:
 
 loc_1A1D4:				; XREF: off_19E80
 		bset	#0,status(a0)
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		tst.w	$30(a0)
 		bne.s	loc_1A1FC
 		tst.b	collision_flags(a0)
@@ -34693,7 +34860,7 @@ loc_1A9A6:				; XREF: Obj86_Index2
 loc_1A9C0:				; XREF: Obj86_Index2
 		tst.w	x_vel(a0)
 		beq.s	loc_1A9E6
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		move.w	x_pos(a0),d0
 		sub.w	$30(a0),d0
 		bcc.s	loc_1A9E6
@@ -34721,7 +34888,7 @@ locret_1AA1C:
 ; ===========================================================================
 
 loc_1AA1E:				; XREF: Obj86_Index2
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		cmpi.w	#$5E0,y_pos(a0)
 		bcc.s	loc_1AA34
 		subq.w	#1,subtype(a0)
@@ -35843,7 +36010,13 @@ SS_AniGlassData:dc.b $4B, $4C, $4D, $4E, $4B, $4C, $4D,	$4E, 0,	0
 ; Special stage	layout pointers
 ; ---------------------------------------------------------------------------
 SS_LayoutIndex:
-		include	"_inc/Special stage layout pointers.asm"
+		dc.l SS_1
+		dc.l SS_2
+		dc.l SS_3
+		dc.l SS_4
+		dc.l SS_5
+		dc.l SS_6
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Special stage	start locations
@@ -35947,7 +36120,162 @@ loc_1B730:
 ; Special stage	mappings and VRAM pointers
 ; ---------------------------------------------------------------------------
 SS_MapIndex:
-		include	"_inc/Special stage mappings and VRAM pointers.asm"
+		dc.l Map_SSWalls	; address of mappings
+		dc.w $142		; VRAM setting
+		dc.l Map_SSWalls
+		dc.w $142
+		dc.l Map_SSWalls
+		dc.w $142
+		dc.l Map_SSWalls
+		dc.w $142
+		dc.l Map_SSWalls
+		dc.w $142
+		dc.l Map_SSWalls
+		dc.w $142
+		dc.l Map_SSWalls
+		dc.w $142
+		dc.l Map_SSWalls
+		dc.w $142
+		dc.l Map_SSWalls
+		dc.w $142
+		dc.l Map_SSWalls
+		dc.w $2142
+		dc.l Map_SSWalls
+		dc.w $2142
+		dc.l Map_SSWalls
+		dc.w $2142
+		dc.l Map_SSWalls
+		dc.w $2142
+		dc.l Map_SSWalls
+		dc.w $2142
+		dc.l Map_SSWalls
+		dc.w $2142
+		dc.l Map_SSWalls
+		dc.w $2142
+		dc.l Map_SSWalls
+		dc.w $2142
+		dc.l Map_SSWalls
+		dc.w $2142
+		dc.l Map_SSWalls
+		dc.w $4142
+		dc.l Map_SSWalls
+		dc.w $4142
+		dc.l Map_SSWalls
+		dc.w $4142
+		dc.l Map_SSWalls
+		dc.w $4142
+		dc.l Map_SSWalls
+		dc.w $4142
+		dc.l Map_SSWalls
+		dc.w $4142
+		dc.l Map_SSWalls
+		dc.w $4142
+		dc.l Map_SSWalls
+		dc.w $4142
+		dc.l Map_SSWalls
+		dc.w $4142
+		dc.l Map_SSWalls
+		dc.w $6142
+		dc.l Map_SSWalls
+		dc.w $6142
+		dc.l Map_SSWalls
+		dc.w $6142
+		dc.l Map_SSWalls
+		dc.w $6142
+		dc.l Map_SSWalls
+		dc.w $6142
+		dc.l Map_SSWalls
+		dc.w $6142
+		dc.l Map_SSWalls
+		dc.w $6142
+		dc.l Map_SSWalls
+		dc.w $6142
+		dc.l Map_SSWalls
+		dc.w $6142
+		dc.l Map_obj47
+		dc.w $23B
+		dc.l Map_SS_R
+		dc.w $570
+		dc.l Map_SS_R
+		dc.w $251
+		dc.l Map_SS_R
+		dc.w $370
+		dc.l Map_SS_Up
+		dc.w $263
+		dc.l Map_SS_Down
+		dc.w $263
+		dc.l Map_SS_R
+		dc.w $22F0
+		dc.l Map_SS_Glass
+		dc.w $470
+		dc.l Map_SS_Glass
+		dc.w $5F0
+		dc.l Map_SS_Glass
+		dc.w $65F0
+		dc.l Map_SS_Glass
+		dc.w $25F0
+		dc.l Map_SS_Glass
+		dc.w $45F0
+		dc.l Map_SS_R
+		dc.w $2F0
+		dc.l Map_obj47+$1000000	; add frame no.	* $1000000
+		dc.w $23B
+		dc.l Map_obj47+$2000000
+		dc.w $23B
+		dc.l Map_SS_R
+		dc.w $797
+		dc.l Map_SS_R
+		dc.w $7A0
+		dc.l Map_SS_R
+		dc.w $7A9
+		dc.l Map_SS_R
+		dc.w $797
+		dc.l Map_SS_R
+		dc.w $7A0
+		dc.l Map_SS_R
+		dc.w $7A9
+		dc.l Map_obj25
+		dc.w $27B2
+		dc.l Map_SS_Chaos3
+		dc.w $770
+		dc.l Map_SS_Chaos3
+		dc.w $2770
+		dc.l Map_SS_Chaos3
+		dc.w $4770
+		dc.l Map_SS_Chaos3
+		dc.w $6770
+		dc.l Map_SS_Chaos1
+		dc.w $770
+		dc.l Map_SS_Chaos2
+		dc.w $770
+		dc.l Map_SS_R
+		dc.w $4F0
+		dc.l Map_obj25+$4000000
+		dc.w $27B2
+		dc.l Map_obj25+$5000000
+		dc.w $27B2
+		dc.l Map_obj25+$6000000
+		dc.w $27B2
+		dc.l Map_obj25+$7000000
+		dc.w $27B2
+		dc.l Map_SS_Glass
+		dc.w $23F0
+		dc.l Map_SS_Glass+$1000000
+		dc.w $23F0
+		dc.l Map_SS_Glass+$2000000
+		dc.w $23F0
+		dc.l Map_SS_Glass+$3000000
+		dc.w $23F0
+		dc.l Map_SS_R+$2000000
+		dc.w $4F0
+		dc.l Map_SS_Glass
+		dc.w $5F0
+		dc.l Map_SS_Glass
+		dc.w $65F0
+		dc.l Map_SS_Glass
+		dc.w $25F0
+		dc.l Map_SS_Glass
+		dc.w $45F0
 
 ; ---------------------------------------------------------------------------
 ; Sprite mappings - special stage "R" block
@@ -36063,7 +36391,7 @@ Obj09_InAir:				; XREF: Obj09_Modes
 Obj09_Display:				; XREF: Obj09_OnWall
 		bsr.w	Obj09_ChkItems
 		bsr.w	Obj09_ChkItems2
-		jsr	(SpeedToPos).l
+		jsr	(ObjectMove).l
 		bsr.w	SS_FixCamera
 		move.w	($FFFFF780).w,d0
 		add.w	($FFFFF782).w,d0
@@ -38141,61 +38469,879 @@ Debug_ShowItem:				; XREF: Debug_Main
 ; Debug	list pointers
 ; ---------------------------------------------------------------------------
 DebugList:
-		include	"_inc/Debug list pointers.asm"
+		dc.w Debug_GHZ-DebugList
+		dc.w Debug_LZ-DebugList
+		dc.w Debug_MZ-DebugList
+		dc.w Debug_SLZ-DebugList
+		dc.w Debug_SYZ-DebugList
+		dc.w Debug_SBZ-DebugList
+		dc.w Debug_Ending-DebugList
 
 ; ---------------------------------------------------------------------------
 ; Debug	list - Green Hill
 ; ---------------------------------------------------------------------------
 Debug_GHZ:
-		include	"_inc/Debug list - GHZ.asm"
+		dc.w $10			; number of items in list
+		dc.l Map_obj25+$25000000	; mappings pointer, object type * 10^6
+		dc.b 0,	0, $27,	$B2		; subtype, frame, VRAM setting (2 bytes)
+		dc.l Map_obj26+$26000000
+		dc.b 0,	0, 6, $80
+		dc.l Map_obj1F+$1F000000
+		dc.b 0,	0, 4, 0
+		dc.l Map_obj22+$22000000
+		dc.b 0,	0, 4, $44
+		dc.l Map_obj2B+$2B000000
+		dc.b 0,	0, 4, $7B
+		dc.l Map_obj36+$36000000
+		dc.b 0,	0, 5, $1B
+		dc.l Map_obj18+$18000000
+		dc.b 0,	0, $40,	0
+		dc.l Map_obj3B+$3B000000
+		dc.b 0,	0, $63,	$D0
+		dc.l Map_obj40+$40000000
+		dc.b 0,	0, 4, $F0
+		dc.l Map_obj41+$41000000
+		dc.b 0,	0, 5, $23
+		dc.l Map_obj42+$42000000
+		dc.b 0,	0, $24,	$9B
+		dc.l Map_obj44+$44000000
+		dc.b 0,	0, $43,	$4C
+		dc.l Map_obj48+$19000000
+		dc.b 0,	0, $43,	$AA
+		dc.l Map_obj79+$79000000
+		dc.b 1,	0, 7, $A0
+		dc.l Map_obj4B+$4B000000
+		dc.b 0,	0, $24,	0
+		dc.l Map_obj7D+$7D000000
+		dc.b 1,	1, $84,	$B6
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Debug	list - Labyrinth
 ; ---------------------------------------------------------------------------
 Debug_LZ:
-		include	"_inc/Debug list - LZ.asm"
+		dc.w $19
+		dc.l Map_obj25+$25000000
+		dc.b 0,	0, $27,	$B2
+		dc.l Map_obj26+$26000000
+		dc.b 0,	0, 6, $80
+		dc.l Map_obj41+$41000000
+		dc.b 0,	0, 5, $23
+		dc.l Map_obj2C+$2C000000
+		dc.b 8,	0, $24,	$86
+		dc.l Map_obj2D+$2D000000
+		dc.b 0,	2, $84,	$A6
+		dc.l Map_obj16+$16000000
+		dc.b 0,	0, 3, $CC
+		dc.l Map_obj16+$16000000
+		dc.b 2,	3, 3, $CC
+		dc.l Map_obj33+$33000000
+		dc.b 0,	0, $43,	$DE
+		dc.l Map_obj32+$32000000
+		dc.b 0,	0, 5, $13
+		dc.l Map_obj36+$36000000
+		dc.b 0,	0, 5, $1B
+		dc.l Map_obj52a+$52000000
+		dc.b 4,	0, $43,	$BC
+		dc.l Map_obj61+$61000000
+		dc.b 1,	0, $43,	$E6
+		dc.l Map_obj61+$61000000
+		dc.b $13, 1, $43, $E6
+		dc.l Map_obj61+$61000000
+		dc.b 5,	0, $43,	$E6
+		dc.l Map_obj62+$62000000
+		dc.b 0,	0, $44,	$3E
+		dc.l Map_obj61+$61000000
+		dc.b $27, 2, $43, $E6
+		dc.l Map_obj61+$61000000
+		dc.b $30, 3, $43, $E6
+		dc.l Map_obj63+$63000000
+		dc.b $7F, 0, 3,	$F6
+		dc.l Map_obj60+$60000000
+		dc.b 0,	0, 4, $67
+		dc.l Map_obj64+$64000000
+		dc.b $84, $13, $83, $48
+		dc.l Map_obj65+$65000000
+		dc.b 2,	2, $C2,	$59
+		dc.l Map_obj65+$65000000
+		dc.b 9,	9, $C2,	$59
+		dc.l Map_obj0B+$B000000
+		dc.b 0,	0, $43,	$DE
+		dc.l Map_obj0C+$C000000
+		dc.b 2,	0, $43,	$28
+		dc.l Map_obj79+$79000000
+		dc.b 1,	0, 7, $A0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Debug	list - Marble
 ; ---------------------------------------------------------------------------
 Debug_MZ:
-		include	"_inc/Debug list - MZ.asm"
+		dc.w $12
+		dc.l Map_obj25+$25000000
+		dc.b 0,	0, $27,	$B2
+		dc.l Map_obj26+$26000000
+		dc.b 0,	0, 6, $80
+		dc.l Map_obj22+$22000000
+		dc.b 0,	0, 4, $44
+		dc.l Map_obj36+$36000000
+		dc.b 0,	0, 5, $1B
+		dc.l Map_obj41+$41000000
+		dc.b 0,	0, 5, $23
+		dc.l Map_obj14+$13000000
+		dc.b 0,	0, 3, $45
+		dc.l Map_obj46+$46000000
+		dc.b 0,	0, $40,	0
+		dc.l Map_obj4C+$4C000000
+		dc.b 0,	0, $63,	$A8
+		dc.l Map_obj4E+$4E000000
+		dc.b 0,	0, $63,	$A8
+		dc.l Map_obj33+$33000000
+		dc.b 0,	0, $42,	$B8
+		dc.l Map_obj50+$50000000
+		dc.b 0,	0, $24,	$7B
+		dc.l Map_obj51+$51000000
+		dc.b 0,	0, $42,	$B8
+		dc.l Map_obj52+$52000000
+		dc.b 0,	0, 2, $B8
+		dc.l Map_obj53+$53000000
+		dc.b 0,	0, $62,	$B8
+		dc.l Map_obj54+$54000000
+		dc.b 0,	0, $86,	$80
+		dc.l Map_obj55+$55000000
+		dc.b 0,	0, 4, $B8
+		dc.l Map_obj78+$78000000
+		dc.b 0,	0, $24,	$FF
+		dc.l Map_obj79+$79000000
+		dc.b 1,	0, 7, $A0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Debug	list - Star Light
 ; ---------------------------------------------------------------------------
 Debug_SLZ:
-		include	"_inc/Debug list - SLZ.asm"
+		dc.w $F
+		dc.l Map_obj25+$25000000
+		dc.b 0,	0, $27,	$B2
+		dc.l Map_obj26+$26000000
+		dc.b 0,	0, 6, $80
+		dc.l Map_obj59+$59000000
+		dc.b 0,	0, $40,	0
+		dc.l Map_obj53+$53000000
+		dc.b 0,	2, $44,	$E0
+		dc.l Map_obj18b+$18000000
+		dc.b 0,	0, $40,	0
+		dc.l Map_obj5A+$5A000000
+		dc.b 0,	0, $40,	0
+		dc.l Map_obj5B+$5B000000
+		dc.b 0,	0, $40,	0
+		dc.l Map_obj5D+$5D000000
+		dc.b 0,	0, $43,	$A0
+		dc.l Map_obj5E+$5E000000
+		dc.b 0,	0, 3, $74
+		dc.l Map_obj41+$41000000
+		dc.l Map_obj14+$13000000
+		dc.b 0,	0, 4, $80
+		dc.l Map_obj1C+$1C000000
+		dc.b 0,	0, $44,	$D8
+		dc.l Map_obj5F+$5F000000
+		dc.b 0,	0, 4, 0
+		dc.l Map_obj60+$60000000
+		dc.b 0,	0, $24,	$29
+		dc.l Map_obj79+$79000000
+		dc.b 1,	0, 7, $A0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Debug	list - Spring Yard
 ; ---------------------------------------------------------------------------
 Debug_SYZ:
-		include	"_inc/Debug list - SYZ.asm"
+		dc.w $F
+		dc.l Map_obj25+$25000000
+		dc.b 0,	0, $27,	$B2
+		dc.l Map_obj26+$26000000
+		dc.b 0,	0, 6, $80
+		dc.l Map_obj36+$36000000
+		dc.b 0,	0, 5, $1B
+		dc.l Map_obj41+$41000000
+		dc.b 0,	0, 5, $23
+		dc.l Map_obj43+$43000000
+		dc.b 0,	0, 4, $B8
+		dc.l Map_obj12+$12000000
+		dc.b 0,	0, 0, 0
+		dc.l Map_obj47+$47000000
+		dc.b 0,	0, 3, $80
+		dc.l Map_obj1F+$1F000000
+		dc.b 0,	0, 4, 0
+		dc.l Map_obj22+$22000000
+		dc.b 0,	0, 4, $44
+		dc.l Map_obj50+$50000000
+		dc.b 0,	0, $24,	$7B
+		dc.l Map_obj18a+$18000000
+		dc.b 0,	0, $40,	0
+		dc.l Map_obj56+$56000000
+		dc.b 0,	0, $40,	0
+		dc.l Map_obj32+$32000000
+		dc.b 0,	0, 5, $13
+		dc.l Map_obj78+$78000000
+		dc.b 0,	0, $24,	$FF
+		dc.l Map_obj79+$79000000
+		dc.b 1,	0, 7, $A0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Debug	list - Scrap Brain
 ; ---------------------------------------------------------------------------
 Debug_SBZ:
-		include	"_inc/Debug list - SBZ.asm"
+		dc.w $1D
+		dc.l Map_obj25+$25000000
+		dc.b 0,	0, $27,	$B2
+		dc.l Map_obj26+$26000000
+		dc.b 0,	0, 6, $80
+		dc.l Map_obj5F+$5F000000
+		dc.b 0,	0, 4, 0
+		dc.l Map_obj60+$60000000
+		dc.b 0,	0, 4, $29
+		dc.l Map_obj78+$78000000
+		dc.b 0,	0, $22,	$B0
+		dc.l Map_obj15b+$15000000
+		dc.b 7,	2, $43,	$91
+		dc.l Map_obj67+$67000000
+		dc.b $E0, 0, $C3, $44
+		dc.l Map_obj52+$52000000
+		dc.b $28, 2, $22, $C0
+		dc.l Map_obj32+$32000000
+		dc.b 0,	0, 5, $13
+		dc.l Map_obj69+$69000000
+		dc.b 3,	0, $44,	$92
+		dc.l Map_obj69a+$69000000
+		dc.b $83, 0, 4,	$DF
+		dc.l Map_obj6A+$6A000000
+		dc.b 2,	0, $43,	$B5
+		dc.l Map_obj53+$53000000
+		dc.b 0,	0, $43,	$F5
+		dc.l Map_obj52+$52000000
+		dc.b $39, 3, $44, $60
+		dc.l Map_obj6B+$6B000000
+		dc.b 0,	0, $22,	$C0
+		dc.l Map_obj2A+$2A000000
+		dc.b 0,	0, $42,	$E8
+		dc.l Map_obj6B+$6B000000
+		dc.b $13, 1, $22, $C0
+		dc.l Map_obj6A+$6A000000
+		dc.b 1,	0, $43,	$B5
+		dc.l Map_obj6B+$6B000000
+		dc.b $24, 1, $22, $C0
+		dc.l Map_obj6A+$6A000000
+		dc.b 4,	2, $43,	$B5
+		dc.l Map_obj6B+$6B000000
+		dc.b $34, 1, $22, $C0
+		dc.l Map_obj6C+$6C000000
+		dc.b 0,	0, $44,	$C3
+		dc.l Map_obj6D+$6D000000
+		dc.b $64, 0, $83, $D9
+		dc.l Map_obj6D+$6D000000
+		dc.b $64, $B, $83, $D9
+		dc.l Map_obj6E+$6E000000
+		dc.b 4,	0, 4, $7E
+		dc.l Map_obj70+$70000000
+		dc.b 0,	0, $42,	$F0
+		dc.l Map_obj71+$71000000
+		dc.b $11, 0, $86, $80
+		dc.l Map_obj1E+$1E000000
+		dc.b 4,	0, $23,	2
+		dc.l Map_obj79+$79000000
+		dc.b 1,	0, 7, $A0
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Debug	list - ending sequence / special stage
 ; ---------------------------------------------------------------------------
 Debug_Ending:
-		include	"_inc/Debug list - Ending and SS.asm"
+		dc.w $D
+		dc.l Map_obj25+$25000000
+		dc.b 0,	0, $27,	$B2
+		dc.l Map_obj47+$47000000
+		dc.b 0,	0, 3, $80
+		dc.l Map_obj28a+$28000000
+		dc.b $A, 0, 5, $A0
+		dc.l Map_obj28a+$28000000
+		dc.b $B, 0, 5, $A0
+		dc.l Map_obj28a+$28000000
+		dc.b $C, 0, 5, $A0
+		dc.l Map_obj28+$28000000
+		dc.b $D, 0, 5, $53
+		dc.l Map_obj28+$28000000
+		dc.b $E, 0, 5, $53
+		dc.l Map_obj28+$28000000
+		dc.b $F, 0, 5, $73
+		dc.l Map_obj28+$28000000
+		dc.b $10, 0, 5,	$73
+		dc.l Map_obj28a+$28000000
+		dc.b $11, 0, 5,	$85
+		dc.l Map_obj28b+$28000000
+		dc.b $12, 0, 5,	$93
+		dc.l Map_obj28a+$28000000
+		dc.b $13, 0, 5,	$65
+		dc.l Map_obj28b+$28000000
+		dc.b $14, 0, 5,	$B3
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Main level load blocks
+;
+; ===FORMAT===
+; level	patterns + (1st	PLC num	* 10^6)
+; 16x16	mappings + (2nd	PLC num	* 10^6)
+; 256x256 mappings
+; blank, music (unused), pal index (unused), pal index
 ; ---------------------------------------------------------------------------
 MainLoadBlocks:
-		include	"_inc/Main level load blocks.asm"
+		dc.l Nem_GHZ_2nd+$4000000
+		dc.l Blk16_GHZ+$5000000
+		dc.l Blk256_GHZ
+		dc.b 0,	$81, 4,	4
+		dc.l Nem_LZ+$6000000
+		dc.l Blk16_LZ+$7000000
+		dc.l Blk256_LZ
+		dc.b 0,	$82, 5,	5
+		dc.l Nem_MZ+$8000000
+		dc.l Blk16_MZ+$9000000
+		dc.l Blk256_MZ
+		dc.b 0,	$83, 6,	6
+		dc.l Nem_SLZ+$A000000
+		dc.l Blk16_SLZ+$B000000
+		dc.l Blk256_SLZ
+		dc.b 0,	$84, 7,	7
+		dc.l Nem_SYZ+$C000000
+		dc.l Blk16_SYZ+$D000000
+		dc.l Blk256_SYZ
+		dc.b 0,	$85, 8,	8
+		dc.l Nem_SBZ+$E000000
+		dc.l Blk16_SBZ+$F000000
+		dc.l Blk256_SBZ
+		dc.b 0,	$86, 9,	9
+		dc.l Nem_GHZ_2nd	; main load block for ending
+		dc.l Blk16_GHZ
+		dc.l Blk256_GHZ
+		dc.b 0,	$86, $13, $13
+		align 2
 
 ; ---------------------------------------------------------------------------
-; Pattern load cues
+; Pattern load cues - index
 ; ---------------------------------------------------------------------------
 ArtLoadCues:
-		include	"_inc/Pattern load cues.asm"
+	dc.w PLC_Main-ArtLoadCues, PLC_Main2-ArtLoadCues
+	dc.w PLC_Explode-ArtLoadCues, PLC_GameOver-ArtLoadCues
+	dc.w PLC_GHZ-ArtLoadCues, PLC_GHZ2-ArtLoadCues
+	dc.w PLC_LZ-ArtLoadCues, PLC_LZ2-ArtLoadCues
+	dc.w PLC_MZ-ArtLoadCues, PLC_MZ2-ArtLoadCues
+	dc.w PLC_SLZ-ArtLoadCues, PLC_SLZ2-ArtLoadCues
+	dc.w PLC_SYZ-ArtLoadCues, PLC_SYZ2-ArtLoadCues
+	dc.w PLC_SBZ-ArtLoadCues, PLC_SBZ2-ArtLoadCues
+	dc.w PLC_TitleCard-ArtLoadCues,	PLC_Boss-ArtLoadCues
+	dc.w PLC_Signpost-ArtLoadCues, PLC_Warp-ArtLoadCues
+	dc.w PLC_SpeStage-ArtLoadCues, PLC_GHZAnimals-ArtLoadCues
+	dc.w PLC_LZAnimals-ArtLoadCues,	PLC_MZAnimals-ArtLoadCues
+	dc.w PLC_SLZAnimals-ArtLoadCues, PLC_SYZAnimals-ArtLoadCues
+	dc.w PLC_SBZAnimals-ArtLoadCues, PLC_SpeStResult-ArtLoadCues
+	dc.w PLC_Ending-ArtLoadCues, PLC_TryAgain-ArtLoadCues
+	dc.w PLC_EggmanSBZ2-ArtLoadCues, PLC_FZBoss-ArtLoadCues
+; ---------------------------------------------------------------------------
+; Pattern load cues - standard block 1
+; ---------------------------------------------------------------------------
+PLC_Main:	dc.w 4
+		dc.l Nem_Lamp		; lamppost
+		dc.w $F400
+		dc.l Nem_Hud		; HUD
+		dc.w $D940
+		dc.l Nem_Lives		; lives	counter
+		dc.w $FA80
+		dc.l Nem_Ring		; rings
+		dc.w $F640
+		dc.l Nem_Points		; points from enemy
+		dc.w $F2E0
+; ---------------------------------------------------------------------------
+; Pattern load cues - standard block 2
+; ---------------------------------------------------------------------------
+PLC_Main2:	dc.w 2
+		dc.l Nem_Monitors	; monitors
+		dc.w $D000
+		dc.l Nem_Shield		; shield
+		dc.w $A820
+		dc.l Nem_Stars		; invincibility	stars
+		dc.w $AB80
+; ---------------------------------------------------------------------------
+; Pattern load cues - explosion
+; ---------------------------------------------------------------------------
+PLC_Explode:	dc.w 0
+		dc.l Nem_Explode	; explosion
+		dc.w $B400
+; ---------------------------------------------------------------------------
+; Pattern load cues - game/time	over
+; ---------------------------------------------------------------------------
+PLC_GameOver:	dc.w 0
+		dc.l Nem_GameOver	; game/time over
+		dc.w $ABC0
+; ---------------------------------------------------------------------------
+; Pattern load cues - Green Hill
+; ---------------------------------------------------------------------------
+PLC_GHZ:	dc.w $B
+		dc.l Nem_GHZ_1st	; GHZ main patterns
+		dc.w 0
+		dc.l Nem_GHZ_2nd	; GHZ secondary	patterns
+		dc.w $39A0
+		dc.l Nem_Stalk		; flower stalk
+		dc.w $6B00
+		dc.l Nem_PplRock	; purple rock
+		dc.w $7A00
+		dc.l Nem_Crabmeat	; crabmeat enemy
+		dc.w $8000
+		dc.l Nem_Buzz		; buzz bomber enemy
+		dc.w $8880
+		dc.l Nem_Chopper	; chopper enemy
+		dc.w $8F60
+		dc.l Nem_Newtron	; newtron enemy
+		dc.w $9360
+		dc.l Nem_Motobug	; motobug enemy
+		dc.w $9E00
+		dc.l Nem_Spikes		; spikes
+		dc.w $A360
+		dc.l Nem_HSpring	; horizontal spring
+		dc.w $A460
+		dc.l Nem_VSpring	; vertical spring
+		dc.w $A660
+PLC_GHZ2:	dc.w 5
+		dc.l Nem_Swing		; swinging platform
+		dc.w $7000
+		dc.l Nem_Bridge		; bridge
+		dc.w $71C0
+		dc.l Nem_SpikePole	; spiked pole
+		dc.w $7300
+		dc.l Nem_Ball		; giant	ball
+		dc.w $7540
+		dc.l Nem_GhzWall1	; breakable wall
+		dc.w $A1E0
+		dc.l Nem_GhzWall2	; normal wall
+		dc.w $6980
+; ---------------------------------------------------------------------------
+; Pattern load cues - Labyrinth
+; ---------------------------------------------------------------------------
+PLC_LZ:		dc.w $B
+		dc.l Nem_LZ		; LZ main patterns
+		dc.w 0
+		dc.l Nem_LzBlock1	; block
+		dc.w $3C00
+		dc.l Nem_LzBlock2	; blocks
+		dc.w $3E00
+		dc.l Nem_Splash		; waterfalls and splash
+		dc.w $4B20
+		dc.l Nem_Water		; water	surface
+		dc.w $6000
+		dc.l Nem_LzSpikeBall	; spiked ball
+		dc.w $6200
+		dc.l Nem_FlapDoor	; flapping door
+		dc.w $6500
+		dc.l Nem_Bubbles	; bubbles and numbers
+		dc.w $6900
+		dc.l Nem_LzBlock3	; block
+		dc.w $7780
+		dc.l Nem_LzDoor1	; vertical door
+		dc.w $7880
+		dc.l Nem_Harpoon	; harpoon
+		dc.w $7980
+		dc.l Nem_Burrobot	; burrobot enemy
+		dc.w $94C0
+PLC_LZ2:	dc.w $C
+		dc.l Nem_LzPole		; pole that breaks
+		dc.w $7BC0
+		dc.l Nem_LzDoor2	; large	horizontal door
+		dc.w $7CC0
+		dc.l Nem_LzWheel	; wheel
+		dc.w $7EC0
+		dc.l Nem_Gargoyle	; gargoyle head
+		dc.w $5D20
+		dc.l Nem_LzSonic	; Sonic	holding	his breath
+		dc.w $8800
+		dc.l Nem_LzPlatfm	; rising platform
+		dc.w $89E0
+		dc.l Nem_Orbinaut	; orbinaut enemy
+		dc.w $8CE0
+		dc.l Nem_Jaws		; jaws enemy
+		dc.w $90C0
+		dc.l Nem_LzSwitch	; switch
+		dc.w $A1E0
+		dc.l Nem_Cork		; cork block
+		dc.w $A000
+		dc.l Nem_Spikes		; spikes
+		dc.w $A360
+		dc.l Nem_HSpring	; horizontal spring
+		dc.w $A460
+		dc.l Nem_VSpring	; vertical spring
+		dc.w $A660
+; ---------------------------------------------------------------------------
+; Pattern load cues - Marble
+; ---------------------------------------------------------------------------
+PLC_MZ:		dc.w 9
+		dc.l Nem_MZ		; MZ main patterns
+		dc.w 0
+		dc.l Nem_MzMetal	; metal	blocks
+		dc.w $6000
+		dc.l Nem_MzFire		; fireballs
+		dc.w $68A0
+		dc.l Nem_Swing		; swinging platform
+		dc.w $7000
+		dc.l Nem_MzGlass	; green	glassy block
+		dc.w $71C0
+		dc.l Nem_Lava		; lava
+		dc.w $7500
+		dc.l Nem_Buzz		; buzz bomber enemy
+		dc.w $8880
+		dc.l Nem_Yadrin		; yadrin enemy
+		dc.w $8F60
+		dc.l Nem_Basaran	; basaran enemy
+		dc.w $9700
+		dc.l Nem_Cater		; caterkiller enemy
+		dc.w $9FE0
+PLC_MZ2:	dc.w 4
+		dc.l Nem_MzSwitch	; switch
+		dc.w $A260
+		dc.l Nem_Spikes		; spikes
+		dc.w $A360
+		dc.l Nem_HSpring	; horizontal spring
+		dc.w $A460
+		dc.l Nem_VSpring	; vertical spring
+		dc.w $A660
+		dc.l Nem_MzBlock	; green	stone block
+		dc.w $5700
+; ---------------------------------------------------------------------------
+; Pattern load cues - Star Light
+; ---------------------------------------------------------------------------
+PLC_SLZ:	dc.w 8
+		dc.l Nem_SLZ		; SLZ main patterns
+		dc.w 0
+		dc.l Nem_Bomb		; bomb enemy
+		dc.w $8000
+		dc.l Nem_Orbinaut	; orbinaut enemy
+		dc.w $8520
+		dc.l Nem_MzFire		; fireballs
+		dc.w $9000
+		dc.l Nem_SlzBlock	; block
+		dc.w $9C00
+		dc.l Nem_SlzWall	; breakable wall
+		dc.w $A260
+		dc.l Nem_Spikes		; spikes
+		dc.w $A360
+		dc.l Nem_HSpring	; horizontal spring
+		dc.w $A460
+		dc.l Nem_VSpring	; vertical spring
+		dc.w $A660
+PLC_SLZ2:	dc.w 5
+		dc.l Nem_Seesaw		; seesaw
+		dc.w $6E80
+		dc.l Nem_Fan		; fan
+		dc.w $7400
+		dc.l Nem_Pylon		; foreground pylon
+		dc.w $7980
+		dc.l Nem_SlzSwing	; swinging platform
+		dc.w $7B80
+		dc.l Nem_SlzCannon	; fireball launcher
+		dc.w $9B00
+		dc.l Nem_SlzSpike	; spikeball
+		dc.w $9E00
+; ---------------------------------------------------------------------------
+; Pattern load cues - Spring Yard
+; ---------------------------------------------------------------------------
+PLC_SYZ:	dc.w 4
+		dc.l Nem_SYZ		; SYZ main patterns
+		dc.w 0
+		dc.l Nem_Crabmeat	; crabmeat enemy
+		dc.w $8000
+		dc.l Nem_Buzz		; buzz bomber enemy
+		dc.w $8880
+		dc.l Nem_Yadrin		; yadrin enemy
+		dc.w $8F60
+		dc.l Nem_Roller		; roller enemy
+		dc.w $9700
+PLC_SYZ2:	dc.w 7
+		dc.l Nem_Bumper		; bumper
+		dc.w $7000
+		dc.l Nem_SyzSpike1	; large	spikeball
+		dc.w $72C0
+		dc.l Nem_SyzSpike2	; small	spikeball
+		dc.w $7740
+		dc.l Nem_Cater		; caterkiller enemy
+		dc.w $9FE0
+		dc.l Nem_LzSwitch	; switch
+		dc.w $A1E0
+		dc.l Nem_Spikes		; spikes
+		dc.w $A360
+		dc.l Nem_HSpring	; horizontal spring
+		dc.w $A460
+		dc.l Nem_VSpring	; vertical spring
+		dc.w $A660
+; ---------------------------------------------------------------------------
+; Pattern load cues - Scrap Brain
+; ---------------------------------------------------------------------------
+PLC_SBZ:	dc.w $B
+		dc.l Nem_SBZ		; SBZ main patterns
+		dc.w 0
+		dc.l Nem_Stomper	; moving platform and stomper
+		dc.w $5800
+		dc.l Nem_SbzDoor1	; door
+		dc.w $5D00
+		dc.l Nem_Girder		; girder
+		dc.w $5E00
+		dc.l Nem_BallHog	; ball hog enemy
+		dc.w $6040
+		dc.l Nem_SbzWheel1	; spot on large	wheel
+		dc.w $6880
+		dc.l Nem_SbzWheel2	; wheel	that grabs Sonic
+		dc.w $6900
+		dc.l Nem_SyzSpike1	; large	spikeball
+		dc.w $7220
+		dc.l Nem_Cutter		; pizza	cutter
+		dc.w $76A0
+		dc.l Nem_FlamePipe	; flaming pipe
+		dc.w $7B20
+		dc.l Nem_SbzFloor	; collapsing floor
+		dc.w $7EA0
+		dc.l Nem_SbzBlock	; vanishing block
+		dc.w $9860
+PLC_SBZ2:	dc.w $C
+		dc.l Nem_Cater		; caterkiller enemy
+		dc.w $5600
+		dc.l Nem_Bomb		; bomb enemy
+		dc.w $8000
+		dc.l Nem_Orbinaut	; orbinaut enemy
+		dc.w $8520
+		dc.l Nem_SlideFloor	; floor	that slides away
+		dc.w $8C00
+		dc.l Nem_SbzDoor2	; horizontal door
+		dc.w $8DE0
+		dc.l Nem_Electric	; electric orb
+		dc.w $8FC0
+		dc.l Nem_TrapDoor	; trapdoor
+		dc.w $9240
+		dc.l Nem_SbzFloor	; collapsing floor
+		dc.w $7F20
+		dc.l Nem_SpinPform	; small	spinning platform
+		dc.w $9BE0
+		dc.l Nem_LzSwitch	; switch
+		dc.w $A1E0
+		dc.l Nem_Spikes		; spikes
+		dc.w $A360
+		dc.l Nem_HSpring	; horizontal spring
+		dc.w $A460
+		dc.l Nem_VSpring	; vertical spring
+		dc.w $A660
+; ---------------------------------------------------------------------------
+; Pattern load cues - title card
+; ---------------------------------------------------------------------------
+PLC_TitleCard:	dc.w 0
+		dc.l Nem_TitleCard
+		dc.w $B000
+; ---------------------------------------------------------------------------
+; Pattern load cues - act 3 boss
+; ---------------------------------------------------------------------------
+PLC_Boss:	dc.w 5
+		dc.l Nem_Eggman		; Eggman main patterns
+		dc.w $8000
+		dc.l Nem_Weapons	; Eggman's weapons
+		dc.w $8D80
+		dc.l Nem_Prison		; prison capsule
+		dc.w $93A0
+		dc.l Nem_Bomb		; bomb enemy (gets overwritten)
+		dc.w $A300
+		dc.l Nem_SlzSpike	; spikeball (SLZ boss)
+		dc.w $A300
+		dc.l Nem_Exhaust	; exhaust flame
+		dc.w $A540
+; ---------------------------------------------------------------------------
+; Pattern load cues - act 1/2 signpost
+; ---------------------------------------------------------------------------
+PLC_Signpost:	dc.w 2
+		dc.l Nem_SignPost	; signpost
+		dc.w $D000
+		dc.l Nem_Bonus		; hidden bonus points
+		dc.w $96C0
+		dc.l Nem_BigFlash	; giant	ring flash effect
+		dc.w $8C40
+; ---------------------------------------------------------------------------
+; Pattern load cues - beta special stage warp effect
+; ---------------------------------------------------------------------------
+PLC_Warp:	dc.w 0
+		dc.l Nem_Warp
+		dc.w $A820
+; ---------------------------------------------------------------------------
+; Pattern load cues - special stage
+; ---------------------------------------------------------------------------
+PLC_SpeStage:	dc.w $10
+		dc.l Nem_SSBgCloud	; bubble and cloud background
+		dc.w 0
+		dc.l Nem_SSBgFish	; bird and fish	background
+		dc.w $A20
+		dc.l Nem_SSWalls	; walls
+		dc.w $2840
+		dc.l Nem_Bumper		; bumper
+		dc.w $4760
+		dc.l Nem_SSGOAL		; GOAL block
+		dc.w $4A20
+		dc.l Nem_SSUpDown	; UP and DOWN blocks
+		dc.w $4C60
+		dc.l Nem_SSRBlock	; R block
+		dc.w $5E00
+		dc.l Nem_SS1UpBlock	; 1UP block
+		dc.w $6E00
+		dc.l Nem_SSEmStars	; emerald collection stars
+		dc.w $7E00
+		dc.l Nem_SSRedWhite	; red and white	block
+		dc.w $8E00
+		dc.l Nem_SSGhost	; ghost	block
+		dc.w $9E00
+		dc.l Nem_SSWBlock	; W block
+		dc.w $AE00
+		dc.l Nem_SSGlass	; glass	block
+		dc.w $BE00
+		dc.l Nem_SSEmerald	; emeralds
+		dc.w $EE00
+		dc.l Nem_SSZone1	; ZONE 1 block
+		dc.w $F2E0
+		dc.l Nem_SSZone2	; ZONE 2 block
+		dc.w $F400
+		dc.l Nem_SSZone3	; ZONE 3 block
+		dc.w $F520
+		dc.l Nem_SSZone4	; ZONE 4 block
+		dc.w $F2E0
+		dc.l Nem_SSZone5	; ZONE 5 block
+		dc.w $F400
+		dc.l Nem_SSZone6	; ZONE 6 block
+		dc.w $F520
+; ---------------------------------------------------------------------------
+; Pattern load cues - GHZ animals
+; ---------------------------------------------------------------------------
+PLC_GHZAnimals:	dc.w 1
+		dc.l Nem_Rabbit		; rabbit
+		dc.w $B000
+		dc.l Nem_Flicky		; flicky
+		dc.w $B240
+; ---------------------------------------------------------------------------
+; Pattern load cues - LZ animals
+; ---------------------------------------------------------------------------
+PLC_LZAnimals:	dc.w 1
+		dc.l Nem_BlackBird	; blackbird
+		dc.w $B000
+		dc.l Nem_Seal		; seal
+		dc.w $B240
+; ---------------------------------------------------------------------------
+; Pattern load cues - MZ animals
+; ---------------------------------------------------------------------------
+PLC_MZAnimals:	dc.w 1
+		dc.l Nem_Squirrel	; squirrel
+		dc.w $B000
+		dc.l Nem_Seal		; seal
+		dc.w $B240
+; ---------------------------------------------------------------------------
+; Pattern load cues - SLZ animals
+; ---------------------------------------------------------------------------
+PLC_SLZAnimals:	dc.w 1
+		dc.l Nem_Pig		; pig
+		dc.w $B000
+		dc.l Nem_Flicky		; flicky
+		dc.w $B240
+; ---------------------------------------------------------------------------
+; Pattern load cues - SYZ animals
+; ---------------------------------------------------------------------------
+PLC_SYZAnimals:	dc.w 1
+		dc.l Nem_Pig		; pig
+		dc.w $B000
+		dc.l Nem_Chicken	; chicken
+		dc.w $B240
+; ---------------------------------------------------------------------------
+; Pattern load cues - SBZ animals
+; ---------------------------------------------------------------------------
+PLC_SBZAnimals:	dc.w 1
+		dc.l Nem_Rabbit		; rabbit
+		dc.w $B000
+		dc.l Nem_Chicken	; chicken
+		dc.w $B240
+; ---------------------------------------------------------------------------
+; Pattern load cues - special stage results screen
+; ---------------------------------------------------------------------------
+PLC_SpeStResult:dc.w 1
+		dc.l Nem_ResultEm	; emeralds
+		dc.w $A820
+		dc.l Nem_MiniSonic	; mini Sonic
+		dc.w $AA20
+; ---------------------------------------------------------------------------
+; Pattern load cues - ending sequence
+; ---------------------------------------------------------------------------
+PLC_Ending:	dc.w $E
+		dc.l Nem_GHZ_1st	; GHZ main patterns
+		dc.w 0
+		dc.l Nem_GHZ_2nd	; GHZ secondary	patterns
+		dc.w $39A0
+		dc.l Nem_Stalk		; flower stalk
+		dc.w $6B00
+		dc.l Nem_EndFlower	; flowers
+		dc.w $7400
+		dc.l Nem_EndEm		; emeralds
+		dc.w $78A0
+		dc.l Nem_EndSonic	; Sonic
+		dc.w $7C20
+		dc.l Nem_EndEggman	; Eggman's death (unused)
+		dc.w $A480
+		dc.l Nem_Rabbit		; rabbit
+		dc.w $AA60
+		dc.l Nem_Chicken	; chicken
+		dc.w $ACA0
+		dc.l Nem_BlackBird	; blackbird
+		dc.w $AE60
+		dc.l Nem_Seal		; seal
+		dc.w $B0A0
+		dc.l Nem_Pig		; pig
+		dc.w $B260
+		dc.l Nem_Flicky		; flicky
+		dc.w $B4A0
+		dc.l Nem_Squirrel	; squirrel
+		dc.w $B660
+		dc.l Nem_EndStH		; "SONIC THE HEDGEHOG"
+		dc.w $B8A0
+; ---------------------------------------------------------------------------
+; Pattern load cues - "TRY AGAIN" and "END" screens
+; ---------------------------------------------------------------------------
+PLC_TryAgain:	dc.w 2
+		dc.l Nem_EndEm		; emeralds
+		dc.w $78A0
+		dc.l Nem_TryAgain	; Eggman
+		dc.w $7C20
+		dc.l Nem_CreditText	; credits alphabet
+		dc.w $B400
+; ---------------------------------------------------------------------------
+; Pattern load cues - Eggman on SBZ 2
+; ---------------------------------------------------------------------------
+PLC_EggmanSBZ2:	dc.w 2
+		dc.l Nem_SbzBlock	; block
+		dc.w $A300
+		dc.l Nem_Sbz2Eggman	; Eggman
+		dc.w $8000
+		dc.l Nem_LzSwitch	; switch
+		dc.w $9400
+; ---------------------------------------------------------------------------
+; Pattern load cues - final boss
+; ---------------------------------------------------------------------------
+PLC_FZBoss:	dc.w 4
+		dc.l Nem_FzEggman	; Eggman after boss
+		dc.w $7400
+		dc.l Nem_FzBoss		; FZ boss
+		dc.w $6000
+		dc.l Nem_Eggman		; Eggman main patterns
+		dc.w $8000
+		dc.l Nem_Sbz2Eggman	; Eggman without ship
+		dc.w $8E00
+		dc.l Nem_Exhaust	; exhaust flame
+		dc.w $A540
+		align 2
 
 		align $100
 Nem_SegaLogo:	binclude	artnem/segalogo.bin	; large Sega logo
@@ -38224,7 +39370,7 @@ Map_Sonic:
 ; Uncompressed graphics	loading	array for Sonic
 ; ---------------------------------------------------------------------------
 SonicDynPLC:
-		include	"_inc/Sonic dynamic pattern load cues.asm"
+		include	"_maps/Sonic dynamic pattern load cues.asm"
 
 ; ---------------------------------------------------------------------------
 ; Uncompressed graphics	- Sonic
