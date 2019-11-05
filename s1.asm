@@ -7580,17 +7580,17 @@ locret_6884:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-sub_6886:				; XREF: loc_C44
+sub_6886:
 		lea	(VDP_control_port).l,a5
 		lea	(VDP_data_port).l,a6
 		lea	(Scroll_flags_BG).w,a2
 		lea	(Camera_BG_X_pos).w,a3
 		lea	(Level_Layout+$40).w,a4
 		move.w	#$6000,d2
-		bsr.w	sub_6954
+		bsr.w	Draw_BG1
 		lea	(Scroll_flags_BG2).w,a2
 		lea	(Camera_BG2_X_pos).w,a3
-		bra.w	sub_69F4
+		bra.w	Draw_BG2
 ; End of function sub_6886
 
 ; ---------------------------------------------------------------------------
@@ -7600,17 +7600,17 @@ sub_6886:				; XREF: loc_C44
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-LoadTilesAsYouMove:			; XREF: Demo_Time
+LoadTilesAsYouMove:
 		lea	(VDP_control_port).l,a5
 		lea	(VDP_data_port).l,a6
 		lea	($FFFFFF32).w,a2
 		lea	($FFFFFF18).w,a3
 		lea	(Level_Layout+$40).w,a4
 		move.w	#$6000,d2
-		bsr.w	sub_6954
+		bsr.w	Draw_BG1
 		lea	($FFFFFF34).w,a2
 		lea	($FFFFFF20).w,a3
-		bsr.w	sub_69F4
+		bsr.w	Draw_BG2
 		lea	(Scroll_flags_copy).w,a2
 		lea	(Camera_RAM_copy).w,a3
 		lea	(Level_Layout).w,a4
@@ -7621,7 +7621,7 @@ LoadTilesAsYouMove:			; XREF: Demo_Time
 		beq.s	loc_6908
 		moveq	#-$10,d4
 		moveq	#-$10,d5
-		bsr.w	sub_6C20
+		bsr.w	CalcBlockVRAMPos
 		moveq	#-$10,d4
 		moveq	#-$10,d5
 		bsr.w	sub_6AD8
@@ -7631,7 +7631,7 @@ loc_6908:
 		beq.s	loc_6922
 		move.w	#$E0,d4
 		moveq	#-$10,d5
-		bsr.w	sub_6C20
+		bsr.w	CalcBlockVRAMPos
 		move.w	#$E0,d4
 		moveq	#-$10,d5
 		bsr.w	sub_6AD8
@@ -7641,7 +7641,7 @@ loc_6922:
 		beq.s	loc_6938
 		moveq	#-$10,d4
 		moveq	#-$10,d5
-		bsr.w	sub_6C20
+		bsr.w	CalcBlockVRAMPos
 		moveq	#-$10,d4
 		moveq	#-$10,d5
 		bsr.w	sub_6B04
@@ -7651,7 +7651,7 @@ loc_6938:
 		beq.s	locret_6952
 		moveq	#-$10,d4
 		move.w	#$140,d5
-		bsr.w	sub_6C20
+		bsr.w	CalcBlockVRAMPos
 		moveq	#-$10,d4
 		move.w	#$140,d5
 		bsr.w	sub_6B04
@@ -7663,15 +7663,15 @@ locret_6952:
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_6954:				; XREF: sub_6886; LoadTilesAsYouMove
+; sub_6954:
+Draw_BG1:
 		tst.b	(a2)
 		beq.w	locret_69F2
 		bclr	#0,(a2)
 		beq.s	loc_6972
 		moveq	#-$10,d4
 		moveq	#-$10,d5
-		bsr.w	sub_6C20
+		bsr.w	CalcBlockVRAMPos
 		moveq	#-$10,d4
 		moveq	#-$10,d5
 		moveq	#$1F,d6
@@ -7682,7 +7682,7 @@ loc_6972:
 		beq.s	loc_698E
 		move.w	#$E0,d4
 		moveq	#-$10,d5
-		bsr.w	sub_6C20
+		bsr.w	CalcBlockVRAMPos
 		move.w	#$E0,d4
 		moveq	#-$10,d5
 		moveq	#$1F,d6
@@ -7693,7 +7693,7 @@ loc_698E:
 		beq.s	loc_69BE
 		moveq	#-$10,d4
 		moveq	#-$10,d5
-		bsr.w	sub_6C20
+		bsr.w	CalcBlockVRAMPos
 		moveq	#-$10,d4
 		moveq	#-$10,d5
 		move.w	(Anim_Counters).w,d6
@@ -7714,7 +7714,7 @@ loc_69BE:
 		beq.s	locret_69F2
 		moveq	#-$10,d4
 		move.w	#$140,d5
-		bsr.w	sub_6C20
+		bsr.w	CalcBlockVRAMPos
 		moveq	#-$10,d4
 		move.w	#$140,d5
 		move.w	(Anim_Counters).w,d6
@@ -7732,13 +7732,13 @@ loc_69EE:
 
 locret_69F2:
 		rts	
-; End of function sub_6954
+; End of function Draw_BG1
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_69F4:				; XREF: sub_6886; LoadTilesAsYouMove
+; sub_69F4:
+Draw_BG2:
 		tst.b	(a2)
 		beq.w	locret_6A80
 		bclr	#2,(a2)
@@ -7751,7 +7751,7 @@ sub_69F4:				; XREF: sub_6886; LoadTilesAsYouMove
 		sub.w	d1,d4
 		move.w	d4,-(sp)
 		moveq	#-$10,d5
-		bsr.w	sub_6C20
+		bsr.w	CalcBlockVRAMPos
 		move.w	(sp)+,d4
 		moveq	#-$10,d5
 		move.w	(Anim_Counters).w,d6
@@ -7774,7 +7774,7 @@ loc_6A3E:
 		sub.w	d1,d4
 		move.w	d4,-(sp)
 		move.w	#$140,d5
-		bsr.w	sub_6C20
+		bsr.w	CalcBlockVRAMPos
 		move.w	(sp)+,d4
 		move.w	#$140,d5
 		move.w	(Anim_Counters).w,d6
@@ -7790,7 +7790,7 @@ loc_6A3E:
 
 locret_6A80:
 		rts	
-; End of function sub_69F4
+; End of function Draw_BG2
 
 ; ===========================================================================
 		tst.b	(a2)
@@ -7838,7 +7838,7 @@ sub_6AD8:				; XREF: LoadTilesAsYouMove
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-sub_6ADA:				; XREF: sub_6954; LoadTilesFromStart2
+sub_6ADA:				; XREF: Draw_BG1; LoadTilesFromStart2
 		move.l	#$800000,d7
 		move.l	d0,d1
 
@@ -7867,7 +7867,7 @@ sub_6B04:				; XREF: LoadTilesAsYouMove
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-sub_6B06:				; XREF: sub_6954
+sub_6B06:				; XREF: Draw_BG1
 		move.l	#$800000,d7
 		move.l	d0,d1
 
@@ -8008,8 +8008,8 @@ locret_6C1E:
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_6C20:				; XREF: LoadTilesAsYouMove; et al
+; sub_6C20:
+CalcBlockVRAMPos:
 		add.w	4(a3),d4
 		add.w	(a3),d5
 		andi.w	#$F0,d4
@@ -8021,7 +8021,7 @@ sub_6C20:				; XREF: LoadTilesAsYouMove; et al
 		swap	d0
 		move.w	d4,d0
 		rts	
-; End of function sub_6C20
+; End of function CalcBlockVRAMPos
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -8073,7 +8073,7 @@ loc_6C82:
 		movem.l	d4-d6,-(sp)
 		moveq	#0,d5
 		move.w	d4,d1
-		bsr.w	sub_6C20
+		bsr.w	CalcBlockVRAMPos
 		move.w	d1,d4
 		moveq	#0,d5
 		moveq	#$1F,d6
@@ -24556,9 +24556,9 @@ Sonic_RollSpeed:			; XREF: Obj01_MdRoll
 		asr.w	#2,d4				; This and the previous line makes Sonic decelerate very slowly underwater, Sonic 2 uses this line instead
 ;		move.w	#$20,d4
 		tst.b	(Lock_Controls).w
-		bne.w	Sonic_ApplyRollSpeed
+		bne.w	Sonic_SetRollSpeeds
 		tst.w	$3E(a0)
-		bne.s	++
+		bne.s	Sonic_ApplyRollSpeed
 		btst	#2,(Ctrl_1_Held_Logical).w ; is left being pressed?
 		beq.s	+		; if not, branch
 		bsr.w	Sonic_RollLeft
