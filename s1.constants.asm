@@ -43,6 +43,125 @@ subtype =		$28
 ; conventions specific to some objects
 inertia =		$14 ; and $15 ; directionless representation of speed... not updated in the air
 next_tile =		$20 ; and $21 and $22 and $23 ; used for Sonic's art buffer
+
+; ---------------------------------------------------------------------------
+; some variables and functions to help define those constants (redefined before a new set of IDs)
+offset :=	0		; this is the start of the pointer table
+ptrsize :=	1		; this is the size of a pointer (should be 1 if the ID is a multiple of the actual size)
+idstart :=	0		; value to add to all IDs
+
+; function using these variables
+id function ptr,((ptr-offset)/ptrsize+idstart)
+
+; Music IDs
+offset :=	MusicIndex
+ptrsize :=	4
+idstart :=	$81
+
+MusID__First = idstart
+MusID_GHZ =		id(MusPtr_GHZ)		; 81
+MusID_LZ =		id(MusPtr_LZ)		; 82
+MusID_MZ =		id(MusPtr_MZ)		; 83
+MusID_SLZ =		id(MusPtr_SLZ)		; 84
+MusID_SYZ =		id(MusPtr_SYZ)		; 85
+MusID_SBZ =		id(MusPtr_SBZ)		; 86
+MusID_Invincible =	id(MusPtr_Invincible)	; 87
+MusID_ExtraLife =	id(MusPtr_ExtraLife)	; 88
+MusID_SpecialStage =	id(MusPtr_SpecialStage)	; 89
+MusID_Title =		id(MusPtr_Title)	; 8A
+MusID_Ending =		id(MusPtr_Ending)	; 8B
+MusID_Boss =		id(MusPtr_Boss)		; 8C
+MusID_FZ =		id(MusPtr_FZ)		; 8D
+MusID_EndLevel =	id(MusPtr_EndLevel)	; 8E
+MusID_GameOver =	id(MusPtr_GameOver)	; 8F
+MusID_Continue =	id(MusPtr_Continue)	; 90
+MusID_Credits =		id(MusPtr_Credits)	; 91
+MusID_Drowning =	id(MusPtr_Drowning)	; 92
+MusID_Emerald =		id(MusPtr_Emerald)	; 93
+MusID__End =		id(MusPtr_End)		; 94
+
+; Sound IDs
+offset :=	SoundIndex
+ptrsize :=	4
+idstart :=	$A0
+; $80 is reserved for silence, so if you make idstart $80 or less,
+; you may need to insert a dummy SndPtr in the $80 slot
+
+SndID__First = idstart
+SndID_Jump =		id(SndPtr_Jump)		; A0
+SndID_Checkpoint =	id(SndPtr_CheckPoint)	; A1
+SndID_SpikesMove =	id(SndPtr_SpikesMove)	; A2 ; unused
+SndID_Death =		id(SndPtr_Death)	; A3
+SndID_Skid =		id(SndPtr_Skid)		; A4
+SndID_Unknown =		id(SndPtr_Unknown)	; A5 ; unused
+SndID_Spikes =		id(SndPtr_Spikes)	; A6
+SndID_BlockPush =	id(SndPtr_BlockPush)	; A7
+SndID_SSExit =		id(SndPtr_SSExit)	; A8
+SndID_Bwoop =		id(SndPtr_Bwoop)	; A9
+SndID_Splash =		id(SndPtr_Splash)	; AA
+SndID_Unknown2 =	id(SndPtr_Unknown2)	; AB ; unused
+SndID_BossHit =		id(SndPtr_BossHit)	; AC
+SndID_Bubble =		id(SndPtr_Bubble)	; AD
+SndID_FireBall =	id(SndPtr_FireBall)	; AE
+SndID_Shield =		id(SndPtr_Shield)	; AF
+SndID_Saw =		id(SndPtr_Saw)		; B0
+SndID_Zap =		id(SndPtr_Zap)		; B1
+SndID_Drown =		id(SndPtr_Drown)	; B2
+SndID_Flame =		id(SndPtr_Flame)	; B3
+SndID_Bumper =		id(SndPtr_Bumper)	; B4
+SndID_Ring =		id(SndPtr_Ring)		; B5
+SndID_SpikesMove2 =	id(SndPtr_SpikesMove2)	; B6
+SndID_Rumble =		id(SndPtr_Rumble)	; B7
+SndID_Unknown3 =	id(SndPtr_Unknown3)	; B8 ; unused
+SndID_Collapse =	id(SndPtr_Collapse)	; B9
+SndID_SSDiamond =	id(SndPtr_SSDiamond)	; BA
+SndID_DoorOpen =	id(SndPtr_DoorOpen)	; BB
+SndID_Teleport =	id(SndPtr_Teleport)	; BC
+SndID_Stomping =	id(SndPtr_Stomping)	; BD
+SndID_Roll =		id(SndPtr_Roll)		; BE
+SndID_ContinueJingle =	id(SndPtr_ContinueJingle)	; BF
+SndID_Flapping =	id(SndPtr_Flapping)	; C0
+SndID_Explosion =	id(SndPtr_Explosion)	; C1
+SndID_Warning =		id(SndPtr_Warning)	; C2
+SndID_SSEntry =		id(SndPtr_SSEntry)	; C3
+SndID_Explosion2 =	id(SndPtr_Explosion2)	; C4
+SndID_ChaChing =	id(SndPtr_ChaChing)	; C5
+SndID_LoseRings =	id(SndPtr_LoseRings)	; C6
+SndID_RisingChain =	id(SndPtr_RisingChain)	; C7
+SndID_Flame2 =		id(SndPtr_Flame2)	; C8
+SndID_Bonus =		id(SndPtr_Bonus)	; C9
+SndID_Flash =		id(SndPtr_Flash)	; CA
+SndID_SlowSmash =	id(SndPtr_SlowSmash)	; CB
+SndID_Spring =		id(SndPtr_Spring)	; CC
+SndID_Button =		id(SndPtr_Button)	; CD
+SndID_RingLeft =	id(SndPtr_RingLeft)	; CE ; IS used
+SndID_Signpost =	id(SndPtr_Signpost)	; CF
+SndID__End =		id(SndPtr_End)		; D0
+
+; Special Sound IDs
+offset :=	SoundD0Index
+ptrsize :=	4
+idstart :=	$D0
+; $80 is reserved for silence, so if you make idstart $80 or less,
+; you may need to insert a dummy SpeSndPtr in the $80 slot
+
+SpeSndID__First = idstart
+SpeSndID_Waterfall =	id(SpeSndPtr_Waterfall)	; D0
+SpeSndID__End =		id(SndPtr_End)		; D1 (though the game is programmed to end at $DF)
+
+; Sound command IDs
+offset :=	Sound_ExIndex
+ptrsize :=	4
+idstart :=	$E0
+
+CmdID__First = idstart
+MusID_FadeOut =		id(CmdPtr_FadeOut)	; E0
+SndID_SegaSound =	id(CmdPtr_SegaSound)	; E1
+MusID_SpeedUp =		id(CmdPtr_SpeedUp)	; E2
+MusID_SlowDown =	id(CmdPtr_SlowDown)	; E3
+MusID_Stop =		id(CmdPtr_Stop)		; E4
+CmdID__End =		id(CmdPtr_End)		; E5
+
 ; ---------------------------------------------------------------------------
 ; I run the main 68k RAM addresses through this function
 ; to let them work in both 16-bit and 32-bit addressing modes.
