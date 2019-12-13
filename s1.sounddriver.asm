@@ -3,11 +3,12 @@ Go_SoundD0:	dc.l SoundD0Index
 Go_MusicIndex:	dc.l MusicIndex
 Go_SoundIndex:	dc.l SoundIndex
 off_719A0:	dc.l byte_71A94
-Go_PSGIndex:	dc.l PSG_Index
+Go_PSGIndex:	dc.l PSG_FlutterTbl
 ; ---------------------------------------------------------------------------
 ; PSG instruments used in music
 ; ---------------------------------------------------------------------------
-PSG_Index:	dc.l PSG1, PSG2, PSG3
+; PSG_Index:
+PSG_FlutterTbl:	dc.l PSG1, PSG2, PSG3
 		dc.l PSG4, PSG5, PSG6
 		dc.l PSG7, PSG8, PSG9
 PSG1:		binclude	sound/psg1.bin
@@ -58,52 +59,50 @@ SoundTypes:	dc.b $90, $90, $90, $90, $90, $90, $90,	$90, $90, $90, $90, $90, $90
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_71B4C:
+; sub_71B4C:
+UpdateMusic:
 		move.w	#$100,(Z80_Bus_Request).l ; stop the Z80
 		nop	
 		nop	
 		nop	
-
-loc_71B5A:
-		btst	#0,(Z80_Bus_Request).l
-		bne.s	loc_71B5A
+-		btst	#0,(Z80_Bus_Request).l
+		bne.s	-
 
 		btst	#7,($A01FFD).l
-		beq.s	loc_71B82
+		beq.s	SoundDriverInput
 		startZ80
 		nop	
 		nop	
 		nop	
 		nop	
 		nop	
-		bra.s	sub_71B4C
+		bra.s	UpdateMusic
 ; ===========================================================================
-
-loc_71B82:
+; loc_71B82: ; sndDriverInput
+SoundDriverInput:
 		lea	($FFF000).l,a6
 		clr.b	$E(a6)
 		tst.b	3(a6)		; is music paused?
-		bne.w	loc_71E50	; if yes, branch
+		bne.w	PauseMusic	; if yes, branch
 		subq.b	#1,1(a6)
 		bne.s	loc_71B9E
-		jsr	sub_7260C(pc)
+		jsr	TempoWait(pc)
 
 loc_71B9E:
 		move.b	4(a6),d0
 		beq.s	loc_71BA8
-		jsr	sub_72504(pc)
+		jsr	UpdateFadeOut(pc)
 
 loc_71BA8:
 		tst.b	$24(a6)
 		beq.s	loc_71BB2
-		jsr	sub_7267C(pc)
+		jsr	UpdateFadeIn(pc)
 
 loc_71BB2:
 ; This is incorrect, it's meant to be a long, not a word, this is why PlaySound_Unk is broken
 		tst.w	$A(a6)		; is music or sound being played?
 		beq.s	loc_71BBC	; if not, branch
-		jsr	Sound_Play(pc)
+		jsr	CycleQueue(pc)
 
 loc_71BBC:
 		cmpi.b	#$80,9(a6)
@@ -135,7 +134,7 @@ loc_71BEC:
 		adda.w	#$30,a5
 		tst.b	(a5)
 		bpl.s	loc_71BF8
-		jsr	sub_72850(pc)
+		jsr	PSGUpdateTrack(pc)
 
 loc_71BF8:
 		dbf	d7,loc_71BEC
@@ -158,7 +157,7 @@ loc_71C16:
 		adda.w	#$30,a5
 		tst.b	(a5)
 		bpl.s	loc_71C22
-		jsr	sub_72850(pc)
+		jsr	PSGUpdateTrack(pc)
 
 loc_71C22:
 		dbf	d7,loc_71C16
@@ -172,12 +171,12 @@ loc_71C38:
 		adda.w	#$30,a5
 		tst.b	(a5)
 		bpl.s	loc_71C44
-		jsr	sub_72850(pc)
+		jsr	PSGUpdateTrack(pc)
 
 loc_71C44:
 		startZ80
 		rts	
-; End of function sub_71B4C
+; End of function UpdateMusic
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -247,14 +246,14 @@ sub_71CCA:
 		bne.s	loc_71CE0
 		bclr	#4,(a5)
 		jsr	sub_71CEC(pc)
-		jsr	sub_71E18(pc)
-		bra.w	loc_726E2
+		jsr	FMPrepareNote(pc)
+		bra.w	FMNoteOn
 ; ===========================================================================
 
 loc_71CE0:
-		jsr	sub_71D9E(pc)
-		jsr	sub_71DC6(pc)
-		bra.w	loc_71E24
+		jsr	NoteFillUpdate(pc)
+		jsr	DoModulation(pc)
+		bra.w	FMUpdateFreq
 ; End of function sub_71CCA
 
 
@@ -275,7 +274,7 @@ loc_71CF4:
 ; ===========================================================================
 
 loc_71D04:
-		jsr	sub_726FE(pc)
+		jsr	FMNoteOff(pc)
 		tst.b	d5
 		bpl.s	loc_71D1A
 		jsr	sub_71D22(pc)
@@ -300,7 +299,7 @@ sub_71D22:
 		add.b	8(a5),d5
 		andi.w	#$7F,d5
 		lsl.w	#1,d5
-		lea	word_72790(pc),a0
+		lea	Frequencies(pc),a0
 		move.w	(a0,d5.w),d6
 		move.w	d6,$10(a5)
 		rts	
@@ -361,8 +360,8 @@ locret_71D9C:
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_71D9E:
+; sub_71D9E:
+NoteFillUpdate:
 		tst.b	$12(a5)
 		beq.s	locret_71DC4
 		subq.b	#1,$12(a5)
@@ -370,7 +369,7 @@ sub_71D9E:
 		bset	#1,(a5)
 		tst.b	1(a5)
 		bmi.w	loc_71DBE
-		jsr	sub_726FE(pc)
+		jsr	FMNoteOff(pc)
 		addq.w	#4,sp
 		rts	
 ; ===========================================================================
@@ -381,13 +380,13 @@ loc_71DBE:
 
 locret_71DC4:
 		rts	
-; End of function sub_71D9E
+; End of function NoteFillUpdate
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_71DC6:
+; sub_71DC6:
+DoModulation:
 		addq.w	#4,sp
 		btst	#3,(a5)
 		beq.s	locret_71E16
@@ -424,19 +423,20 @@ loc_71DFE:
 
 locret_71E16:
 		rts	
-; End of function sub_71DC6
+; End of function DoModulation
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_71E18:
+; sub_71E18:
+FMPrepareNote:
 		btst	#1,(a5)
 		bne.s	locret_71E48
 		move.w	$10(a5),d6
 		beq.s	loc_71E4A
 
-loc_71E24:
+; loc_71E24:
+FMUpdateFreq:
 		move.b	$1E(a5),d0
 		ext.w	d0
 		add.w	d0,d6
@@ -457,11 +457,11 @@ locret_71E48:
 loc_71E4A:
 		bset	#1,(a5)
 		rts	
-; End of function sub_71E18
+; End of function FMPrepareNote
 
 ; ===========================================================================
-
-loc_71E50:
+; loc_71E50:
+PauseMusic:
 		bmi.s	loc_71E94
 		cmpi.b	#2,3(a6)
 		beq.w	loc_71EFE
@@ -486,7 +486,7 @@ loc_71E7C:
 		jsr	WriteFMI(pc)
 		dbf	d3,loc_71E7C
 
-		jsr	sub_729B6(pc)
+		jsr	PSGSilenceAll(pc)
 		bra.w	loc_71C44
 ; ===========================================================================
 
@@ -543,43 +543,40 @@ loc_71EFE:
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-Sound_Play:
+; Sound_Play:
+CycleQueue:
 		movea.l	(Go_SoundTypes).l,a0
 		lea	$A(a6),a1	; load music track number
 		_move.b	0(a6),d3
 		moveq	#2,d4
 
-loc_71F12:
-		move.b	(a1),d0		; move track number to d0
+-		move.b	(a1),d0		; move track number to d0
 		move.b	d0,d1
 		clr.b	(a1)+
 		subi.b	#MusID__First,d0
-		bcs.s	loc_71F3E
+		bcs.s	locQueueNext
 		cmpi.b	#$80,9(a6)
-		beq.s	loc_71F2C
+		beq.s	+
 		move.b	d1,$A(a6)
-		bra.s	loc_71F3E
-; ===========================================================================
-
-loc_71F2C:
+		bra.s	locQueueNext
++
 		andi.w	#$7F,d0
 		move.b	(a0,d0.w),d2
 		cmp.b	d3,d2
-		bcs.s	loc_71F3E
+		bcs.s	locQueueNext
 		move.b	d2,d3
 		move.b	d1,9(a6)	; set music flag
 
-loc_71F3E:
-		dbf	d4,loc_71F12
+; loc_71F3E:
+locQueueNext:
+		dbf	d4,-
 
 		tst.b	d3
-		bmi.s	locret_71F4A
+		bmi.s	+
 		_move.b	d3,0(a6)
-
-locret_71F4A:
++
 		rts	
-; End of function Sound_Play
+; End of function CycleQueue
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -592,29 +589,29 @@ PlaySoundByIndex:
 		bpl.s	locret_71F8C
 		move.b	#$80,9(a6)	; reset	music flag
 		cmpi.b	#MusID__End+$B,d7
-		bls.w	Sound_81to9F	; music	$81-$9F
+		bls.w	PlayMusic	; music	$81-$9F
 		cmpi.b	#SndID__First,d7	; is it after MusID__End but before SndID__First? (redundant)
 		bcs.w	locret_71F8C
 		cmpi.b	#SndID__End,d7
-		bls.w	Sound_A0toCF	; sound	$A0-$CF
+		bls.w	PlaySound_CheckRing	; sound	$A0-$CF
 		cmpi.b	#SpeSndID__First,d7	; is it after SndID__End but before SpecSndID__First? (redundant)
 		bcs.w	locret_71F8C
 		cmpi.b	#SpeSndID__End+$F,d7
-		bcs.w	Sound_D0toDF	; sound	$D0-$DF
+		bcs.w	PlaySound_CheckWaterfall	; sound	$D0-$DF
 		cmpi.b	#CmdID__End,d7
-		bls.s	Sound_E0toE4	; sound	$E0-$E4
+		bls.s	PlaySound_Effects	; sound	$E0-$E4
 
 locret_71F8C:
 		rts	
 ; ===========================================================================
-
-Sound_E0toE4:
-		subi.b	#$E0,d7
+; Sound_E0toE4:
+PlaySound_Effects:
+		subi.b	#CmdID__First,d7
 		lsl.w	#2,d7
-		jmp	Sound_ExIndex(pc,d7.w)
+		jmp	CommandIndex(pc,d7.w)
 ; ===========================================================================
-
-Sound_ExIndex:
+; Sound_ExIndex:
+CommandIndex:
 CmdPtr_FadeOut:		bra.w	FadeOutMusic
 CmdPtr_SegaSound:	bra.w	PlaySegaSound
 CmdPtr_SpeedUp:		bra.w	SpeedUpMusic
@@ -646,8 +643,8 @@ loc_71FC4:
 ; ---------------------------------------------------------------------------
 ; Play music track $81-$9F
 ; ---------------------------------------------------------------------------
-
-Sound_81to9F:
+; Sound_81to9F:
+PlayMusic:
 		cmpi.b	#MusID_ExtraLife,d7		; is "extra life" music	played?
 		bne.s	loc_72024	; if not, branch
 		tst.b	$27(a6)
@@ -686,7 +683,7 @@ loc_72024:
 		clr.b	$26(a6)
 
 loc_7202C:
-		jsr	sub_725CA(pc)
+		jsr	InitMusicPlayback(pc)
 		movea.l	(off_719A0).l,a4
 		subi.b	#MusID__First,d7
 		move.b	(a4,d7.w),$29(a6)
@@ -827,7 +824,7 @@ loc_7219A:
 		moveq	#5,d4
 
 loc_721A0:
-		jsr	sub_726FE(pc)
+		jsr	FMNoteOff(pc)
 		adda.w	d6,a5
 		dbf	d4,loc_721A0
 		moveq	#2,d4
@@ -849,8 +846,8 @@ byte_721C2:	dc.b $80, $A0, $C0, 0
 ; ---------------------------------------------------------------------------
 ; Play normal sound effect
 ; ---------------------------------------------------------------------------
-
-Sound_A0toCF:
+; Sound_A0toCF:
+PlaySound_CheckRing:
 		tst.b	$27(a6)
 		bne.w	loc_722C6
 		tst.b	4(a6)
@@ -976,8 +973,8 @@ dword_722EC:	dc.l $FFF220
 ; ---------------------------------------------------------------------------
 ; Play GHZ waterfall sound
 ; ---------------------------------------------------------------------------
-
-Sound_D0toDF:
+; Sound_D0toDF:
+PlaySound_CheckWaterfall:
 		tst.b	$27(a6)
 		bne.w	locret_723C6
 		tst.b	4(a6)
@@ -1074,7 +1071,7 @@ loc_723EA:
 		moveq	#0,d3
 		move.b	1(a5),d3
 		bmi.s	loc_7243C
-		jsr	sub_726FE(pc)
+		jsr	FMNoteOff(pc)
 		cmpi.b	#4,d3
 		bne.s	loc_72416
 		tst.b	$340(a6)
@@ -1184,8 +1181,8 @@ FadeOutMusic:
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_72504:
+; sub_72504:
+UpdateFadeOut:
 		move.b	6(a6),d0
 		beq.s	loc_72510
 		subq.b	#1,6(a6)
@@ -1236,13 +1233,13 @@ loc_72560:
 		dbf	d7,loc_72542
 
 		rts	
-; End of function sub_72504
+; End of function UpdateFadeOut
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_7256A:
+; sub_7256A:
+FMSilenceAll:
 		moveq	#2,d3
 		moveq	#$28,d0
 
@@ -1270,7 +1267,7 @@ loc_72586:
 		dbf	d4,loc_72584
 
 		rts	
-; End of function sub_7256A
+; End of function FMSilenceAll
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -1293,13 +1290,13 @@ loc_725B6:
 		dbf	d0,loc_725B6
 
 		move.b	#$80,9(a6)	; set music to $80 (silence)
-		jsr	sub_7256A(pc)
-		bra.w	sub_729B6
+		jsr	FMSilenceAll(pc)
+		bra.w	PSGSilenceAll
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_725CA:
+; sub_725CA:
+InitMusicPlayback:
 		movea.l	a6,a0
 		_move.b	0(a6),d1
 		move.b	$27(a6),d2
@@ -1320,15 +1317,15 @@ loc_725E4:
 ; This is incorrect, it's meant to be a long, not a word, this is why PlaySound_Unk is broken
 		move.w	d5,$A(a6)
 		move.b	#$80,9(a6)
-		jsr	sub_7256A(pc)
-		bra.w	sub_729B6
-; End of function sub_725CA
+		jsr	FMSilenceAll(pc)
+		bra.w	PSGSilenceAll
+; End of function InitMusicPlayback
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_7260C:
+; sub_7260C:
+TempoWait:
 		move.b	2(a6),1(a6)
 		lea	$4E(a6),a0
 		moveq	#$30,d0
@@ -1340,7 +1337,7 @@ loc_7261A:
 		dbf	d1,loc_7261A
 
 		rts	
-; End of function sub_7260C
+; End of function TempoWait
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -1349,14 +1346,12 @@ loc_7261A:
 ; Sound_E2:
 SpeedUpMusic:
 		tst.b	$27(a6)
-		bne.s	loc_7263E
+		bne.s	+
 		move.b	$29(a6),2(a6)
 		move.b	$29(a6),1(a6)
 		move.b	#$80,$2A(a6)
 		rts	
-; ===========================================================================
-
-loc_7263E:
++
 		move.b	$3C9(a6),$3A2(a6)
 		move.b	$3C9(a6),$3A1(a6)
 		move.b	#$80,$3CA(a6)
@@ -1368,14 +1363,12 @@ loc_7263E:
 ; Sound_E3:
 SlowDownMusic:
 		tst.b	$27(a6)
-		bne.s	loc_7266A
+		bne.s	+
 		move.b	$28(a6),2(a6)
 		move.b	$28(a6),1(a6)
 		clr.b	$2A(a6)
 		rts	
-; ===========================================================================
-
-loc_7266A:
++
 		move.b	$3C8(a6),$3A2(a6)
 		move.b	$3C8(a6),$3A1(a6)
 		clr.b	$3CA(a6)
@@ -1383,8 +1376,8 @@ loc_7266A:
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_7267C:
+; sub_7267C:
+UpdateFadeIn:
 		tst.b	$25(a6)
 		beq.s	loc_72688
 		subq.b	#1,$25(a6)
@@ -1432,28 +1425,26 @@ loc_726D6:
 		bclr	#2,$40(a6)
 		clr.b	$24(a6)
 		rts	
-; End of function sub_7267C
+; End of function UpdateFadeIn
 
 ; ===========================================================================
-
-loc_726E2:
+; loc_726E2:
+FMNoteOn:
 		btst	#1,(a5)
-		bne.s	locret_726FC
+		bne.s	+
 		btst	#2,(a5)
-		bne.s	locret_726FC
+		bne.s	+
 		moveq	#$28,d0
 		move.b	1(a5),d1
 		ori.b	#-$10,d1
 		bra.w	WriteFMI
-; ===========================================================================
-
-locret_726FC:
++
 		rts	
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_726FE:
+; sub_726FE:
+FMNoteOff:
 		btst	#4,(a5)
 		bne.s	locret_72714
 		btst	#2,(a5)
@@ -1467,7 +1458,7 @@ loc_7270A:
 
 locret_72714:
 		rts	
-; End of function sub_726FE
+; End of function FMNoteOff
 
 ; ===========================================================================
 
@@ -1542,7 +1533,8 @@ loc_7277C:
 ; End of function WriteFMII
 
 ; ===========================================================================
-word_72790:	dc.w $25E, $284, $2AB, $2D3, $2FE, $32D, $35C, $38F, $3C5
+; word_72790:
+Frequencies:	dc.w $25E, $284, $2AB, $2D3, $2FE, $32D, $35C, $38F, $3C5
 		dc.w $3FF, $43C, $47C, $A5E, $A84, $AAB, $AD3, $AFE, $B2D
 		dc.w $B5C, $B8F, $BC5, $BFF, $C3C, $C7C, $125E,	$1284
 		dc.w $12AB, $12D3, $12FE, $132D, $135C,	$138F, $13C5, $13FF
@@ -1557,29 +1549,37 @@ word_72790:	dc.w $25E, $284, $2AB, $2D3, $2FE, $32D, $35C, $38F, $3C5
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_72850:
+; sub_72850:
+PSGUpdateTrack:
 		subq.b	#1,$E(a5)
 		bne.s	loc_72866
 		bclr	#4,(a5)
-		jsr	sub_72878(pc)
-		jsr	sub_728DC(pc)
-		bra.w	loc_7292E
+		jsr	PSGDoNext(pc)
+		jsr	PSGDoNoteOn(pc)
+	if 1==0
+; Sonic 2 makes sure to update the frequencey and check the modulation to
+; avoid possible bugs.
+		bsr.w	PSGDoVolFX
+		jsr	DoModulation(pc)
+		jmp	PSGUpdateFreq(pc)
+	else
+		bra.w	PSGDoVolFX
+	endif
 ; ===========================================================================
 
 loc_72866:
-		jsr	sub_71D9E(pc)
-		jsr	sub_72926(pc)
-		jsr	sub_71DC6(pc)
-		jsr	sub_728E2(pc)
+		jsr	NoteFillUpdate(pc)
+		jsr	PSGUpdateVolFX(pc)
+		jsr	DoModulation(pc)
+		jsr	PSGUpdateFreq(pc)
 		rts	
-; End of function sub_72850
+; End of function PSGUpdateTrack
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_72878:
+; sub_72878:
+PSGDoNext:
 		bclr	#1,(a5)
 		movea.l	4(a5),a4
 
@@ -1595,7 +1595,7 @@ loc_72880:
 loc_72890:
 		tst.b	d5
 		bpl.s	loc_728A4
-		jsr	sub_728AC(pc)
+		jsr	PSGSetFreq(pc)
 		move.b	(a4)+,d5
 		tst.b	d5
 		bpl.s	loc_728A4
@@ -1606,19 +1606,19 @@ loc_72890:
 loc_728A4:
 		jsr	sub_71D40(pc)
 		bra.w	sub_71D60
-; End of function sub_72878
+; End of function PSGDoNext
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_728AC:
+; sub_728AC:
+PSGSetFreq:
 		subi.b	#$81,d5
 		bcs.s	loc_728CA
 		add.b	8(a5),d5
 		andi.w	#$7F,d5
 		lsl.w	#1,d5
-		lea	word_729CE(pc),a0
+		lea	PSGFrequencies(pc),a0
 		move.w	(a0,d5.w),$10(a5)
 		bra.w	sub_71D60
 ; ===========================================================================
@@ -1628,22 +1628,22 @@ loc_728CA:
 		move.w	#-1,$10(a5)
 		jsr	sub_71D60(pc)
 		bra.w	PSGNoteOff
-; End of function sub_728AC
+; End of function PSGSetFreq
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_728DC:
+; sub_728DC:
+PSGDoNoteOn:
 		move.w	$10(a5),d6
 		bmi.s	loc_72920
-; End of function sub_728DC
+; End of function PSGDoNoteOn
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_728E2:
+; sub_728E2:
+PSGUpdateFreq:
 		move.b	$1E(a5),d0
 		ext.w	d0
 		add.w	d0,d6
@@ -1667,7 +1667,7 @@ loc_72904:
 
 locret_7291E:
 		rts	
-; End of function sub_728E2
+; End of function PSGUpdateFreq
 
 ; ===========================================================================
 
@@ -1677,12 +1677,13 @@ loc_72920:
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_72926:
+; sub_72926:
+PSGUpdateVolFX:
 		tst.b	$B(a5)
 		beq.w	locret_7298A
 
-loc_7292E:
+; loc_7292E:
+PSGDoVolFX:
 		move.b	9(a5),d6
 		moveq	#0,d0
 		move.b	$B(a5),d0
@@ -1692,19 +1693,26 @@ loc_7292E:
 		lsl.w	#2,d0
 		movea.l	(a0,d0.w),a0
 		move.b	$C(a5),d0
+	if 1==0
+; The original code was unoptimized so here's some extremely optimized code.
+		addq.b	#1,$C(a5)
+		move.b	(a0,d0.w),d0
+		bmi.s	VolEnvHold
+	else
 		move.b	(a0,d0.w),d0
 		addq.b	#1,$C(a5)
 		btst	#7,d0
 		beq.s	loc_72960
 		cmpi.b	#$80,d0
 		beq.s	VolEnvHold
+	endif
 
 loc_72960:
 		add.w	d0,d6
 		cmpi.b	#$10,d6
 		bcs.s	sub_7296A
 		moveq	#$F,d6
-; End of function sub_72926
+; End of function PSGUpdateVolFX
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -1742,15 +1750,15 @@ VolEnvHold:
 ; To fix this, uncomment the two lines and delete the rts
 		subq.b	#1,$C(a5)
 ;		subq.b	#1,$C(a5)
-;		jsr	loc_7292E
+;		jsr	PSGDoVolFX
 		rts	
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 ; sub_729A0:
 PSGNoteOff:
-		btst	#2,(a5)
-		bne.s	locret_729B4
+		btst	#2,(a5)			; Is "SFX override" bit set?
+		bne.s	locret_729B4		; If so, quit!
 
 ; loc_729A6:
 SendPSGNoteOff:
@@ -1772,18 +1780,19 @@ locret_729B4:
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_729B6:
+; sub_729B6:
+PSGSilenceAll:
 		lea	($C00011).l,a0
 		move.b	#$9F,(a0)
 		move.b	#$BF,(a0)
 		move.b	#$DF,(a0)
 		move.b	#$FF,(a0)
 		rts	
-; End of function sub_729B6
+; End of function PSGSilenceAll
 
 ; ===========================================================================
-word_729CE:	dc.w $356, $326, $2F9, $2CE, $2A5, $280, $25C, $23A, $21A
+; word_729CE:
+PSGFrequencies:	dc.w $356, $326, $2F9, $2CE, $2A5, $280, $25C, $23A, $21A
 		dc.w $1FB, $1DF, $1C4, $1AB, $193, $17D, $167, $153, $140
 		dc.w $12E, $11D, $10D, $FE, $EF, $E2, $D6, $C9,	$BE, $B4
 		dc.w $A9, $A0, $97, $8F, $87, $7F, $78,	$71, $6B, $65
@@ -2009,7 +2018,7 @@ loc_72BEE:
 loc_72BF4:
 		bclr	#7,(a5)
 		bclr	#4,(a5)
-		jsr	sub_726FE(pc)
+		jsr	FMNoteOff(pc)
 		tst.b	$250(a6)
 		bmi.s	loc_72C22
 		movea.l	a5,a3
@@ -2174,7 +2183,7 @@ loc_72D58:
 		bmi.s	loc_72D74
 		tst.b	8(a6)
 		bmi.w	loc_72E02
-		jsr	sub_726FE(pc)
+		jsr	FMNoteOff(pc)
 		bra.s	loc_72D78
 ; ===========================================================================
 

@@ -478,7 +478,7 @@ x
 		jsr	Vint_SwitchTbl(pc,d0.w)
 
 loc_B5E:
-		jsr	(sub_71B4C).l
+		jsr	(UpdateMusic).l
 
 VintRet:
 		addq.l	#1,(Vint_runcount).w
@@ -905,7 +905,7 @@ loc_119E:				; XREF: PalToCRAM
 		clr.b	(Do_Updates_in_H_int).w
 		movem.l	d0-a6,-(sp)
 		bsr.w	Demo_Time
-		jsr	(sub_71B4C).l
+		jsr	(UpdateMusic).l
 		movem.l	(sp)+,d0-a6
 		rte	
 ; End of function PalToCRAM
@@ -24715,7 +24715,6 @@ Sonic_ChgJumpDir:			; XREF: Obj01_MdJump; Obj01_MdJump2
 Obj01_Jump_ResetScr:
 		cmpi.w	#$60,(Camera_Y_pos_bias).w 	; is screen in its default position?
 		beq.s	Sonic_JumpPeakDecelerate	; if yes, branch
-; Sonic 2 changed this to a bhs command.
 		bcc.s	+				; depending on the sign of the difference,
 		addq.w	#4,(Camera_Y_pos_bias).w	; either add 2
 +		subq.w	#2,(Camera_Y_pos_bias).w	; or subtract 2
@@ -24723,7 +24722,6 @@ Obj01_Jump_ResetScr:
 ; loc_132A4:
 Sonic_JumpPeakDecelerate:
 		cmpi.w	#-$400,y_vel(a0)		; is Sonic moving faster than -$400 upwards?
-; Sonic 2 changed this to a blo command.
 		bcs.s	locret_132D2		; if yes, return
 		move.w	x_vel(a0),d0
 		move.w	d0,d1
