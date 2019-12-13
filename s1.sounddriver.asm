@@ -1285,6 +1285,7 @@ StopSoundAndMusic:
 		moveq	#0,d1
 		jsr	WriteFMI(pc)
 		movea.l	a6,a0
+; Note: This doesn't clear the last $10 bytes
 		move.w	#$E3,d0
 
 loc_725B6:
@@ -1740,9 +1741,9 @@ VolEnvHold:
 ; DANGER! This effectively halts all future volume updates, breaking fades.
 ; To fix this, uncomment the two lines and delete the rts
 		subq.b	#1,$C(a5)
-		subq.b	#1,$C(a5)
-		jsr	loc_7292E
-;		rts	
+;		subq.b	#1,$C(a5)
+;		jsr	loc_7292E
+		rts	
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
