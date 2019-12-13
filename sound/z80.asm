@@ -200,7 +200,10 @@ zPlayPCMLoop:
 	jp	zCheckForSamples				; Sample is done; wait for new samples
    else
 	jr	nz,zPlayPCMLoop					; If yes, keep playing sample
-	jr	zCheckForSamples				; Sample is done; wait for new samples
+
+zCheckForSamples:
+	ld	hl,zDAC_Sample					; Load the address of next sample.
+	jp	zWaitDACLoop
 ; ===========================================================================
 ; JMan2050's DAC decode lookup table
 ; ===========================================================================
@@ -208,10 +211,6 @@ zPlayPCMLoop:
 zDACDecodeTbl:
 	db	   0,	 1,   2,   4,   8,  10h,  20h,  40h
 	db	 80h,	-1,  -2,  -4,  -8, -10h, -20h, -40h
-
-zCheckForSamples:
-	ld	hl,zDAC_Sample					; Load the address of next sample.
-	jp	zWaitDACLoop
    endif
 
 ;
@@ -241,7 +240,7 @@ zPlaySEGAPCMLoop:
 	jp	zCheckForSamples				; SEGA sound is done; wait for new samples
    else
 	jr	nz,zPlaySEGAPCMLoop				; If yes, keep playing sample
-	jr	zCheckForSamples				; SEGA sound is done; wait for new samples
+	jp	zCheckForSamples				; SEGA sound is done; wait for new samples
    endif
 ;
 ; Table referencing the three PCM samples
