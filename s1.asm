@@ -1138,20 +1138,20 @@ PlaySound_Unk:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-PauseGame:				; XREF: Level_MainLoop; et al
+PauseGame:
 		nop	
 		tst.b	(Life_count).w	; do you have any lives	left?
 		beq.s	Unpause		; if not, branch
 		tst.w	(Game_paused).w	; is game already paused?
-		bne.s	loc_13BE	; if yes, branch
+		bne.s	+		; if yes, branch
 		btst	#7,(Ctrl_1_Press).w ; is Start button pressed?
 		beq.s	Pause_DoNothing	; if not, branch
-
-loc_13BE:
++
 		move.w	#1,(Game_paused).w ; freeze time
 		move.b	#1,($FFFFF003).w ; pause music
 
-loc_13CA:
+; loc_13CA:
+Pause_Loop:
 		move.b	#$10,(Vint_routine).w
 		bsr.w	WaitForVint
 		tst.b	(Slow_motion_flag).w	; is slow-motion cheat on?
@@ -1160,30 +1160,31 @@ loc_13CA:
 		beq.s	Pause_ChkBC	; if not, branch
 		move.b	#4,(Game_Mode).w ; set game mode to 4 (title screen)
 		nop	
-		bra.s	loc_1404
+		bra.s	Pause_Resume
 ; ===========================================================================
 
-Pause_ChkBC:				; XREF: PauseGame
+Pause_ChkBC:
 		btst	#4,(Ctrl_1_Held).w ; is button B held?
 		bne.s	Pause_SlowMo	; if yes, branch
 		btst	#5,(Ctrl_1_Press).w ; is button C pressed?
 		bne.s	Pause_SlowMo	; if yes, branch
 
-Pause_ChkStart:				; XREF: PauseGame
+Pause_ChkStart:
 		btst	#7,(Ctrl_1_Press).w ; is Start button pressed?
-		beq.s	loc_13CA	; if not, branch
+		beq.s	Pause_Loop	; if not, branch
 
-loc_1404:				; XREF: PauseGame
+; loc_1404:
+Pause_Resume:
 		move.b	#$80,($FFFFF003).w
 
-Unpause:				; XREF: PauseGame
+Unpause:
 		move.w	#0,(Game_paused).w ; unpause the game
 
-Pause_DoNothing:			; XREF: PauseGame
+Pause_DoNothing:
 		rts	
 ; ===========================================================================
 
-Pause_SlowMo:				; XREF: PauseGame
+Pause_SlowMo:
 		move.w	#1,(Game_paused).w
 		move.b	#$80,($FFFFF003).w
 		rts	
@@ -1195,8 +1196,8 @@ Pause_SlowMo:				; XREF: PauseGame
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-ShowVDPGraphics:			; XREF: SegaScreen; TitleScreen; SS_BGLoad
+; ShowVDPGraphics:
+PlaneMapToVRAM_H40:
 		lea	(VDP_data_port).l,a6
 		move.l	#$800000,d4
 -		move.l	d0,4(a6)
@@ -1206,7 +1207,7 @@ ShowVDPGraphics:			; XREF: SegaScreen; TitleScreen; SS_BGLoad
 		add.l	d4,d0
 		dbf	d2,--
 		rts	
-; End of function ShowVDPGraphics
+; End of function PlaneMapToVRAM_H40
 
 ; ---------------------------------------------------------------------------
 ; Nemesis decompression	algorithm
@@ -1225,7 +1226,7 @@ NemDec:
 		movem.l	d0-a1/a3-a5,-(sp)
 		lea	(loc_1518).l,a3
 
-loc_145C:				; XREF: NemDec
+loc_145C:
 		lea	(Decomp_Buffer).w,a1
 		move.w	(a0)+,d2
 		lsl.w	#1,d2
@@ -1252,7 +1253,7 @@ loc_146A:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-NemDec2:				; XREF: NemDec
+NemDec2:
 		move.w	d6,d7
 		subq.w	#8,d7
 		move.w	d5,d1
@@ -1276,10 +1277,10 @@ loc_14B2:
 		andi.w	#$F,d1
 		andi.w	#$F0,d0
 
-loc_14C0:				; XREF: NemDec3
+loc_14C0:
 		lsr.w	#4,d0
 
-loc_14C2:				; XREF: NemDec3
+loc_14C2:
 		lsl.l	#4,d4
 		or.b	d1,d4
 		subq.w	#1,d3
@@ -1291,16 +1292,16 @@ loc_14C2:				; XREF: NemDec3
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-NemDec3:				; XREF: loc_1502
+NemDec3:
 		moveq	#0,d4
 		moveq	#8,d3
 
-loc_14D0:				; XREF: NemDec2
+loc_14D0:
 		dbf	d0,loc_14C2
 		bra.s	NemDec2
 ; ===========================================================================
 
-loc_14D6:				; XREF: NemDec2
+loc_14D6:
 		subq.w	#6,d6
 		cmpi.w	#9,d6
 		bcc.s	loc_14E4
@@ -1308,7 +1309,7 @@ loc_14D6:				; XREF: NemDec2
 		asl.w	#8,d5
 		move.b	(a0)+,d5
 
-loc_14E4:				; XREF: NemDec3
+loc_14E4:
 		subq.w	#7,d6
 		move.w	d5,d1
 		lsr.w	d6,d1
@@ -1325,7 +1326,7 @@ loc_14E4:				; XREF: NemDec3
 
 ; ===========================================================================
 
-loc_1502:				; XREF: NemDec
+loc_1502:
 		move.l	d4,(a4)
 		subq.w	#1,a5
 		move.w	a5,d4
@@ -1340,7 +1341,7 @@ loc_1502:				; XREF: NemDec
 		rts	
 ; ===========================================================================
 
-loc_1518:				; XREF: NemDec
+loc_1518:
 		move.l	d4,(a4)+
 		subq.w	#1,a5
 		move.w	a5,d4
@@ -1357,7 +1358,7 @@ loc_1518:				; XREF: NemDec
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-NemDec4:				; XREF: NemDec
+NemDec4:
 		move.b	(a0)+,d0
 
 loc_1530:
@@ -1366,7 +1367,7 @@ loc_1530:
 		rts	
 ; ===========================================================================
 
-loc_1538:				; XREF: NemDec4
+loc_1538:
 		move.w	d0,d7
 
 loc_153A:
@@ -1390,7 +1391,7 @@ loc_153A:
 		bra.s	loc_153A
 ; ===========================================================================
 
-loc_1568:				; XREF: NemDec4
+loc_1568:
 		move.b	(a0)+,d0
 		lsl.w	d1,d0
 		add.w	d0,d0
@@ -3150,12 +3151,12 @@ SegaScreen:				; XREF: GameModeArray
 		move.l	#$65100003,d0
 		moveq	#$17,d1
 		moveq	#7,d2
-		bsr.w	ShowVDPGraphics
+		bsr.w	PlaneMapToVRAM_H40
 		lea	(Chunk_Table+$180).l,a1
 		move.l	#$40000003,d0
 		moveq	#$27,d1
 		moveq	#$1B,d2
-		bsr.w	ShowVDPGraphics
+		bsr.w	PlaneMapToVRAM_H40
 		moveq	#0,d0
 		bsr.w	PalLoad2	; load Sega logo pallet
 		move.w	#-$A,(PalCycle_Frame).w
@@ -3234,7 +3235,7 @@ Title_ClrObjRam:
 		move.l	#$40000003,d0
 		moveq	#$27,d1
 		moveq	#$1B,d2
-		bsr.w	ShowVDPGraphics
+		bsr.w	PlaneMapToVRAM_H40
 		lea	(Target_palette).w,a1
 		moveq	#0,d0
 		move.w	#$1F,d1
@@ -3290,7 +3291,7 @@ Title_LoadText:
 		lea	(VDP_control_port).l,a5
 		lea	(VDP_data_port).l,a6
 		lea	(Camera_BG_X_pos).w,a3
-		lea	(Level_Layout+$40).w,a4
+		movea.l	(Level_Layout+4).w,a4		; MJ: Load address of layout BG
 		move.w	#$6000,d2
 		bsr.w	LoadTilesFromStart2
 		lea	(Chunk_Table).l,a1
@@ -3301,7 +3302,7 @@ Title_LoadText:
 		move.l	#$42060003,d0
 		moveq	#$21,d1
 		moveq	#$15,d2
-		bsr.w	ShowVDPGraphics
+		bsr.w	PlaneMapToVRAM_H40
 		move.l	#$40000000,(VDP_control_port).l
 		lea	(Nem_GHZ_1st).l,a0 ; load GHZ patterns
 		bsr.w	NemDec
@@ -4290,7 +4291,7 @@ DynWater_LZ3:				; XREF: DynWater_Index
 		cmpi.w	#$600,(Object_RAM+y_pos).w
 		bcc.s	loc_3D54
 		move.w	#$4C8,d1
-		move.b	#$4B,(Level_Layout+$106).w ; change level layout
+		move.l	#Level_LZ3,(Level_Layout).w		; MJ: Set normal version of act 3's layout to be read
 		move.b	#1,(Water_routine).w
 		move.w	#SndID_Rumble,d0
 		bsr.w	PlaySound_Special ; play sound $B7 (rumbling)
@@ -4499,16 +4500,17 @@ LZWaterSlides:				; XREF: LZWaterEffects
 		lea	(Object_RAM).w,a1
 		btst	#1,status(a1)
 		bne.s	loc_3F6A
-		move.w	y_pos(a1),d0
-		lsr.w	#1,d0
-		andi.w	#$380,d0
-		move.b	x_pos(a1),d1
-		andi.w	#$7F,d1
-		add.w	d1,d0
-		lea	(Level_Layout).w,a2
-		move.b	(a2,d0.w),d0
+		move.w	y_pos(a1),d0				; MJ: Load Y position
+		move.w	x_pos(a1),d1				; MJ: Load X position
+		and.w	#$780,d0				; MJ: keep Y position within 800 pixels (in multiples of 80)
+		lsl.w	#1,d0					; MJ: multiply by 2 (Because every 80 bytes switch from FG to BG..)
+		lsr.w	#7,d1					; MJ: divide X position by 80 (00 = 0, 80 = 1, etc)
+		and.b	#$7F,d1					; MJ: keep within 4000 pixels (4000 / 80 = 80)
+		add.w	d1,d0					; MJ: add together
+		movea.l	(Level_Layout).w,a2			; MJ: Load address of layout
+		move.b	(a2,d0.w),d0				; MJ: collect correct chunk ID based on the position of Sonic
 		lea	byte_3FCF(pc),a2
-		moveq	#6,d1
+		moveq	#$14,d1					; MJ: repeat times
 
 loc_3F62:
 		cmp.b	-(a2),d0
@@ -4552,8 +4554,19 @@ locret_3FBE:
 ; End of function LZWaterSlides
 
 ; ===========================================================================
-byte_3FC0:	dc.b $A, $F5, $A, $F6, $F5, $F4, $B, 0,	2, 7, 3, $4C, $4B, 8, 4
-byte_3FCF:	dc.b 0			; XREF: LZWaterSlides
+byte_3FC0:	dc.b		    $F5
+		dc.b	$F4,$F4,$F4,$F4
+		dc.b	$F5,$F5,$F5,$F5
+		dc.b	$B,$B,$B,$B
+		dc.b	$F6,$F6,$F6,$F6
+		dc.b	$A,$A,$A,$A				; MJ: Values for speed, format XX00 = Speed in $14(a-)
+		align 2
+byte_3FCF:	dc.b	5,6,9,$A				; MJ: Chunks to read (128x128 ID's)
+		dc.b	$FA,$FB,$FC,$FD
+		dc.b	$B,$C,$D,$E
+		dc.b	$15,$16,$F8,$F9
+		dc.b	$19,$1A,$1B,$1C
+		dc.b	$17
 		align 2
 
 ; ---------------------------------------------------------------------------
@@ -4677,8 +4690,10 @@ Demo_EndIndex:
 ColIndexLoad:				; XREF: Level
 		moveq	#0,d0
 		move.b	(Current_Zone).w,d0
-		lsl.w	#2,d0
-		move.l	ColPointers(pc,d0.w),($FFFFF796).w
+		lsl.w	#3,d0					; MJ: multiply by 8 not 4
+		move.l	ColPointers(pc,d0.w),($FFFFFFD0).w	; MJ: get first collision set
+		add.w	#4,d0					; MJ: increase to next location
+		move.l	ColPointers(pc,d0.w),($FFFFFFD4).w	; MJ: get second collision set
 		rts	
 ; End of function ColIndexLoad
 
@@ -4687,12 +4702,18 @@ ColIndexLoad:				; XREF: Level
 ; Collision index pointers
 ; ---------------------------------------------------------------------------
 ColPointers:
-	dc.l Col_GHZ
-	dc.l Col_LZ
-	dc.l Col_MZ
-	dc.l Col_SLZ
-	dc.l Col_SYZ
-	dc.l Col_SBZ
+	dc.l Col_GHZ_1
+	dc.l Col_GHZ_2
+	dc.l Col_LZ_1
+	dc.l Col_LZ_2
+	dc.l Col_MZ_1
+	dc.l Col_MZ_2
+	dc.l Col_SLZ_1
+	dc.l Col_SLZ_2
+	dc.l Col_SYZ_1
+	dc.l Col_SYZ_2
+	dc.l Col_SBZ_1
+	dc.l Col_SBZ_2
 
 ; ---------------------------------------------------------------------------
 ; Oscillating number subroutine
@@ -5127,7 +5148,7 @@ loc_48E2:
 		movem.l	d0-d4,-(sp)
 		moveq	#7,d1
 		moveq	#7,d2
-		bsr.w	ShowVDPGraphics
+		bsr.w	PlaneMapToVRAM_H40
 		movem.l	(sp)+,d0-d4
 
 loc_48F2:
@@ -5153,12 +5174,12 @@ loc_491C:
 		move.l	#$40000003,d0
 		moveq	#$3F,d1
 		moveq	#$1F,d2
-		bsr.w	ShowVDPGraphics
+		bsr.w	PlaneMapToVRAM_H40
 		lea	(Chunk_Table).l,a1
 		move.l	#$50000003,d0
 		moveq	#$3F,d1
 		moveq	#$3F,d2
-		bsr.w	ShowVDPGraphics
+		bsr.w	PlaneMapToVRAM_H40
 		rts	
 ; End of function SS_BGLoad
 
@@ -5734,7 +5755,8 @@ End_LoadData:
 		bset	#2,(Scroll_flags).w
 		bsr.w	MainLoadBlockLoad
 		bsr.w	LoadTilesFromStart
-		move.l	#Col_GHZ,($FFFFF796).w ; load collision	index
+		move.l	#Col_GHZ_1,($FFFFFFD0).w			; MJ: Set first collision for ending
+		move.l	#Col_GHZ_2,($FFFFFFD4).w			; MJ: Set second collision for ending
 		move	#$2300,sr
 		lea	(Kos_EndFlowers).l,a0 ;	load extra flower patterns
 		lea	($FFFF9400).w,a1 ; RAM address to buffer the patterns
@@ -5840,7 +5862,7 @@ loc_5334:
 		lea	(VDP_control_port).l,a5
 		lea	(VDP_data_port).l,a6
 		lea	(Camera_X_pos).w,a3
-		lea	(Level_Layout).w,a4
+		movea.l	(Level_Layout).w,a4			; MJ: Load address of layout
 		move.w	#$4000,d2
 		bsr.w	LoadTilesFromStart2
 		moveq	#$13,d0
@@ -7592,7 +7614,7 @@ sub_6886:
 		lea	(VDP_data_port).l,a6
 		lea	(Scroll_flags_BG).w,a2
 		lea	(Camera_BG_X_pos).w,a3
-		lea	(Level_Layout+$40).w,a4
+		movea.l	(Level_Layout+4).w,a4			; MJ: Load address of layout BG
 		move.w	#$6000,d2
 		bsr.w	Draw_BG1
 		lea	(Scroll_flags_BG2).w,a2
@@ -7612,7 +7634,7 @@ LoadTilesAsYouMove:
 		lea	(VDP_data_port).l,a6
 		lea	($FFFFFF32).w,a2
 		lea	($FFFFFF18).w,a3
-		lea	(Level_Layout+$40).w,a4
+		movea.l	(Level_Layout+4).w,a4			; MJ: Load address of layout BG
 		move.w	#$6000,d2
 		bsr.w	Draw_BG1
 		lea	($FFFFFF34).w,a2
@@ -7620,7 +7642,7 @@ LoadTilesAsYouMove:
 		bsr.w	Draw_BG2
 		lea	(Scroll_flags_copy).w,a2
 		lea	(Camera_RAM_copy).w,a3
-		lea	(Level_Layout).w,a4
+		movea.l	(Level_Layout).w,a4			; MJ: Load address of layout
 		move.w	#$4000,d2
 		tst.b	(a2)
 		beq.s	locret_6952
@@ -7898,9 +7920,9 @@ loc_6B0E:
 sub_6B32:				; XREF: sub_6ADA; sub_6B06
 		or.w	d2,d0
 		swap	d0
-		btst	#4,(a0)
+		btst	#3,(a0)					; MJ: checking bit 3 not 4 (Flip)
 		bne.s	loc_6B6E
-		btst	#3,(a0)
+		btst	#2,(a0)					; MJ: checking bit 2 not 3 (Mirror)
 		bne.s	loc_6B4E
 		move.l	d0,(a5)
 		move.l	(a1)+,(a6)
@@ -7926,7 +7948,7 @@ loc_6B4E:
 ; ===========================================================================
 
 loc_6B6E:
-		btst	#3,(a0)
+		btst	#2,(a0) 				; MJ: checking bit 2 not 3 (Mirror)
 		bne.s	loc_6B90
 		move.l	d0,(a5)
 		move.l	(a1)+,d5
@@ -7980,33 +8002,32 @@ loc_6B90:
 
 
 sub_6BD6:				; XREF: sub_6ADA; sub_6B06
-		lea	(Block_Table).w,a1
-		add.w	4(a3),d4
-		add.w	(a3),d5
-		move.w	d4,d3
-		lsr.w	#1,d3
-		andi.w	#$380,d3
-		lsr.w	#3,d5
-		move.w	d5,d0
-		lsr.w	#5,d0
-		andi.w	#$7F,d0
-		add.w	d3,d0
-		moveq	#-1,d3
-		move.b	(a4,d0.w),d3
-		beq.s	locret_6C1E
-		subq.b	#1,d3
-		andi.w	#$7F,d3
-		ror.w	#7,d3
-		add.w	d4,d4
-		andi.w	#$1E0,d4
-		andi.w	#$1E,d5
-		add.w	d4,d3
-		add.w	d5,d3
-		movea.l	d3,a0
+		lea	(Block_Table).w,a1			; MJ: load Block's location
+		add.w	4(a3),d4				; MJ: load Y position to d4
+		add.w	(a3),d5					; MJ: load X position to d5
+		move.w	d4,d3					; MJ: copy Y position to d3
+		andi.w	#$780,d3				; MJ: get within 780 (Not 380) (E00 pixels (not 700)) in multiples of 80
+		lsr.w	#3,d5					; MJ: divide X position by 8
+		move.w	d5,d0					; MJ: copy to d0
+		lsr.w	#4,d0					; MJ: divide by 10 (Not 20)
+		andi.w	#$7F,d0					; MJ: get within 7F
+		lsl.w	#1,d3					; MJ: multiply by 2 (So it skips the BG)
+		add.w	d3,d0					; MJ: add calc'd Y pos
+		moveq	#-1,d3					; MJ: prepare FFFF in d3
+		move.b	(a4,d0.w),d3				; MJ: collect correct chunk ID from layout
+		andi.w	#$FF,d3					; MJ: keep within 7F
+		ror.w	#7,d3					; MJ: ror round to the far left
+		ror.w	#2,d3					; MJ: ..plus an extra 2 (so it's within 80 bytes, not 200)
+		andi.w	#$70,d4					; MJ: keep Y pos within 80 pixels
+		andi.w	#$E,d5					; MJ: keep X pos within 10
+		add.w	d4,d3					; MJ: add calc'd Y pos to ror'd d3
+		add.w	d5,d3					; MJ: add calc'd X pos to ror'd d3
+		movea.l	d3,a0					; MJ: set address (Chunk to read)
 		move.w	(a0),d3
 		andi.w	#$3FF,d3
 		lsl.w	#3,d3
 		adda.w	d3,a1
+
 
 locret_6C1E:
 		rts	
@@ -8060,11 +8081,11 @@ LoadTilesFromStart:			; XREF: Level; EndingSequence
 		lea	(VDP_control_port).l,a5
 		lea	(VDP_data_port).l,a6
 		lea	(Camera_X_pos).w,a3
-		lea	(Level_Layout).w,a4
+		movea.l	(Level_Layout).w,a4			; MJ: Load address of layout
 		move.w	#$4000,d2
 		bsr.s	LoadTilesFromStart2
 		lea	(Camera_BG_X_pos).w,a3
-		lea	(Level_Layout+$40).w,a4
+		movea.l	(Level_Layout+4).w,a4			; MJ: Load address of layout BG
 		move.w	#$6000,d2
 ; End of function LoadTilesFromStart
 
@@ -8151,52 +8172,18 @@ locret_6D10:
 
 
 LevelLayoutLoad:			; XREF: TitleScreen; MainLoadBlockLoad
-		lea	(Level_Layout).w,a3
-		move.w	#$1FF,d1
-		moveq	#0,d0
-
-LevLoad_ClrRam:
-		move.l	d0,(a3)+
-		dbf	d1,LevLoad_ClrRam ; clear the RAM (Level_Layout)
-
-		lea	(Level_Layout).w,a3 ; RAM address for level layout
-		moveq	#0,d1
-		bsr.w	LevelLayoutLoad2 ; load	level layout into RAM
-		lea	(Level_Layout+$40).w,a3 ; RAM address for background layout
-		moveq	#2,d1
-; End of function LevelLayoutLoad
-
-; "LevelLayoutLoad2" is	run twice - for	the level and the background
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
-LevelLayoutLoad2:			; XREF: LevelLayoutLoad
 		move.w	(Current_ZoneAndAct).w,d0
 		lsl.b	#6,d0
-		lsr.w	#5,d0
+		lsr.w	#4,d0
 		move.w	d0,d2
 		add.w	d0,d0
 		add.w	d2,d0
-		add.w	d1,d0
 		lea	(Level_Index).l,a1
-		move.w	(a1,d0.w),d0
-		lea	(a1,d0.w),a1
-		moveq	#0,d1
-		move.w	d1,d2
-		move.b	(a1)+,d1	; load level width (in tiles)
-		move.b	(a1)+,d2	; load level height (in	tiles)
-
-LevLoad_NumRows:
-		move.w	d1,d0
-		movea.l	a3,a0
-
-LevLoad_Row:
-		move.b	(a1)+,(a0)+
-		dbf	d0,LevLoad_Row	; load 1 row
-		lea	$80(a3),a3	; do next row
-		dbf	d2,LevLoad_NumRows ; repeat for	number of rows
-		rts	
+		movea.l	(a1,d0.w),a1				; MJ: moving the address strait to a1 rather than adding a word to an address
+		move.l	a1,(Level_Layout).w			; MJ: save location of layout to $FFFFA400
+		adda.w	#$80,a1					; MJ: add 80 (As the BG line is always after the FG line)
+		move.l	a1,(Level_Layout+4).w			; MJ: save location of layout to $FFFFA404
+		rts						; MJ Return
 ; End of function LevelLayoutLoad2
 
 ; ---------------------------------------------------------------------------
@@ -8394,10 +8381,10 @@ Resize_LZ12:
 Resize_LZ3:
 		tst.b	($FFFFF7EF).w	; has switch $F	been pressed?
 		beq.s	loc_6F28	; if not, branch
-		lea	(Level_Layout+$106).w,a1
-		cmpi.b	#7,(a1)
-		beq.s	loc_6F28
-		move.b	#7,(a1)		; modify level layout
+		move.l	(Level_Layout).w,d0			; MJ: load layout being read currently
+		cmp.l	#Level_LZ3_WALL,d0			; MJ: is it already set to wall version?
+		beq.s	loc_6F28				; MJ: if so, branch to skip
+		move.l	#Level_LZ3_WALL,(Level_Layout).w	; MJ: Set wall version of act 3's layout to be read
 		move.w	#SndID_Rumble,d0
 		bsr.w	PlaySound_Special ; play rumbling sound
 
@@ -16586,7 +16573,7 @@ loc_D37C:
 ; Object pointers
 ; ---------------------------------------------------------------------------
 Obj_Index:
-	dc.l Obj01, ObjectMoveAndFall,	ObjectMoveAndFall, ObjectMoveAndFall
+	dc.l Obj01, ObjectMoveAndFall,	Obj03, ObjectMoveAndFall
 	dc.l ObjectMoveAndFall, ObjectMoveAndFall, ObjectMoveAndFall, Obj08
 	dc.l Obj09, Obj0A, Obj0B, Obj0C
 	dc.l Obj0D, Obj0E, Obj0F, Obj10
@@ -24009,6 +23996,7 @@ Obj01_Index:	dc.w Obj01_Main-Obj01_Index
 ; ===========================================================================
 
 Obj01_Main:				; XREF: Obj01_Index
+		move.b	#0,($FFFFFFF7).w			; MJ: set collision to 1st
 		addq.b	#2,routine(a0)
 		move.b	#$13,x_radius(a0)
 		move.b	#9,y_radius(a0)
@@ -25468,28 +25456,36 @@ locret_13914:
 
 
 Sonic_Loops:				; XREF: Obj01_Control
-		cmpi.b	#3,(Current_Zone).w ; is level SLZ	?
-		beq.s	loc_13926	; if yes, branch
 		tst.b	(Current_Zone).w	; is level GHZ ?
 		bne.w	locret_139C2	; if not, branch
 
 loc_13926:
-		move.w	y_pos(a0),d0
-		lsr.w	#1,d0
-		andi.w	#$380,d0
-		move.b	x_pos(a0),d1
-		andi.w	#$7F,d1
-		add.w	d1,d0
-		lea	(Level_Layout).w,a1
-		move.b	(a1,d0.w),d1	; d1 is	the 256x256 tile Sonic is currently on
-		cmp.b	($FFFFF7AE).w,d1
-		beq.w	Obj01_ChkRoll
-		cmp.b	($FFFFF7AF).w,d1
-		beq.w	Obj01_ChkRoll
-		cmp.b	($FFFFF7AC).w,d1
-		beq.s	loc_13976
-		cmp.b	($FFFFF7AD).w,d1
-		beq.s	loc_13966
+		move.w	y_pos(a0),d0				; MJ: Load Y position
+		move.w	x_pos(a0),d1				; MJ: Load X position
+		and.w	#$780,d0				; MJ: keep Y position within 800 pixels (in multiples of 80)
+		lsl.w	#1,d0					; MJ: multiply by 2 (Because every 80 bytes switch from FG to BG..)
+		lsr.w	#7,d1					; MJ: divide X position by 80 (00 = 0, 80 = 1, etc)
+		and.b	#$7F,d1					; MJ: keep within 4000 pixels (4000 / 80 = 80)
+		add.w	d1,d0					; MJ: add together
+		movea.l	(Level_Layout).w,a1			; MJ: Load address of layout
+		move.b	(a1,d0.w),d1				; MJ: collect correct 128x128 chunk ID based on the position of Sonic
+
+		cmp.b	#$75,d1					; MJ: is the chunk 75 (Top top left S Bend)
+		beq.w	Obj01_ChkRoll				; MJ: if so, branch
+		cmp.b	#$76,d1					; MJ: is the chunk 76 (Top top right S Bend)
+		beq.w	Obj01_ChkRoll				; MJ: if so, branch
+		cmp.b	#$77,d1					; MJ: is the chunk 77 (Top bottom left S Bend)
+		beq.w	Obj01_ChkRoll				; MJ: if so, branch
+		cmp.b	#$78,d1					; MJ: is the chunk 78 (Top bottom right S Bend)
+		beq.w	Obj01_ChkRoll				; MJ: if so, branch
+		cmp.b	#$79,d1					; MJ: is the chunk 79 (Bottom top left S Bend)
+		beq.w	Obj01_ChkRoll				; MJ: if so, branch
+		cmp.b	#$7A,d1					; MJ: is the chunk 7A (Bottom top right S Bend)
+		beq.w	Obj01_ChkRoll				; MJ: if so, branch
+		cmp.b	#$7B,d1					; MJ: is the chunk 7B (Bottom bottom left S Bend)
+		beq.w	Obj01_ChkRoll				; MJ: if so, branch
+		cmp.b	#$7C,d1					; MJ: is the chunk 7C (Bottom bottom right S Bend)
+		beq.w	Obj01_ChkRoll				; MJ: if so, branch
 		bclr	#6,1(a0)
 		rts	
 ; ===========================================================================
@@ -26453,6 +26449,11 @@ Map_obj08:
 
 
 Sonic_AnglePos:				; XREF: Obj01_MdNormal; Obj01_MdRoll
+		move.l	($FFFFFFD0).w,($FFFFF796).w		; MJ: load first collision data location
+		tst.b	($FFFFFFF7).w				; MJ: is second sollision set to be used?
+		beq.s	+					; MJ: if not, branch
+		move.l	($FFFFFFD4).w,($FFFFF796).w		; MJ: load second collision data location
++
 		btst	#3,status(a0)
 		beq.s	loc_14602
 		moveq	#0,d0
@@ -26504,9 +26505,9 @@ loc_14630:
 		add.w	d0,d3
 		lea	(Primary_Angle).w,a4
 		movea.w	#$10,a3
-		move.w	#0,d6
-		moveq	#$D,d5
-		bsr.w	FindFloor
+		move.w	#0,d6					; MJ: set angle?
+		moveq	#$C,d5					; MJ: set solid type to check
+		bsr.w	FindFloor				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
@@ -26521,8 +26522,8 @@ loc_14630:
 		lea	(Secondary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$D,d5
-		bsr.w	FindFloor
+		moveq	#$C,d5					; MJ: set solid type to check
+		bsr.w	FindFloor				; MJ: check solidity
 		move.w	(sp)+,d0
 		bsr.w	Sonic_Angle
 		tst.w	d1
@@ -26651,8 +26652,8 @@ Sonic_WalkVertR:			; XREF: Sonic_AnglePos
 		lea	(Primary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$D,d5
-		bsr.w	FindWall
+		moveq	#$C,d5					; MJ: set solid type to check
+		bsr.w	FindWall				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
@@ -26666,8 +26667,8 @@ Sonic_WalkVertR:			; XREF: Sonic_AnglePos
 		lea	(Secondary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$D,d5
-		bsr.w	FindWall
+		moveq	#$C,d5					; MJ: set solid type to check
+		bsr.w	FindWall				; MJ: check solidity
 		move.w	(sp)+,d0
 		bsr.w	Sonic_Angle
 		tst.w	d1
@@ -26719,9 +26720,9 @@ Sonic_WalkCeiling:			; XREF: Sonic_AnglePos
 		add.w	d0,d3
 		lea	(Primary_Angle).w,a4
 		movea.w	#-$10,a3
-		move.w	#$1000,d6
-		moveq	#$D,d5
-		bsr.w	FindFloor
+		move.w	#$800,d6
+		moveq	#$C,d5					; MJ: set solid type to check
+		bsr.w	FindFloor				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
@@ -26735,9 +26736,9 @@ Sonic_WalkCeiling:			; XREF: Sonic_AnglePos
 		sub.w	d0,d3
 		lea	(Secondary_Angle).w,a4
 		movea.w	#-$10,a3
-		move.w	#$1000,d6
-		moveq	#$D,d5
-		bsr.w	FindFloor
+		move.w	#$800,d6
+		moveq	#$C,d5					; MJ: set solid type to check
+		bsr.w	FindFloor				; MJ: check solidity
 		move.w	(sp)+,d0
 		bsr.w	Sonic_Angle
 		tst.w	d1
@@ -26777,21 +26778,21 @@ loc_148A0:
 
 
 Sonic_WalkVertL:			; XREF: Sonic_AnglePos
-		move.w	y_pos(a0),d2
-		move.w	x_pos(a0),d3
-		moveq	#0,d0
-		move.b	y_radius(a0),d0
-		ext.w	d0
-		sub.w	d0,d2
-		move.b	x_radius(a0),d0
-		ext.w	d0
-		sub.w	d0,d3
+		move.w	y_pos(a0),d2				; MJ: Load Y position
+		move.w	x_pos(a0),d3				; MJ: Load X position
+		moveq	#0,d0					; MJ: clear d0
+		move.b	y_radius(a0),d0				; MJ: load height
+		ext.w	d0					; MJ: set left byte pos or neg
+		sub.w	d0,d2					; MJ: subtract from Y position
+		move.b	x_radius(a0),d0				; MJ: load width
+		ext.w	d0					; MJ: set left byte pos or neg
+		sub.w	d0,d3					; MJ: subtract from X position
 		eori.w	#$F,d3
-		lea	(Primary_Angle).w,a4
+		lea	(Primary_Angle).w,a4			; MJ: load address of the angle value set
 		movea.w	#-$10,a3
-		move.w	#$800,d6
-		moveq	#$D,d5
-		bsr.w	FindWall
+		move.w	#$400,d6
+		moveq	#$C,d5					; MJ: set solid type to check
+		bsr.w	FindWall				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
@@ -26805,9 +26806,9 @@ Sonic_WalkVertL:			; XREF: Sonic_AnglePos
 		eori.w	#$F,d3
 		lea	(Secondary_Angle).w,a4
 		movea.w	#-$10,a3
-		move.w	#$800,d6
-		moveq	#$D,d5
-		bsr.w	FindWall
+		move.w	#$400,d6
+		moveq	#$C,d5					; MJ: set solid type to check
+		bsr.w	FindWall				; MJ: check solidity
 		move.w	(sp)+,d0
 		bsr.w	Sonic_Angle
 		tst.w	d1
@@ -26847,33 +26848,30 @@ loc_14942:
 
 
 Floor_ChkTile:				; XREF: FindFloor; et al
-		move.w	d2,d0
-		lsr.w	#1,d0
-		andi.w	#$380,d0
-		move.w	d3,d1
-		lsr.w	#8,d1
-		andi.w	#$7F,d1
-		add.w	d1,d0
-		moveq	#-1,d1
-		lea	(Level_Layout).w,a1
-		move.b	(a1,d0.w),d1
-		beq.s	loc_14996
-		bmi.s	loc_1499A
-		subq.b	#1,d1
-		ext.w	d1
-		ror.w	#7,d1
-		move.w	d2,d0
-		add.w	d0,d0
-		andi.w	#$1E0,d0
-		add.w	d0,d1
-		move.w	d3,d0
-		lsr.w	#3,d0
-		andi.w	#$1E,d0
-		add.w	d0,d1
+		move.w	d2,d0					; MJ: load Y position
+		andi.w	#$780,d0				; MJ: get within 780 (E00 pixels) in multiples of 80
+		add.w	d0,d0					; MJ: multiply by 2
+		move.w	d3,d1					; MJ: load X position
+		lsr.w	#7,d1					; MJ: shift to right side
+		andi.w	#$7F,d1					; MJ: get within 7F
+		add.w	d1,d0					; MJ: add calc'd Y to calc'd X
+		moveq	#-1,d1					; MJ: prepare FFFF in d3
+		movea.l	(Level_Layout).w,a1			; MJ: load address of Layout to a1
+		move.b	(a1,d0.w),d1				; MJ: collect correct chunk ID based on the X and Y position
+		andi.w	#$FF,d1					; MJ: keep within FF
+		ror.w	#7,d1					; MJ: ror round to the far left
+		ror.w	#2,d1					; MJ: ..plus an extra 2 (so it's 80, not 200)
+		move.w	d2,d0					; MJ: load Y position
+		andi.w	#$70,d0					; MJ: keep Y within 80 pixels
+		add.w	d0,d1					; MJ: add to ror'd chunk ID
+		move.w	d3,d0					; MJ: load X position
+		lsr.w	#3,d0					; MJ: divide by 8
+		andi.w	#$E,d0					; MJ: keep X within 10 pixels
+		add.w	d0,d1					; MJ: add to ror'd chunk ID
 
 loc_14996:
-		movea.l	d1,a1
-		rts	
+		movea.l	d1,a1					; MJ: set address (Chunk to read)
+		rts						; MJ: return
 ; ===========================================================================
 
 loc_1499A:
@@ -26904,11 +26902,27 @@ loc_149B2:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
+ColisionChkLayer:
+		tst.b	($FFFFFFF7).w				; MJ: is collision set to first?
+		beq.s	CCL_NoChange				; MJ: if so, branch
+		move.w	d0,d4					; MJ: load block ID to d4
+		and.w	#$FFF,d0				; MJ: clear solid settings of d0
+		and.w	#$C000,d4				; MJ: get only second solid settings of d4
+		lsr.w	#2,d4					; MJ: shift them to first solid settings location
+		add.w	d4,d0					; MJ: add to rest of block ID
+
+CCL_NoChange:
+		rts						; MJ: return
+
+; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
+
+
 FindFloor:				; XREF: Sonic_AnglePos; et al
-		bsr.s	Floor_ChkTile
+		bsr.w	Floor_ChkTile
 		move.w	(a1),d0
+		bsr.s	ColisionChkLayer			; MJ: check solid settings to use
 		move.w	d0,d4
-		andi.w	#$7FF,d0
+		andi.w	#$3FF,d0
 		beq.s	loc_149DE
 		btst	d5,d4
 		bne.s	loc_149EC
@@ -26922,49 +26936,49 @@ loc_149DE:
 ; ===========================================================================
 
 loc_149EC:
-		movea.l	($FFFFF796).w,a2 ; load	collision index
-		move.b	(a2,d0.w),d0
-		andi.w	#$FF,d0
-		beq.s	loc_149DE
-		lea	(AngleMap).l,a2
-		move.b	(a2,d0.w),(a4)
-		lsl.w	#4,d0
-		move.w	d3,d1
-		btst	#$B,d4
-		beq.s	loc_14A12
-		not.w	d1
-		neg.b	(a4)
+		movea.l	($FFFFF796).w,a2			; MJ: load collision index address
+		move.b	(a2,d0.w),d0				; MJ: load correct Collision ID based on the Block ID
+		andi.w	#$FF,d0					; MJ: clear the left byte
+		beq.s	loc_149DE				; MJ: if collision ID is 00, branch
+		lea	(AngleMap).l,a2				; MJ: load angle map data to a2
+		move.b	(a2,d0.w),(a4)				; MJ: collect correct angle based on the collision ID
+		lsl.w	#4,d0					; MJ: multiply collision ID by 10
+		move.w	d3,d1					; MJ: load X position
+		btst	#$A,d4					; MJ: is the block mirrored?
+		beq.s	loc_14A12				; MJ: if not, branch
+		not.w	d1					; MJ: reverse bits of the X position
+		neg.b	(a4)					; MJ: reverse the angle ID
 
 loc_14A12:
-		btst	#$C,d4
-		beq.s	loc_14A22
-		addi.b	#$40,(a4)
-		neg.b	(a4)
-		subi.b	#$40,(a4)
+		btst	#$B,d4					; MJ: is the block flipped?
+		beq.s	loc_14A22				; MJ: if not, branch
+		addi.b	#$40,(a4)				; MJ: increase angle ID by 40..
+		neg.b	(a4)					; MJ: ..reverse the angle ID..
+		subi.b	#$40,(a4)				; MJ: ..and subtract 40 again 
 
 loc_14A22:
-		andi.w	#$F,d1
-		add.w	d0,d1
-		lea	(CollArray1).l,a2
-		move.b	(a2,d1.w),d0
-		ext.w	d0
-		eor.w	d6,d4
-		btst	#$C,d4
-		beq.s	loc_14A3E
-		neg.w	d0
+		andi.w	#$F,d1					; MJ: get only within 10 (d1 is pixel based on the collision block)
+		add.w	d0,d1					; MJ: add collision ID (x10) (d0 is the collision block being read)
+		lea	(CollArray1).l,a2			; MJ: load collision array
+		move.b	(a2,d1.w),d0				; MJ: load solid value
+		ext.w	d0					; MJ: clear left byte
+		eor.w	d6,d4					; MJ: set ceiling/wall bits
+		btst	#$B,d4					; MJ: is sonic walking on the left wall?
+		beq.s	loc_14A3E				; MJ: if not, branch
+		neg.w	d0					; MJ: reverse solid value
 
 loc_14A3E:
-		tst.w	d0
-		beq.s	loc_149DE
-		bmi.s	loc_14A5A
-		cmpi.b	#$10,d0
-		beq.s	loc_14A66
-		move.w	d2,d1
-		andi.w	#$F,d1
-		add.w	d1,d0
-		move.w	#$F,d1
-		sub.w	d0,d1
-		rts	
+		tst.w	d0					; MJ: is the solid data null?
+		beq.s	loc_149DE				; MJ: if so, branch
+		bmi.s	loc_14A5A				; MJ: if it's negative, branch
+		cmpi.b	#$10,d0					; MJ: is it 10?
+		beq.s	loc_14A66				; MJ: if so, branch
+		move.w	d2,d1					; MJ: load Y position
+		andi.w	#$F,d1					; MJ: get only within 10 pixels
+		add.w	d1,d0					; MJ: add to solid value
+		move.w	#$F,d1					; MJ: set F
+		sub.w	d0,d1					; MJ: minus solid value from F
+		rts			; d1 = position?	; MJ: return
 ; ===========================================================================
 
 loc_14A5A:
@@ -26988,8 +27002,9 @@ loc_14A66:
 FindFloor2:				; XREF: FindFloor
 		bsr.w	Floor_ChkTile
 		move.w	(a1),d0
+		bsr.w	ColisionChkLayer			; MJ: check solid settings to use
 		move.w	d0,d4
-		andi.w	#$7FF,d0
+		andi.w	#$3FF,d0
 		beq.s	loc_14A86
 		btst	d5,d4
 		bne.s	loc_14A94
@@ -27011,13 +27026,13 @@ loc_14A94:
 		move.b	(a2,d0.w),(a4)
 		lsl.w	#4,d0
 		move.w	d3,d1
-		btst	#$B,d4
+		btst	#$A,d4					; MJ: B to A (because S2 format has two solids)
 		beq.s	loc_14ABA
 		not.w	d1
 		neg.b	(a4)
 
 loc_14ABA:
-		btst	#$C,d4
+		btst	#$B,d4					; MJ: C to B (because S2 format has two solids)
 		beq.s	loc_14ACA
 		addi.b	#$40,(a4)
 		neg.b	(a4)
@@ -27030,7 +27045,7 @@ loc_14ACA:
 		move.b	(a2,d1.w),d0
 		ext.w	d0
 		eor.w	d6,d4
-		btst	#$C,d4
+		btst	#$B,d4					; MJ: C to B (because S2 format has two solids)
 		beq.s	loc_14AE6
 		neg.w	d0
 
@@ -27060,42 +27075,43 @@ loc_14AFC:
 
 
 FindWall:				; XREF: Sonic_WalkVertR; et al
-		bsr.w	Floor_ChkTile
-		move.w	(a1),d0
-		move.w	d0,d4
-		andi.w	#$7FF,d0
-		beq.s	loc_14B1E
-		btst	d5,d4
-		bne.s	loc_14B2C
+		bsr.w	Floor_ChkTile				; MJ: get chunk/block location
+		move.w	(a1),d0					; MJ: load block ID from chunk
+		bsr.w	ColisionChkLayer			; MJ: check solid settings to use
+		move.w	d0,d4					; MJ: copy to d4
+		andi.w	#$3FF,d0				; MJ: clear flip/mirror/etc data
+		beq.s	loc_14B1E				; MJ: if it was null, branch
+		btst	d5,d4					; MJ: check solid set (C top solid | D Left/right solid)
+		bne.s	loc_14B2C				; MJ: if the specific solid is set, branch
 
 loc_14B1E:
-		add.w	a3,d3
+		add.w	a3,d3					; MJ: add 10 to X position
 		bsr.w	FindWall2
-		sub.w	a3,d3
+		sub.w	a3,d3					; MJ: minus 10 from X position
 		addi.w	#$10,d1
 		rts	
 ; ===========================================================================
 
 loc_14B2C:
-		movea.l	($FFFFF796).w,a2
-		move.b	(a2,d0.w),d0
-		andi.w	#$FF,d0
-		beq.s	loc_14B1E
-		lea	(AngleMap).l,a2
-		move.b	(a2,d0.w),(a4)
-		lsl.w	#4,d0
-		move.w	d2,d1
-		btst	#$C,d4
-		beq.s	loc_14B5A
+		movea.l	($FFFFF796).w,a2			; MJ: load address of collision for level
+		move.b	(a2,d0.w),d0				; MJ: load correct colision ID based on the block ID
+		andi.w	#$FF,d0					; MJ: keep within FF
+		beq.s	loc_14B1E				; MJ: if it's null, branch
+		lea	(AngleMap).l,a2				; MJ: load angle map data to a2
+		move.b	(a2,d0.w),(a4)				; MJ: load angle set location based on collision ID
+		lsl.w	#4,d0					; MJ: multiply by 10
+		move.w	d2,d1					; MJ: load Y position
+		btst	#$B,d4					; MJ: is the block ID flipped?
+		beq.s	loc_14B5A				; MJ: if not, branch
 		not.w	d1
-		addi.b	#$40,(a4)
-		neg.b	(a4)
-		subi.b	#$40,(a4)
+		addi.b	#$40,(a4)				; MJ: increase angle set by 40
+		neg.b	(a4)					; MJ: negate to opposite
+		subi.b	#$40,(a4)				; MJ: decrease angle set by 40
 
 loc_14B5A:
-		btst	#$B,d4
-		beq.s	loc_14B62
-		neg.b	(a4)
+		btst	#$A,d4					; MJ: is the block ID mirrored?
+		beq.s	loc_14B62				; MJ: if not, branch
+		neg.b	(a4)					; MJ: negate to opposite
 
 loc_14B62:
 		andi.w	#$F,d1
@@ -27104,7 +27120,7 @@ loc_14B62:
 		move.b	(a2,d1.w),d0
 		ext.w	d0
 		eor.w	d6,d4
-		btst	#$B,d4
+		btst	#$A,d4					; MJ: B to A (because S2 format has two solids)
 		beq.s	loc_14B7E
 		neg.w	d0
 
@@ -27143,8 +27159,9 @@ loc_14BA6:
 FindWall2:				; XREF: FindWall
 		bsr.w	Floor_ChkTile
 		move.w	(a1),d0
+		bsr.w	ColisionChkLayer			; MJ: check solid settings to use
 		move.w	d0,d4
-		andi.w	#$7FF,d0
+		andi.w	#$3FF,d0
 		beq.s	loc_14BC6
 		btst	d5,d4
 		bne.s	loc_14BD4
@@ -27166,7 +27183,7 @@ loc_14BD4:
 		move.b	(a2,d0.w),(a4)
 		lsl.w	#4,d0
 		move.w	d2,d1
-		btst	#$C,d4
+		btst	#$B,d4					; MJ: C to B (because S2 format has two solids)
 		beq.s	loc_14C02
 		not.w	d1
 		addi.b	#$40,(a4)
@@ -27174,7 +27191,7 @@ loc_14BD4:
 		subi.b	#$40,(a4)
 
 loc_14C02:
-		btst	#$B,d4
+		btst	#$A,d4					; MJ: B to A (because S2 format has two solids)
 		beq.s	loc_14C0A
 		neg.b	(a4)
 
@@ -27185,7 +27202,7 @@ loc_14C0A:
 		move.b	(a2,d1.w),d0
 		ext.w	d0
 		eor.w	d6,d4
-		btst	#$B,d4
+		btst	#$A,d4					; MJ: B to A (because S2 format has two solids)
 		beq.s	loc_14C26
 		neg.w	d0
 
@@ -27412,8 +27429,8 @@ Sonic_CheckFloor:				; XREF: Sonic_DoLevelCollision
 		lea	(Primary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$D,d5
-		bsr.w	FindFloor
+		moveq	#$C,d5					; MJ: set solid type to check
+		bsr.w	FindFloor				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
@@ -27427,8 +27444,8 @@ Sonic_CheckFloor:				; XREF: Sonic_DoLevelCollision
 		lea	(Secondary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$D,d5
-		bsr.w	FindFloor
+		moveq	#$C,d5					; MJ: set solid type to check
+		bsr.w	FindFloor				; MJ: check solidity
 		move.w	(sp)+,d0
 		move.b	#0,d2
 
@@ -27458,8 +27475,8 @@ loc_14DF0:				; XREF: CalcRoomInFront
 		lea	(Primary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$E,d5
-		bsr.w	FindFloor
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindFloor				; MJ: check solidity
 		move.b	#0,d2
 
 loc_14E0A:
@@ -27497,8 +27514,8 @@ ObjHitFloor2:
 		move.b	#0,(a4)
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$D,d5
-		bsr.w	FindFloor
+		moveq	#$C,d5					; MJ: set solid type to check
+		bsr.w	FindFloor				; MJ: check solidity
 		move.b	(Primary_Angle).w,d3
 		btst	#0,d3
 		beq.s	locret_14E4E
@@ -27525,8 +27542,8 @@ sub_14E50:				; XREF: CalcRoomOverHead
 		lea	(Primary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindWall				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
@@ -27540,8 +27557,8 @@ sub_14E50:				; XREF: CalcRoomOverHead
 		lea	(Secondary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindWall				; MJ: check solidity
 		move.w	(sp)+,d0
 		move.b	#-$40,d2
 		bra.w	loc_14DD0
@@ -27561,8 +27578,8 @@ loc_14EBC:
 		lea	(Primary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindWall				; MJ: check solidity
 		move.b	#-$40,d2
 		bra.w	loc_14E0A
 
@@ -27582,8 +27599,8 @@ ObjHitWallRight:
 		move.b	#0,(a4)
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindWall				; MJ: check solidity
 		move.b	(Primary_Angle).w,d3
 		btst	#0,d3
 		beq.s	locret_14F06
@@ -27615,9 +27632,9 @@ Sonic_CheckCeiling:			; XREF: Sonic_DoLevelCollision; et al
 		add.w	d0,d3
 		lea	(Primary_Angle).w,a4
 		movea.w	#-$10,a3
-		move.w	#$1000,d6
-		moveq	#$E,d5
-		bsr.w	FindFloor
+		move.w	#$800,d6
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindFloor				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
@@ -27631,9 +27648,9 @@ Sonic_CheckCeiling:			; XREF: Sonic_DoLevelCollision; et al
 		sub.w	d0,d3
 		lea	(Secondary_Angle).w,a4
 		movea.w	#-$10,a3
-		move.w	#$1000,d6
-		moveq	#$E,d5
-		bsr.w	FindFloor
+		move.w	#$800,d6
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindFloor				; MJ: check solidity
 		move.w	(sp)+,d0
 		move.b	#-$80,d2
 		bra.w	loc_14DD0
@@ -27648,9 +27665,9 @@ loc_14F7C:
 		eori.w	#$F,d2
 		lea	(Primary_Angle).w,a4
 		movea.w	#-$10,a3
-		move.w	#$1000,d6
-		moveq	#$E,d5
-		bsr.w	FindFloor
+		move.w	#$800,d6
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindFloor				; MJ: check solidity
 		move.b	#-$80,d2
 		bra.w	loc_14E0A
 
@@ -27667,9 +27684,9 @@ ObjHitCeiling:
 		eori.w	#$F,d2
 		lea	(Primary_Angle).w,a4
 		movea.w	#-$10,a3
-		move.w	#$1000,d6
-		moveq	#$E,d5
-		bsr.w	FindFloor
+		move.w	#$800,d6
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindFloor				; MJ: check solidity
 		move.b	(Primary_Angle).w,d3
 		btst	#0,d3
 		beq.s	locret_14FD4
@@ -27694,9 +27711,9 @@ loc_14FD6:				; XREF: CalcRoomOverHead
 		eori.w	#$F,d3
 		lea	(Primary_Angle).w,a4
 		movea.w	#-$10,a3
-		move.w	#$800,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
+		move.w	#$400,d6
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindWall				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
@@ -27710,9 +27727,9 @@ loc_14FD6:				; XREF: CalcRoomOverHead
 		eori.w	#$F,d3
 		lea	(Secondary_Angle).w,a4
 		movea.w	#-$10,a3
-		move.w	#$800,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
+		move.w	#$400,d6
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindWall				; MJ: check solidity
 		move.w	(sp)+,d0
 		move.b	#$40,d2
 		bra.w	loc_14DD0
@@ -27733,9 +27750,9 @@ loc_1504A:
 		eori.w	#$F,d3
 		lea	(Primary_Angle).w,a4
 		movea.w	#-$10,a3
-		move.w	#$800,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
+		move.w	#$400,d6
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindWall				; MJ: check solidity
 		move.b	#$40,d2
 		bra.w	loc_14E0A
 ; End of function CheckLeftWallDist
@@ -27753,9 +27770,9 @@ ObjHitWallLeft:
 		lea	(Primary_Angle).w,a4
 		move.b	#0,(a4)
 		movea.w	#-$10,a3
-		move.w	#$800,d6
-		moveq	#$E,d5
-		bsr.w	FindWall
+		move.w	#$400,d6
+		moveq	#$D,d5					; MJ: set solid type to check
+		bsr.w	FindWall				; MJ: check solidity
 		move.b	(Primary_Angle).w,d3
 		btst	#0,d3
 		beq.s	locret_15098
@@ -37064,6 +37081,239 @@ Obj09_NoGlass:
 
 Obj10:					; XREF: Obj_Index
 		rts	
+
+; ===========================================================================
+; ---------------------------------------------------------------------------
+; Object 03 - Collision plane/layer switcher (From Sonic 2 [Modified])
+; ---------------------------------------------------------------------------
+
+Obj03:
+		moveq	#0,d0
+		move.b	routine(a0),d0
+		move.w	Obj03_Index(pc,d0.w),d1
+		jsr	Obj03_Index(pc,d1.w)
+		move.w	x_pos(a0),d0
+		andi.w	#$FF80,d0
+		move.w	(Camera_X_pos).w,d1
+		subi.w	#$80,d1
+		andi.w	#$FF80,d1
+		sub.w	d1,d0
+		cmpi.w	#$280,d0
+		bhi.s	Obj03_MarkChkGone
+		rts
+
+Obj03_MarkChkGone:
+		jmp	Mark_ChkGone
+; ===========================================================================
+Obj03_Index:	dc.w Obj03_Init-Obj03_Index
+		dc.w Obj03_MainX-Obj03_Index
+		dc.w Obj03_MainY-Obj03_Index
+; ===========================================================================
+
+Obj03_Init:
+		addq.b	#2,routine(a0)
+;		move.l	#0,4(a0)
+		move.w	#$26BC,2(a0)
+		ori.b	#4,1(a0)
+		move.b	#$10,width_pixels(a0)
+		move.b	#5,priority(a0)
+		move.b	subtype(a0),d0
+		btst	#2,d0
+		beq.s	Obj03_Init_CheckX
+
+;Obj03_Init_CheckY:
+		addq.b	#2,routine(a0) ; => Obj03_MainY
+		andi.w	#7,d0
+		move.b	d0,mapping_frame(a0)
+		andi.w	#3,d0
+		add.w	d0,d0
+		move.w	word_1FD68(pc,d0.w),$32(a0)
+		move.w	y_pos(a0),d1
+		lea	(Object_RAM).w,a1 ; a1=character
+		cmp.w	y_pos(a1),d1
+		bcc.s	+
+		move.b	#1,$34(a0)
++
+		bra.w	Obj03_MainY
+; ===========================================================================
+word_1FD68:
+	dc.w  $020
+	dc.w  $040	; 1
+	dc.w  $080	; 2
+	dc.w  $100	; 3
+; ===========================================================================
+; loc_1FD70:
+Obj03_Init_CheckX:
+		andi.w	#3,d0
+		move.b	d0,mapping_frame(a0)
+		add.w	d0,d0
+		move.w	word_1FD68(pc,d0.w),$32(a0)
+		move.w	x_pos(a0),d1
+		lea	(Object_RAM).w,a1 ; a1=character
+		cmp.w	x_pos(a1),d1
+		bcc.s	Obj03_MainX
+		move.b	#1,$34(a0)
+
+Obj03_MainX:
+		tst.w	(Debug_placement_mode).w
+		bne.w	return_1FEAC
+		move.w	x_pos(a0),d1
+		lea	$34(a0),a2
+		lea	(Object_RAM).w,a1 ; a1=character
+		tst.b	(a2)+
+		bne.s	Obj03_MainX_Alt
+		cmp.w	x_pos(a1),d1
+		bhi.w	return_1FEAC
+		move.b	#1,-1(a2)
+		move.w	y_pos(a0),d2
+		move.w	d2,d3
+		move.w	$32(a0),d4
+		sub.w	d4,d2
+		add.w	d4,d3
+		move.w	y_pos(a1),d4
+		cmp.w	d2,d4
+		blt.w	return_1FEAC
+		cmp.w	d3,d4
+		bge.w	return_1FEAC
+		move.b	subtype(a0),d0
+		bpl.s	Obj03_ICX_B1
+		btst	#1,$2B(a1)
+		bne.w	return_1FEAC
+
+Obj03_ICX_B1:
+		btst	#0,1(a0)
+		bne.s	Obj03_ICX_B2
+		move.b	#0,($FFFFFFF7).w
+		btst	#3,d0
+		beq.s	Obj03_ICX_B2
+		move.b	#1,($FFFFFFF7).w
+
+Obj03_ICX_B2:
+		andi.w	#$7FFF,2(a1)
+		btst	#5,d0
+		beq.s	return_1FEAC
+		ori.w	#$8000,2(a1)
+		bra.s	return_1FEAC
+; ===========================================================================
+
+Obj03_MainX_Alt:
+		cmp.w	x_pos(a1),d1
+		bls.w	return_1FEAC
+		move.b	#0,-1(a2)
+		move.w	y_pos(a0),d2
+		move.w	d2,d3
+		move.w	$32(a0),d4
+		sub.w	d4,d2
+		add.w	d4,d3
+		move.w	y_pos(a1),d4
+		cmp.w	d2,d4
+		blt.w	return_1FEAC
+		cmp.w	d3,d4
+		bge.w	return_1FEAC
+		move.b	subtype(a0),d0
+		bpl.s	Obj03_MXA_B1
+		btst	#1,$2B(a1)
+		bne.w	return_1FEAC
+
+Obj03_MXA_B1:
+		btst	#0,1(a0)
+		bne.s	Obj03_MXA_B2
+		move.b	#0,($FFFFFFF7).w
+		btst	#4,d0
+		beq.s	Obj03_MXA_B2
+		move.b	#1,($FFFFFFF7).w
+
+Obj03_MXA_B2:
+		andi.w	#$7FFF,2(a1)
+		btst	#6,d0
+		beq.s	return_1FEAC
+		ori.w	#$8000,2(a1)
+
+return_1FEAC:
+		rts
+
+; ===========================================================================
+
+Obj03_MainY:
+		tst.w	(Debug_placement_mode).w
+		bne.w	return_1FFB6
+		move.w	y_pos(a0),d1
+		lea	$34(a0),a2
+		lea	(Object_RAM).w,a1 ; a1=character
+		tst.b	(a2)+
+		bne.s	Obj03_MainY_Alt
+		cmp.w	y_pos(a1),d1
+		bhi.w	return_1FFB6
+		move.b	#1,-1(a2)
+		move.w	x_pos(a0),d2
+		move.w	d2,d3
+		move.w	$32(a0),d4
+		sub.w	d4,d2
+		add.w	d4,d3
+		move.w	x_pos(a1),d4
+		cmp.w	d2,d4
+		blt.w	return_1FFB6
+		cmp.w	d3,d4
+		bge.w	return_1FFB6
+		move.b	subtype(a0),d0
+		bpl.s	Obj03_MY_B1
+		btst	#1,$2B(a1)
+		bne.w	return_1FFB6
+
+Obj03_MY_B1:
+		btst	#0,1(a0)
+		bne.s	Obj03_MY_B2
+		move.b	#0,($FFFFFFF7).w
+		btst	#3,d0
+		beq.s	Obj03_MY_B2
+		move.b	#1,($FFFFFFF7).w
+
+Obj03_MY_B2:
+		andi.w	#$7FFF,2(a1)
+		btst	#5,d0
+		beq.s	return_1FFB6
+		ori.w	#$8000,2(a1)
+		bra.s	return_1FFB6
+
+; ===========================================================================
+
+Obj03_MainY_Alt:
+		cmp.w	y_pos(a1),d1
+		bls.w	return_1FFB6
+		move.b	#0,-1(a2)
+		move.w	x_pos(a0),d2
+		move.w	d2,d3
+		move.w	$32(a0),d4
+		sub.w	d4,d2
+		add.w	d4,d3
+		move.w	x_pos(a1),d4
+		cmp.w	d2,d4
+		blt.w	return_1FFB6
+		cmp.w	d3,d4
+		bge.w	return_1FFB6
+		move.b	subtype(a0),d0
+		bpl.s	Obj03_MYA_B1
+		btst	#1,$2B(a1)
+		bne.w	return_1FFB6
+
+Obj03_MYA_B1
+		btst	#0,1(a0)
+		bne.s	Obj03_MYA_B2
+		move.b	#0,($FFFFFFF7).w
+		btst	#4,d0
+		beq.s	Obj03_MYA_B2
+		move.b	#1,($FFFFFFF7).w
+
+Obj03_MYA_B2:
+		andi.w	#$7FFF,2(a1)
+		btst	#6,d0
+		beq.s	return_1FFB6
+		ori.w	#$8000,2(a1)
+
+return_1FFB6:
+		rts
+
+
 ; ---------------------------------------------------------------------------
 ; Subroutine to	animate	level graphics
 ; ---------------------------------------------------------------------------
@@ -39774,17 +40024,29 @@ CollArray1:	binclude	collide/carray_n.bin	; normal collision array
 		align 2
 CollArray2:	binclude	collide/carray_r.bin	; rotated collision array
 		align 2
-Col_GHZ:	binclude	collide/ghz.bin		; GHZ index
+Col_GHZ_1:	binclude	collide/ghz1.bin	; GHZ index 1
 		align 2
-Col_LZ:		binclude	collide/lz.bin		; LZ index
+Col_GHZ_2:	binclude	collide/ghz2.bin	; GHZ index 2
 		align 2
-Col_MZ:		binclude	collide/mz.bin		; MZ index
+Col_LZ_1:	binclude	collide/lz1.bin		; LZ index 1
 		align 2
-Col_SLZ:	binclude	collide/slz.bin		; SLZ index
+Col_LZ_2:	binclude	collide/lz2.bin		; LZ index 2
 		align 2
-Col_SYZ:	binclude	collide/syz.bin		; SYZ index
+Col_MZ_1:	binclude	collide/mz1.bin		; MZ index 1
 		align 2
-Col_SBZ:	binclude	collide/sbz.bin		; SBZ index
+Col_MZ_2:	binclude	collide/mz2.bin		; MZ index 2
+		align 2
+Col_SLZ_1:	binclude	collide/slz1.bin	; SLZ index 1
+		align 2
+Col_SLZ_2:	binclude	collide/slz2.bin	; SLZ index 2
+		align 2
+Col_SYZ_1:	binclude	collide/syz1.bin	; SYZ index 1
+		align 2
+Col_SYZ_2:	binclude	collide/syz2.bin	; SYZ index 2
+		align 2
+Col_SBZ_1:	binclude	collide/sbz1.bin	; SBZ index 1
+		align 2
+Col_SBZ_2:	binclude	collide/sbz2.bin	; SBZ index 2
 		align 2
 ; ---------------------------------------------------------------------------
 ; Special layouts
@@ -39822,34 +40084,34 @@ Art_SbzSmoke:	binclude	artunc/sbzsmoke.bin	; SBZ smoke in background
 ; ---------------------------------------------------------------------------
 ; Level	layout index
 ; ---------------------------------------------------------------------------
-Level_Index:	dc.w Level_GHZ1-Level_Index, Level_GHZbg-Level_Index, byte_68D70-Level_Index
-		dc.w Level_GHZ2-Level_Index, Level_GHZbg-Level_Index, byte_68E3C-Level_Index
-		dc.w Level_GHZ3-Level_Index, Level_GHZbg-Level_Index, byte_68F84-Level_Index
-		dc.w byte_68F88-Level_Index, byte_68F88-Level_Index, byte_68F88-Level_Index
-		dc.w Level_LZ1-Level_Index, Level_LZbg-Level_Index, byte_69190-Level_Index
-		dc.w Level_LZ2-Level_Index, Level_LZbg-Level_Index, byte_6922E-Level_Index
-		dc.w Level_LZ3-Level_Index, Level_LZbg-Level_Index, byte_6934C-Level_Index
-		dc.w Level_SBZ3-Level_Index, Level_LZbg-Level_Index, byte_6940A-Level_Index
-		dc.w Level_MZ1-Level_Index, Level_MZ1bg-Level_Index, Level_MZ1-Level_Index
-		dc.w Level_MZ2-Level_Index, Level_MZ2bg-Level_Index, byte_6965C-Level_Index
-		dc.w Level_MZ3-Level_Index, Level_MZ3bg-Level_Index, byte_697E6-Level_Index
-		dc.w byte_697EA-Level_Index, byte_697EA-Level_Index, byte_697EA-Level_Index
-		dc.w Level_SLZ1-Level_Index, Level_SLZbg-Level_Index, byte_69B84-Level_Index
-		dc.w Level_SLZ2-Level_Index, Level_SLZbg-Level_Index, byte_69B84-Level_Index
-		dc.w Level_SLZ3-Level_Index, Level_SLZbg-Level_Index, byte_69B84-Level_Index
-		dc.w byte_69B84-Level_Index, byte_69B84-Level_Index, byte_69B84-Level_Index
-		dc.w Level_SYZ1-Level_Index, Level_SYZbg-Level_Index, byte_69C7E-Level_Index
-		dc.w Level_SYZ2-Level_Index, Level_SYZbg-Level_Index, byte_69D86-Level_Index
-		dc.w Level_SYZ3-Level_Index, Level_SYZbg-Level_Index, byte_69EE4-Level_Index
-		dc.w byte_69EE8-Level_Index, byte_69EE8-Level_Index, byte_69EE8-Level_Index
-		dc.w Level_SBZ1-Level_Index, Level_SBZ1bg-Level_Index, Level_SBZ1bg-Level_Index
-		dc.w Level_SBZ2-Level_Index, Level_SBZ2bg-Level_Index, Level_SBZ2bg-Level_Index
-		dc.w Level_SBZ2-Level_Index, Level_SBZ2bg-Level_Index, byte_6A2F8-Level_Index
-		dc.w byte_6A2FC-Level_Index, byte_6A2FC-Level_Index, byte_6A2FC-Level_Index
-		dc.w Level_End-Level_Index, Level_GHZbg-Level_Index, byte_6A320-Level_Index
-		dc.w Level_End-Level_Index, Level_GHZbg-Level_Index, byte_6A320-Level_Index
-		dc.w byte_6A320-Level_Index, byte_6A320-Level_Index, byte_6A320-Level_Index
-		dc.w byte_6A320-Level_Index, byte_6A320-Level_Index, byte_6A320-Level_Index
+Level_Index:	dc.l Level_GHZ1, Level_GHZbg, byte_68D70	; MJ: Table needs to be read in long-word as the layouts are now bigger
+		dc.l Level_GHZ2, Level_GHZbg, byte_68E3C
+		dc.l Level_GHZ3, Level_GHZbg, byte_68F84
+		dc.l byte_68F88, byte_68F88, byte_68F88
+		dc.l Level_LZ1, Level_LZbg, byte_69190
+		dc.l Level_LZ2, Level_LZbg, byte_6922E
+		dc.l Level_LZ3, Level_LZbg, byte_6934C
+		dc.l Level_SBZ3, Level_LZbg, byte_6940A
+		dc.l Level_MZ1, Level_MZ1bg, Level_MZ1
+		dc.l Level_MZ2, Level_MZ2bg, byte_6965C
+		dc.l Level_MZ3, Level_MZ3bg, byte_697E6
+		dc.l byte_697EA, byte_697EA, byte_697EA
+		dc.l Level_SLZ1, Level_SLZbg, byte_69B84
+		dc.l Level_SLZ2, Level_SLZbg, byte_69B84
+		dc.l Level_SLZ3, Level_SLZbg, byte_69B84
+		dc.l byte_69B84, byte_69B84, byte_69B84
+		dc.l Level_SYZ1, Level_SYZbg, byte_69C7E
+		dc.l Level_SYZ2, Level_SYZbg, byte_69D86
+		dc.l Level_SYZ3, Level_SYZbg, byte_69EE4
+		dc.l byte_69EE8, byte_69EE8, byte_69EE8
+		dc.l Level_SBZ1, Level_SBZ1bg, Level_SBZ1bg
+		dc.l Level_SBZ2, Level_SBZ2bg, Level_SBZ2bg
+		dc.l Level_SBZ2, Level_SBZ2bg, byte_6A2F8
+		dc.l byte_6A2FC, byte_6A2FC, byte_6A2FC
+		dc.l Level_End, Level_GHZbg, byte_6A320
+		dc.l Level_End, Level_GHZbg, byte_6A320
+		dc.l byte_6A320, byte_6A320, byte_6A320
+		dc.l byte_6A320, byte_6A320, byte_6A320
 
 Level_GHZ1:	binclude	levels/ghz1.bin
 		align 2
@@ -39874,6 +40136,8 @@ Level_LZ2:	binclude	levels/lz2.bin
 byte_6922E:	dc.b 0,	0, 0, 0
 Level_LZ3:	binclude	levels/lz3.bin
 		align 2
+Level_LZ3_WALL:	binclude	levels\lz3_wall.bin	; MJ: layout with LZ's wall change (When the switch is pressed) data is not in ram anymore,
+		align 2				; and altering values in rom is prohibited, so a new layout is loaded in its place.
 byte_6934C:	dc.b 0,	0, 0, 0
 Level_SBZ3:	binclude	levels/sbz3.bin
 		align 2
