@@ -388,6 +388,11 @@ locret_71DC4:
 ; sub_71DC6:
 DoModulation:
 		addq.w	#4,sp
+; Note: The modulation isn't setup properly here, which can cause rumbling during
+; when the Extra Life music is played. To fix this, uncomment these two lines,
+; which were backported from the Sonic 2 Driver
+;		btst	#1,(a5)		; Is note playing?
+;		bne.s	locret_71E16	; no - return
 		btst	#3,(a5)
 		beq.s	locret_71E16
 		tst.b	$18(a5)
