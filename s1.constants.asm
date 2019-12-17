@@ -150,7 +150,7 @@ SpeSndID_Waterfall =	id(SpeSndPtr_Waterfall)	; D0
 SpeSndID__End =		id(SndPtr_End)		; D1 (though the game is programmed to end at $DF)
 
 ; Sound command IDs
-offset :=	Sound_ExIndex
+offset :=	CommandIndex
 ptrsize :=	4
 idstart :=	$E0
 
