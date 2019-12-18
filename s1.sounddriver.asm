@@ -2,7 +2,7 @@ Go_SoundTypes:	dc.l SoundTypes
 Go_SoundD0:	dc.l SoundD0Index
 Go_MusicIndex:	dc.l MusicIndex
 Go_SoundIndex:	dc.l SoundIndex
-off_719A0:	dc.l byte_71A94
+off_719A0:	dc.l SpedUpTempoTable
 Go_PSGIndex:	dc.l PSG_FlutterTbl
 ; ---------------------------------------------------------------------------
 ; PSG instruments used in music
@@ -21,7 +21,17 @@ PSG7:		binclude	sound/psg7.bin
 PSG8:		binclude	sound/psg8.bin
 PSG9:		binclude	sound/psg9.bin
 
-byte_71A94:	dc.b 7,	$72, $73, $26, $15, 8, $FF, 5
+; Tempo with speed shoe tempo for each song
+; byte_71A94:
+SpedUpTempoTable:
+		dc.b 7		; GHZ
+		dc.b $72	; LZ
+		dc.b $73	; MZ
+		dc.b $26	; SLZ
+		dc.b $15	; SYZ
+		dc.b 8		; SBZ
+		dc.b $FF	; Invincible
+		dc.b 5		; Extra Life
 ; ---------------------------------------------------------------------------
 ; Music	Pointers
 ; ---------------------------------------------------------------------------
@@ -82,9 +92,9 @@ UpdateMusic:
 SoundDriverInput:
 		lea	($FFF000).l,a6
 		clr.b	$E(a6)
-		tst.b	3(a6)		; is music paused?
+		tst.b	StopMusic(a6)		; is music paused?
 		bne.w	PauseMusic	; if yes, branch
-		subq.b	#1,1(a6)
+		subq.b	#1,TempoTimeout(a6)
 		bne.s	loc_71B9E
 		jsr	TempoWait(pc)
 
@@ -100,7 +110,7 @@ loc_71BA8:
 
 loc_71BB2:
 ; This is incorrect, it's meant to be a long, not a word, this is why PlaySound_Unk is broken
-		tst.w	$A(a6)		; is music or sound being played?
+		tst.w	QueueToPlay(a6)		; is music or sound being played?
 		beq.s	loc_71BBC	; if not, branch
 		jsr	CycleQueue(pc)
 
@@ -113,7 +123,7 @@ loc_71BC8:
 		lea	$40(a6),a5
 		tst.b	(a5)
 		bpl.s	loc_71BD4
-		jsr	sub_71C4E(pc)
+		jsr	DACUpdateTrack(pc)
 
 loc_71BD4:
 		clr.b	8(a6)
@@ -123,7 +133,7 @@ loc_71BDA:
 		adda.w	#$30,a5
 		tst.b	(a5)
 		bpl.s	loc_71BE6
-		jsr	sub_71CCA(pc)
+		jsr	FMUpdateTrack(pc)
 
 loc_71BE6:
 		dbf	d7,loc_71BDA
@@ -146,7 +156,7 @@ loc_71C04:
 		adda.w	#$30,a5
 		tst.b	(a5)
 		bpl.s	loc_71C10
-		jsr	sub_71CCA(pc)
+		jsr	FMUpdateTrack(pc)
 
 loc_71C10:
 		dbf	d7,loc_71C04
@@ -165,7 +175,7 @@ loc_71C22:
 		adda.w	#$30,a5
 		tst.b	(a5)
 		bpl.s	loc_71C38
-		jsr	sub_71CCA(pc)
+		jsr	FMUpdateTrack(pc)
 
 loc_71C38:
 		adda.w	#$30,a5
@@ -181,8 +191,8 @@ loc_71C44:
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_71C4E:
+; sub_71C4E:
+DACUpdateTrack:
 		subq.b	#1,$E(a5)
 		bne.s	locret_71CAA
 		move.b	#$80,8(a6)
@@ -233,15 +243,15 @@ loc_71CAC:
 		move.b	d0,($A000EA).l
 		move.b	#$83,($A01FFF).l
 		rts	
-; End of function sub_71C4E
+; End of function DACUpdateTrack
 
 ; ===========================================================================
 byte_71CC4:	dc.b $12, $15, $1C, $1D, $FF, $FF
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
-
-sub_71CCA:
+; sub_71CCA:
+FMUpdateTrack:
 		subq.b	#1,$E(a5)
 		bne.s	loc_71CE0
 		bclr	#4,(a5)
@@ -254,7 +264,7 @@ loc_71CE0:
 		jsr	NoteFillUpdate(pc)
 		jsr	DoModulation(pc)
 		bra.w	FMUpdateFreq
-; End of function sub_71CCA
+; End of function FMUpdateTrack
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
@@ -341,7 +351,7 @@ sub_71D60:
 		btst	#4,(a5)
 		bne.s	locret_71D9C
 		move.b	$13(a5),$12(a5)
-		clr.b	$C(a5)
+		clr.b	SFXUnknown(a5)
 		btst	#3,(a5)
 		beq.s	locret_71D9C
 		movea.l	$14(a5),a0
@@ -468,9 +478,9 @@ loc_71E4A:
 ; loc_71E50:
 PauseMusic:
 		bmi.s	loc_71E94
-		cmpi.b	#2,3(a6)
+		cmpi.b	#2,StopMusic(a6)
 		beq.w	loc_71EFE
-		move.b	#2,3(a6)
+		move.b	#2,StopMusic(a6)
 		moveq	#2,d3
 		move.b	#-$4C,d0
 		moveq	#0,d1
@@ -496,7 +506,7 @@ loc_71E7C:
 ; ===========================================================================
 
 loc_71E94:
-		clr.b	3(a6)
+		clr.b	StopMusic(a6)
 		moveq	#$30,d3
 		lea	$40(a6),a5
 		moveq	#6,d4
@@ -507,7 +517,7 @@ loc_71EA0:
 		btst	#2,(a5)
 		bne.s	loc_71EB8
 		move.b	#-$4C,d0
-		move.b	$A(a5),d1
+		move.b	QueueToPlay(a5),d1
 		jsr	WriteFMIorII(pc)
 
 loc_71EB8:
@@ -523,7 +533,7 @@ loc_71EC4:
 		btst	#2,(a5)
 		bne.s	loc_71EDC
 		move.b	#-$4C,d0
-		move.b	$A(a5),d1
+		move.b	QueueToPlay(a5),d1
 		jsr	WriteFMIorII(pc)
 
 loc_71EDC:
@@ -536,7 +546,7 @@ loc_71EDC:
 		btst	#2,(a5)
 		bne.s	loc_71EFE
 		move.b	#-$4C,d0
-		move.b	$A(a5),d1
+		move.b	QueueToPlay(a5),d1
 		jsr	WriteFMIorII(pc)
 
 loc_71EFE:
@@ -551,8 +561,8 @@ loc_71EFE:
 ; Sound_Play:
 CycleQueue:
 		movea.l	(Go_SoundTypes).l,a0
-		lea	$A(a6),a1	; load music track number
-		_move.b	0(a6),d3
+		lea	QueueToPlay(a6),a1	; load music track number
+		_move.b	SFXPriorityVal(a6),d3
 		moveq	#2,d4
 
 -		move.b	(a1),d0		; move track number to d0
@@ -562,7 +572,7 @@ CycleQueue:
 		bcs.s	locQueueNext
 		cmpi.b	#$80,9(a6)
 		beq.s	+
-		move.b	d1,$A(a6)
+		move.b	d1,QueueToPlay(a6)
 		bra.s	locQueueNext
 +
 		andi.w	#$7F,d0
@@ -578,7 +588,7 @@ locQueueNext:
 
 		tst.b	d3
 		bmi.s	+
-		_move.b	d3,0(a6)
+		_move.b	d3,SFXPriorityVal(a6)
 +
 		rts	
 ; End of function CycleQueue
@@ -669,7 +679,7 @@ loc_71FF8:
 		bclr	#7,(a5)
 		adda.w	#$30,a5
 		dbf	d0,loc_71FF8
-		_clr.b	0(a6)
+		_clr.b	SFXPriorityVal(a6)
 		movea.l	a6,a0
 		lea	$3A0(a6),a1
 		move.w	#$87,d0
@@ -679,7 +689,7 @@ loc_72012:
 		dbf	d0,loc_72012
 
 		move.b	#$80,$27(a6)
-		_clr.b	0(a6)
+		_clr.b	SFXPriorityVal(a6)
 		bra.s	loc_7202C
 ; ===========================================================================
 
@@ -707,7 +717,7 @@ loc_7202C:
 
 loc_72068:
 		move.b	d0,2(a6)
-		move.b	d0,1(a6)
+		move.b	d0,TempoTimeout(a6)
 		moveq	#0,d1
 		movea.l	a4,a3
 		addq.w	#6,a4
@@ -727,7 +737,7 @@ loc_72098:
 		move.b	(a2)+,1(a1)
 		move.b	d4,2(a1)
 		move.b	d6,$D(a1)
-		move.b	d1,$A(a1)
+		move.b	d1,QueueToPlay(a1)
 		move.b	d5,$E(a1)
 		moveq	#0,d0
 		move.w	(a4)+,d0
@@ -784,7 +794,7 @@ loc_72126:
 		move.l	d0,4(a1)
 		move.w	(a4)+,8(a1)
 		move.b	(a4)+,d0
-		move.b	(a4)+,$B(a1)
+		move.b	(a4)+,SFXSpecToPlay(a1)
 		adda.w	d6,a1
 		dbf	d7,loc_72126
 
@@ -935,7 +945,7 @@ loc_72276:
 		move.b	d6,$D(a5)
 		tst.b	d4
 		bmi.s	loc_722A8
-		move.b	#$C0,$A(a5)
+		move.b	#$C0,QueueToPlay(a5)
 		move.l	d1,$20(a5)
 
 loc_722A8:
@@ -955,7 +965,7 @@ locret_722C4:
 ; ===========================================================================
 
 loc_722C6:
-		_clr.b	0(a6)
+		_clr.b	SFXPriorityVal(a6)
 		rts	
 ; ===========================================================================
 dword_722CC:	dc.l $FFF0D0
@@ -1031,7 +1041,7 @@ loc_72368:
 		move.b	d6,$D(a5)
 		tst.b	d4
 		bmi.s	loc_72396
-		move.b	#$C0,$A(a5)
+		move.b	#$C0,QueueToPlay(a5)
 
 loc_72396:
 		dbf	d7,loc_72348
@@ -1065,7 +1075,7 @@ locret_723C6:
 
 
 Snd_FadeOut1:
-		_clr.b	0(a6)
+		_clr.b	SFXPriorityVal(a6)
 		lea	$220(a6),a5
 		moveq	#5,d7
 
@@ -1097,7 +1107,7 @@ loc_72416:
 loc_72428:
 		bclr	#2,(a5)
 		bset	#1,(a5)
-		move.b	$B(a5),d0
+		move.b	SFXSpecToPlay(a5),d0
 		jsr	sub_72C4E(pc)
 		movea.l	a3,a5
 		bra.s	loc_72472
@@ -1146,7 +1156,7 @@ Snd_FadeOut2:
 		tst.b	(a5)
 		bpl.s	loc_724AE
 		movea.l	$18(a6),a1
-		move.b	$B(a5),d0
+		move.b	SFXSpecToPlay(a5),d0
 		jsr	sub_72C4E(pc)
 
 loc_724AE:
@@ -1303,25 +1313,25 @@ loc_725B6:
 ; sub_725CA:
 InitMusicPlayback:
 		movea.l	a6,a0
-		_move.b	0(a6),d1
+		_move.b	SFXPriorityVal(a6),d1
 		move.b	$27(a6),d2
 		move.b	$2A(a6),d3
 		move.b	$26(a6),d4
 ; This is incorrect, it's meant to be a long, not a word, this is why PlaySound_Unk is broken
-		move.w	$A(a6),d5
+		move.w	QueueToPlay(a6),d5
 		move.w	#$87,d0
 
 loc_725E4:
 		clr.l	(a0)+
 		dbf	d0,loc_725E4
 
-		_move.b	d1,0(a6)
+		_move.b	d1,SFXPriorityVal(a6)
 		move.b	d2,$27(a6)
 		move.b	d3,$2A(a6)
 		move.b	d4,$26(a6)
 ; This is incorrect, it's meant to be a long, not a word, this is why PlaySound_Unk is broken
-		move.w	d5,$A(a6)
-		move.b	#$80,9(a6)
+		move.w	d5,QueueToPlay(a6)
+		move.b	#$80,9(a6)	; set music to $80 (silence)
 		jsr	FMSilenceAll(pc)
 		bra.w	PSGSilenceAll
 ; End of function InitMusicPlayback
@@ -1331,7 +1341,7 @@ loc_725E4:
 
 ; sub_7260C:
 TempoWait:
-		move.b	2(a6),1(a6)
+		move.b	2(a6),TempoTimeout(a6)
 		lea	$4E(a6),a0
 		moveq	#$30,d0
 		moveq	#9,d1
@@ -1353,12 +1363,12 @@ SpeedUpMusic:
 		tst.b	$27(a6)
 		bne.s	+
 		move.b	$29(a6),2(a6)
-		move.b	$29(a6),1(a6)
+		move.b	$29(a6),TempoTimeout(a6)
 		move.b	#$80,$2A(a6)
 		rts	
 +
 		move.b	$3C9(a6),$3A2(a6)
-		move.b	$3C9(a6),$3A1(a6)
+		move.b	$3C9(a6),$3A0+TempoTimeout(a6)
 		move.b	#$80,$3CA(a6)
 		rts	
 ; ===========================================================================
@@ -1370,12 +1380,12 @@ SlowDownMusic:
 		tst.b	$27(a6)
 		bne.s	+
 		move.b	$28(a6),2(a6)
-		move.b	$28(a6),1(a6)
+		move.b	$28(a6),TempoTimeout(a6)
 		clr.b	$2A(a6)
 		rts	
 +
 		move.b	$3C8(a6),$3A2(a6)
-		move.b	$3C8(a6),$3A1(a6)
+		move.b	$3C8(a6),$3A0+TempoTimeout(a6)
 		clr.b	$3CA(a6)
 		rts	
 
@@ -1684,28 +1694,28 @@ loc_72920:
 
 ; sub_72926:
 PSGUpdateVolFX:
-		tst.b	$B(a5)
+		tst.b	SFXSpecToPlay(a5)
 		beq.w	locret_7298A
 
 ; loc_7292E:
 PSGDoVolFX:
 		move.b	9(a5),d6
 		moveq	#0,d0
-		move.b	$B(a5),d0
+		move.b	SFXSpecToPlay(a5),d0
 		beq.s	sub_7296A
 		movea.l	(Go_PSGIndex).l,a0
 		subq.w	#1,d0
 		lsl.w	#2,d0
 		movea.l	(a0,d0.w),a0
-		move.b	$C(a5),d0
+		move.b	SFXUnknown(a5),d0
 	if 1==0
 ; The original code was unoptimized so here's some extremely optimized code.
-		addq.b	#1,$C(a5)
+		addq.b	#1,SFXUnknown(a5)
 		move.b	(a0,d0.w),d0
 		bmi.s	VolEnvHold
 	else
 		move.b	(a0,d0.w),d0
-		addq.b	#1,$C(a5)
+		addq.b	#1,SFXUnknown(a5)
 		btst	#7,d0
 		beq.s	loc_72960
 		cmpi.b	#$80,d0
@@ -1753,8 +1763,8 @@ loc_7298C:
 VolEnvHold:
 ; DANGER! This effectively halts all future volume updates, breaking fades.
 ; To fix this, uncomment the two lines and delete the rts
-		subq.b	#1,$C(a5)
-;		subq.b	#1,$C(a5)
+		subq.b	#1,SFXUnknown(a5)
+;		subq.b	#1,SFXUnknown(a5)
 ;		jsr	PSGDoVolFX
 		rts	
 
@@ -1875,10 +1885,10 @@ loc_72ACC:
 		move.b	(a4)+,d1
 		tst.b	1(a5)
 		bmi.s	locret_72AEA
-		move.b	$A(a5),d0
+		move.b	QueueToPlay(a5),d0
 		andi.b	#$37,d0
 		or.b	d0,d1
-		move.b	d1,$A(a5)
+		move.b	d1,QueueToPlay(a5)
 		move.b	#$B4,d0
 		bra.w	loc_72716
 ; ===========================================================================
@@ -1932,7 +1942,7 @@ loc_72B3A:
 		btst	#2,(a5)
 		bne.s	loc_72B5C
 		moveq	#0,d0
-		move.b	$B(a5),d0
+		move.b	SFXSpecToPlay(a5),d0
 		movea.l	$18(a6),a1
 		jsr	sub_72C4E(pc)
 
@@ -1991,7 +2001,7 @@ loc_72BBE:
 
 loc_72BC6:
 		move.b	(a4),2(a6)
-		move.b	(a4)+,1(a6)
+		move.b	(a4)+,TempoTimeout(a6)
 		rts	
 ; ===========================================================================
 
@@ -2031,7 +2041,7 @@ loc_72BF4:
 		movea.l	$18(a6),a1
 		bclr	#2,(a5)
 		bset	#1,(a5)
-		move.b	$B(a5),d0
+		move.b	SFXSpecToPlay(a5),d0
 		jsr	sub_72C4E(pc)
 		movea.l	a3,a5
 
@@ -2043,7 +2053,7 @@ loc_72C22:
 loc_72C26:
 		moveq	#0,d0
 		move.b	(a4)+,d0
-		move.b	d0,$B(a5)
+		move.b	d0,SFXSpecToPlay(a5)
 		btst	#2,(a5)
 		bne.w	locret_72CAA
 		movea.l	$18(a6),a1
@@ -2096,7 +2106,7 @@ loc_72C96:
 		jsr	WriteFMIorII(pc)
 		dbf	d5,loc_72C8C
 		move.b	#$B4,d0
-		move.b	$A(a5),d1
+		move.b	QueueToPlay(a5),d1
 		jsr	WriteFMIorII(pc)
 
 locret_72CAA:
@@ -2113,7 +2123,7 @@ sub_72CB4:
 		btst	#2,(a5)
 		bne.s	locret_72D16
 		moveq	#0,d0
-		move.b	$B(a5),d0
+		move.b	SFXSpecToPlay(a5),d0
 		movea.l	$18(a6),a1
 		tst.b	$E(a6)
 		beq.s	loc_72CD8
@@ -2198,7 +2208,7 @@ loc_72D74:
 loc_72D78:
 		tst.b	$E(a6)
 		bpl.w	loc_72E02
-		_clr.b	0(a6)
+		_clr.b	SFXPriorityVal(a6)
 		moveq	#0,d0
 		move.b	1(a5),d0
 		bmi.s	loc_72DCC
@@ -2224,7 +2234,7 @@ loc_72DA8:
 loc_72DB8:
 		bclr	#2,(a5)
 		bset	#1,(a5)
-		move.b	$B(a5),d0
+		move.b	SFXSpecToPlay(a5),d0
 		jsr	sub_72C4E(pc)
 
 loc_72DC8:
@@ -2275,7 +2285,7 @@ loc_72E20:
 ; ===========================================================================
 
 loc_72E26:
-		move.b	(a4)+,$B(a5)
+		move.b	(a4)+,SFXSpecToPlay(a5)
 		rts	
 ; ===========================================================================
 

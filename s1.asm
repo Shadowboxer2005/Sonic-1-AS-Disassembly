@@ -10,6 +10,9 @@ skipChecksumCheck = 0
 zeroOffsetOptimization = 0
 ;	| If 1, makes a handful of zero-offset instructions smaller
 ;
+pathswappersVisible = 1
+;	| If 1, pathswappers are visible in Debug Mode
+;
 ;
 ; >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; AS-specific macros and assembler settings
@@ -1100,7 +1103,7 @@ SoundDriverLoad:			; XREF: GameClrRAM; TitleScreen
 
 
 PlaySound:
-		move.b	d0,($FFFFF00A).w
+		move.b	d0,($FFFFF000+QueueToPlay).w
 		rts		
 ; End of function PlaySound
 
@@ -1118,7 +1121,7 @@ PlaySound:
 
 
 PlaySound_Special:
-		move.b	d0,($FFFFF00B).w
+		move.b	d0,($FFFFF000+SFXSpecToPlay).w
 		rts	
 ; End of function PlaySound_Special
 
@@ -1128,7 +1131,7 @@ PlaySound_Special:
 ; ---------------------------------------------------------------------------
 
 PlaySound_Unk:
-		move.b	d0,($FFFFF00C).w
+		move.b	d0,($FFFFF000+SFXUnknown).w
 		rts	
 
 ; ---------------------------------------------------------------------------
@@ -1148,7 +1151,7 @@ PauseGame:
 		beq.s	Pause_DoNothing	; if not, branch
 +
 		move.w	#1,(Game_paused).w ; freeze time
-		move.b	#1,($FFFFF003).w ; pause music
+		move.b	#1,($FFFFF000+StopMusic).w ; pause music
 
 ; loc_13CA:
 Pause_Loop:
@@ -1175,7 +1178,7 @@ Pause_ChkStart:
 
 ; loc_1404:
 Pause_Resume:
-		move.b	#$80,($FFFFF003).w
+		move.b	#$80,($FFFFF000+StopMusic).w
 
 Unpause:
 		move.w	#0,(Game_paused).w ; unpause the game
@@ -1186,7 +1189,7 @@ Pause_DoNothing:
 
 Pause_SlowMo:
 		move.w	#1,(Game_paused).w
-		move.b	#$80,($FFFFF003).w
+		move.b	#$80,($FFFFF000+StopMusic).w
 		rts	
 ; End of function PauseGame
 
@@ -23996,7 +23999,6 @@ Obj01_Index:	dc.w Obj01_Main-Obj01_Index
 ; ===========================================================================
 
 Obj01_Main:				; XREF: Obj01_Index
-		move.b	#0,(Collision_set).w			; MJ: set collision to 1st
 		addq.b	#2,routine(a0)
 		move.b	#$13,x_radius(a0)
 		move.b	#9,y_radius(a0)
@@ -24008,6 +24010,8 @@ Obj01_Main:				; XREF: Obj01_Index
 		move.w	#$600,(Sonic_top_speed).w ; Sonic's top speed
 		move.w	#$C,(Sonic_acceleration).w ; Sonic's acceleration
 		move.w	#$80,(Sonic_deceleration).w ; Sonic's deceleration
+		move.b	#$C,top_solid_bit(a0)
+		move.b	#$D,lrb_solid_bit(a0)
 
 ; ---------------------------------------------------------------------------
 ; Normal state for Sonic
@@ -24534,7 +24538,7 @@ Sonic_TurnRight:
 		bgt.s	+
 		move.b	#$D,anim(a0)	; use "stopping" animation
 		bset	#0,status(a0)
-		move.w	SndID_Skid,d0
+		move.w	#SndID_Skid,d0
 		jsr	(PlaySound_Special).l ;	play stopping sound
 +
 		rts	
@@ -25100,6 +25104,12 @@ locret_135A2:
 
 ; Sonic_Floor:
 Sonic_DoLevelCollision:
+		move.l	($FFFFFFD0).w,($FFFFF796).w		; MJ: load first collision data location
+		cmpi.b	#$C,top_solid_bit(a0)			; MJ: is second sollision set to be used?
+		beq.s	+					; MJ: if not, branch
+		move.l	($FFFFFFD4).w,($FFFFF796).w		; MJ: load second collision data location
++
+		move.b	lrb_solid_bit(a0),d5
 		move.w	x_vel(a0),d1
 		move.w	y_vel(a0),d2
 		jsr	(CalcAngle).l
@@ -25462,8 +25472,8 @@ Sonic_Loops:				; XREF: Obj01_Control
 loc_13926:
 		move.w	y_pos(a0),d0				; MJ: Load Y position
 		move.w	x_pos(a0),d1				; MJ: Load X position
-		and.w	#$780,d0				; MJ: keep Y position within 800 pixels (in multiples of 80)
-		lsl.w	#1,d0					; MJ: multiply by 2 (Because every 80 bytes switch from FG to BG..)
+		andi.w	#$780,d0				; MJ: keep Y position within 800 pixels (in multiples of 80)
+		add.w	d0,d0					; MJ: multiply by 2 (Because every 80 bytes switch from FG to BG..)
 		lsr.w	#7,d1					; MJ: divide X position by 80 (00 = 0, 80 = 1, etc)
 		and.b	#$7F,d1					; MJ: keep within 4000 pixels (4000 / 80 = 80)
 		add.w	d1,d0					; MJ: add together
@@ -26450,10 +26460,11 @@ Map_obj08:
 
 Sonic_AnglePos:				; XREF: Obj01_MdNormal; Obj01_MdRoll
 		move.l	($FFFFFFD0).w,($FFFFF796).w		; MJ: load first collision data location
-		tst.b	(Collision_set).w				; MJ: is second sollision set to be used?
+		cmpi.b	#$C,top_solid_bit(a0)			; MJ: is second sollision set to be used?
 		beq.s	+					; MJ: if not, branch
 		move.l	($FFFFFFD4).w,($FFFFF796).w		; MJ: load second collision data location
 +
+		move.b	top_solid_bit(a0),d5
 		btst	#3,status(a0)
 		beq.s	loc_14602
 		moveq	#0,d0
@@ -26506,7 +26517,6 @@ loc_14630:
 		lea	(Primary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6					; MJ: set angle?
-		moveq	#$C,d5					; MJ: set solid type to check
 		bsr.w	FindFloor				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
@@ -26522,7 +26532,6 @@ loc_14630:
 		lea	(Secondary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$C,d5					; MJ: set solid type to check
 		bsr.w	FindFloor				; MJ: check solidity
 		move.w	(sp)+,d0
 		bsr.w	Sonic_Angle
@@ -26652,7 +26661,6 @@ Sonic_WalkVertR:			; XREF: Sonic_AnglePos
 		lea	(Primary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$C,d5					; MJ: set solid type to check
 		bsr.w	FindWall				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
@@ -26667,7 +26675,6 @@ Sonic_WalkVertR:			; XREF: Sonic_AnglePos
 		lea	(Secondary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$C,d5					; MJ: set solid type to check
 		bsr.w	FindWall				; MJ: check solidity
 		move.w	(sp)+,d0
 		bsr.w	Sonic_Angle
@@ -26721,7 +26728,6 @@ Sonic_WalkCeiling:			; XREF: Sonic_AnglePos
 		lea	(Primary_Angle).w,a4
 		movea.w	#-$10,a3
 		move.w	#$800,d6
-		moveq	#$C,d5					; MJ: set solid type to check
 		bsr.w	FindFloor				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
@@ -26737,7 +26743,6 @@ Sonic_WalkCeiling:			; XREF: Sonic_AnglePos
 		lea	(Secondary_Angle).w,a4
 		movea.w	#-$10,a3
 		move.w	#$800,d6
-		moveq	#$C,d5					; MJ: set solid type to check
 		bsr.w	FindFloor				; MJ: check solidity
 		move.w	(sp)+,d0
 		bsr.w	Sonic_Angle
@@ -26791,7 +26796,6 @@ Sonic_WalkVertL:			; XREF: Sonic_AnglePos
 		lea	(Primary_Angle).w,a4			; MJ: load address of the angle value set
 		movea.w	#-$10,a3
 		move.w	#$400,d6
-		moveq	#$C,d5					; MJ: set solid type to check
 		bsr.w	FindWall				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
@@ -26807,7 +26811,6 @@ Sonic_WalkVertL:			; XREF: Sonic_AnglePos
 		lea	(Secondary_Angle).w,a4
 		movea.w	#-$10,a3
 		move.w	#$400,d6
-		moveq	#$C,d5					; MJ: set solid type to check
 		bsr.w	FindWall				; MJ: check solidity
 		move.w	(sp)+,d0
 		bsr.w	Sonic_Angle
@@ -26902,25 +26905,9 @@ loc_149B2:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-CollisionChkLayer:
-		tst.b	(Collision_set).w			; MJ: is collision set to first?
-		beq.s	CCL_NoChange				; MJ: if so, branch
-		move.w	d0,d4					; MJ: load block ID to d4
-		and.w	#$FFF,d0				; MJ: clear solid settings of d0
-		and.w	#$C000,d4				; MJ: get only second solid settings of d4
-		lsr.w	#2,d4					; MJ: shift them to first solid settings location
-		add.w	d4,d0					; MJ: add to rest of block ID
-
-CCL_NoChange:
-		rts						; MJ: return
-
-; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
-
-
 FindFloor:				; XREF: Sonic_AnglePos; et al
 		bsr.w	Floor_ChkTile
 		move.w	(a1),d0
-		bsr.s	CollisionChkLayer			; MJ: check solid settings to use
 		move.w	d0,d4
 		andi.w	#$3FF,d0
 		beq.s	loc_149DE
@@ -27002,7 +26989,6 @@ loc_14A66:
 FindFloor2:				; XREF: FindFloor
 		bsr.w	Floor_ChkTile
 		move.w	(a1),d0
-		bsr.w	CollisionChkLayer			; MJ: check solid settings to use
 		move.w	d0,d4
 		andi.w	#$3FF,d0
 		beq.s	loc_14A86
@@ -27077,7 +27063,6 @@ loc_14AFC:
 FindWall:				; XREF: Sonic_WalkVertR; et al
 		bsr.w	Floor_ChkTile				; MJ: get chunk/block location
 		move.w	(a1),d0					; MJ: load block ID from chunk
-		bsr.w	CollisionChkLayer			; MJ: check solid settings to use
 		move.w	d0,d4					; MJ: copy to d4
 		andi.w	#$3FF,d0				; MJ: clear flip/mirror/etc data
 		beq.s	loc_14B1E				; MJ: if it was null, branch
@@ -27159,7 +27144,6 @@ loc_14BA6:
 FindWall2:				; XREF: FindWall
 		bsr.w	Floor_ChkTile
 		move.w	(a1),d0
-		bsr.w	CollisionChkLayer			; MJ: check solid settings to use
 		move.w	d0,d4
 		andi.w	#$3FF,d0
 		beq.s	loc_14BC6
@@ -27335,6 +27319,12 @@ loc_14CD6:
 
 ; Sonic_WalkSpeed:
 CalcRoomInFront:			; XREF: Sonic_Move
+		move.l	($FFFFFFD0).w,($FFFFF796).w		; MJ: load first collision data location
+		cmpi.b	#$C,top_solid_bit(a0)			; MJ: is second sollision set to be used?
+		beq.s	+					; MJ: if not, branch
+		move.l	($FFFFFFD4).w,($FFFFF796).w		; MJ: load second collision data location
++
+		move.b	lrb_solid_bit(a0),d5
 		move.l	x_pos(a0),d3
 		move.l	y_pos(a0),d2
 		move.w	x_vel(a0),d1
@@ -27396,6 +27386,12 @@ loc_14D3C:
 
 ; sub_14D48:
 CalcRoomOverHead:				; XREF: Sonic_Jump
+		move.l	($FFFFFFD0).w,($FFFFF796).w		; MJ: load first collision data location
+		cmpi.b	#$C,top_solid_bit(a0)			; MJ: is second sollision set to be used?
+		beq.s	+					; MJ: if not, branch
+		move.l	($FFFFFFD4).w,($FFFFF796).w		; MJ: load second collision data location
++
+		move.b	lrb_solid_bit(a0),d5
 		move.b	d0,(Primary_Angle).w
 		move.b	d0,(Secondary_Angle).w
 		addi.b	#$20,d0
@@ -27416,7 +27412,13 @@ CalcRoomOverHead:				; XREF: Sonic_Jump
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 ; Sonic_HitFloor:
-Sonic_CheckFloor:				; XREF: Sonic_DoLevelCollision
+Sonic_CheckFloor:
+		move.l	($FFFFFFD0).w,($FFFFF796).w		; MJ: load first collision data location
+		cmpi.b	#$C,top_solid_bit(a0)			; MJ: is second sollision set to be used?
+		beq.s	+					; MJ: if not, branch
+		move.l	($FFFFFFD4).w,($FFFFF796).w		; MJ: load second collision data location
++
+		move.b	top_solid_bit(a0),d5
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
@@ -27429,7 +27431,6 @@ Sonic_CheckFloor:				; XREF: Sonic_DoLevelCollision
 		lea	(Primary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$C,d5					; MJ: set solid type to check
 		bsr.w	FindFloor				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
@@ -27444,7 +27445,6 @@ Sonic_CheckFloor:				; XREF: Sonic_DoLevelCollision
 		lea	(Secondary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$C,d5					; MJ: set solid type to check
 		bsr.w	FindFloor				; MJ: check solidity
 		move.w	(sp)+,d0
 		move.b	#0,d2
@@ -27475,7 +27475,6 @@ loc_14DF0:				; XREF: CalcRoomInFront
 		lea	(Primary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindFloor				; MJ: check solidity
 		move.b	#0,d2
 
@@ -27542,7 +27541,6 @@ sub_14E50:				; XREF: CalcRoomOverHead
 		lea	(Primary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindWall				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
@@ -27557,7 +27555,6 @@ sub_14E50:				; XREF: CalcRoomOverHead
 		lea	(Secondary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindWall				; MJ: check solidity
 		move.w	(sp)+,d0
 		move.b	#-$40,d2
@@ -27578,7 +27575,6 @@ loc_14EBC:
 		lea	(Primary_Angle).w,a4
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindWall				; MJ: check solidity
 		move.b	#-$40,d2
 		bra.w	loc_14E0A
@@ -27599,7 +27595,6 @@ ObjHitWallRight:
 		move.b	#0,(a4)
 		movea.w	#$10,a3
 		move.w	#0,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindWall				; MJ: check solidity
 		move.b	(Primary_Angle).w,d3
 		btst	#0,d3
@@ -27633,7 +27628,6 @@ Sonic_CheckCeiling:			; XREF: Sonic_DoLevelCollision; et al
 		lea	(Primary_Angle).w,a4
 		movea.w	#-$10,a3
 		move.w	#$800,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindFloor				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
@@ -27649,7 +27643,6 @@ Sonic_CheckCeiling:			; XREF: Sonic_DoLevelCollision; et al
 		lea	(Secondary_Angle).w,a4
 		movea.w	#-$10,a3
 		move.w	#$800,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindFloor				; MJ: check solidity
 		move.w	(sp)+,d0
 		move.b	#-$80,d2
@@ -27666,7 +27659,6 @@ loc_14F7C:
 		lea	(Primary_Angle).w,a4
 		movea.w	#-$10,a3
 		move.w	#$800,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindFloor				; MJ: check solidity
 		move.b	#-$80,d2
 		bra.w	loc_14E0A
@@ -27685,7 +27677,6 @@ ObjHitCeiling:
 		lea	(Primary_Angle).w,a4
 		movea.w	#-$10,a3
 		move.w	#$800,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindFloor				; MJ: check solidity
 		move.b	(Primary_Angle).w,d3
 		btst	#0,d3
@@ -27712,7 +27703,6 @@ loc_14FD6:				; XREF: CalcRoomOverHead
 		lea	(Primary_Angle).w,a4
 		movea.w	#-$10,a3
 		move.w	#$400,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindWall				; MJ: check solidity
 		move.w	d1,-(sp)
 		move.w	y_pos(a0),d2
@@ -27728,7 +27718,6 @@ loc_14FD6:				; XREF: CalcRoomOverHead
 		lea	(Secondary_Angle).w,a4
 		movea.w	#-$10,a3
 		move.w	#$400,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindWall				; MJ: check solidity
 		move.w	(sp)+,d0
 		move.b	#$40,d2
@@ -27751,7 +27740,6 @@ loc_1504A:
 		lea	(Primary_Angle).w,a4
 		movea.w	#-$10,a3
 		move.w	#$400,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindWall				; MJ: check solidity
 		move.b	#$40,d2
 		bra.w	loc_14E0A
@@ -27771,7 +27759,6 @@ ObjHitWallLeft:
 		move.b	#0,(a4)
 		movea.w	#-$10,a3
 		move.w	#$400,d6
-		moveq	#$D,d5					; MJ: set solid type to check
 		bsr.w	FindWall				; MJ: check solidity
 		move.b	(Primary_Angle).w,d3
 		btst	#0,d3
@@ -37112,8 +37099,8 @@ Obj03_Index:	dc.w Obj03_Init-Obj03_Index
 
 Obj03_Init:
 		addq.b	#2,routine(a0)
-;		move.l	#0,4(a0)
-		move.w	#$26BC,2(a0)
+		move.l	#Map_Obj03,4(a0)
+		move.w	#$27B2,2(a0)
 		ori.b	#4,1(a0)
 		move.b	#$10,width_pixels(a0)
 		move.b	#5,priority(a0)
@@ -37156,7 +37143,11 @@ Obj03_Init_CheckX:
 
 Obj03_MainX:
 		tst.w	(Debug_placement_mode).w
+	if pathswappersVisible=0
 		bne.w	return_1FEAC
+	else
+		bne.w	JmpTo_DisplaySprite
+	endif
 		move.w	x_pos(a0),d1
 		lea	$34(a0),a2
 		lea	(Object_RAM).w,a1 ; a1=character
@@ -37183,10 +37174,12 @@ Obj03_MainX:
 Obj03_ICX_B1:
 		btst	#0,1(a0)
 		bne.s	Obj03_ICX_B2
-		move.b	#0,(Collision_set).w
+		move.b	#$C,top_solid_bit(a1)
+		move.b	#$D,lrb_solid_bit(a1)
 		btst	#3,d0
 		beq.s	Obj03_ICX_B2
-		move.b	#1,(Collision_set).w
+		move.b	#$E,top_solid_bit(a1)
+		move.b	#$F,lrb_solid_bit(a1)
 
 Obj03_ICX_B2:
 		andi.w	#$7FFF,2(a1)
@@ -37218,10 +37211,12 @@ Obj03_MainX_Alt:
 Obj03_MXA_B1:
 		btst	#0,1(a0)
 		bne.s	Obj03_MXA_B2
-		move.b	#0,(Collision_set).w
+		move.b	#$C,top_solid_bit(a1)
+		move.b	#$D,lrb_solid_bit(a1)
 		btst	#4,d0
 		beq.s	Obj03_MXA_B2
-		move.b	#1,(Collision_set).w
+		move.b	#$E,top_solid_bit(a1)
+		move.b	#$F,lrb_solid_bit(a1)
 
 Obj03_MXA_B2:
 		andi.w	#$7FFF,2(a1)
@@ -37232,11 +37227,19 @@ Obj03_MXA_B2:
 return_1FEAC:
 		rts
 
+	if pathswappersVisible=1
+JmpTo_DisplaySprite
+		jmp	(DisplaySprite).l
+	endif
 ; ===========================================================================
 
 Obj03_MainY:
 		tst.w	(Debug_placement_mode).w
+	if pathswappersVisible=0
 		bne.w	return_1FFB6
+	else
+		bne.w	JmpTo_DisplaySprite
+	endif
 		move.w	y_pos(a0),d1
 		lea	$34(a0),a2
 		lea	(Object_RAM).w,a1 ; a1=character
@@ -37263,10 +37266,12 @@ Obj03_MainY:
 Obj03_MY_B1:
 		btst	#0,1(a0)
 		bne.s	Obj03_MY_B2
-		move.b	#0,(Collision_set).w
+		move.b	#$C,top_solid_bit(a1)
+		move.b	#$D,lrb_solid_bit(a1)
 		btst	#3,d0
 		beq.s	Obj03_MY_B2
-		move.b	#1,(Collision_set).w
+		move.b	#$E,top_solid_bit(a1)
+		move.b	#$F,lrb_solid_bit(a1)
 
 Obj03_MY_B2:
 		andi.w	#$7FFF,2(a1)
@@ -37299,10 +37304,12 @@ Obj03_MainY_Alt:
 Obj03_MYA_B1
 		btst	#0,1(a0)
 		bne.s	Obj03_MYA_B2
-		move.b	#0,(Collision_set).w
+		move.b	#$C,top_solid_bit(a1)
+		move.b	#$D,lrb_solid_bit(a1)
 		btst	#4,d0
 		beq.s	Obj03_MYA_B2
-		move.b	#1,(Collision_set).w
+		move.b	#$E,top_solid_bit(a1)
+		move.b	#$F,lrb_solid_bit(a1)
 
 Obj03_MYA_B2:
 		andi.w	#$7FFF,2(a1)
@@ -37313,6 +37320,11 @@ Obj03_MYA_B2:
 return_1FFB6:
 		rts
 
+; ---------------------------------------------------------------------------
+; Sprite mappings - Pathswappers
+; ---------------------------------------------------------------------------
+Map_Obj03:	BINCLUDE "_maps/Pathswappers.bin"
+		align 2
 
 ; ---------------------------------------------------------------------------
 ; Subroutine to	animate	level graphics

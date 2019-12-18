@@ -43,6 +43,8 @@ subtype =		$28
 ; conventions specific to some objects
 inertia =		$14 ; and $15 ; directionless representation of speed... not updated in the air
 next_tile =		$20 ; and $21 and $22 and $23 ; used for Sonic's art buffer
+top_solid_bit =   	$2E ; the bit to check for top solidity (either $C or $E)
+lrb_solid_bit =		$2F ; the bit to check for left/right/bottom solidity (either $D or $F)
 
 ; ---------------------------------------------------------------------------
 ; some variables and functions to help define those constants (redefined before a new set of IDs)
@@ -437,7 +439,6 @@ unk_FFEF =			ramaddr( $FFFFFFEF )	; Written to at Sonic_Floor, never read from
 Demo_mode_flag =		ramaddr( $FFFFFFF0 )	; 1 if a demo is playing (2 bytes)
 Demo_number =			ramaddr( $FFFFFFF2 )	; which demo will play next (2 bytes)
 Ending_demo_number =		ramaddr( $FFFFFFF4 )	; zone for the ending demos (2 bytes)
-Collision_set =			ramaddr( $FFFFFFF7 )	; 0 = first, 1 = second
 Graphics_Flags =		ramaddr( $FFFFFFF8 )	; misc. bitfield
 Debug_mode_flag =		ramaddr( $FFFFFFFA )	; (2 bytes)
 Checksum_fourcc =		ramaddr( $FFFFFFFC )	; (4 bytes)
@@ -461,3 +462,12 @@ Z80_Bus_Request =		$A11100
 Z80_Reset =			$A11200
 
 Security_Addr =			$A14000
+
+; ---------------------------------------------------------------------------
+; Sound Driver addressses
+SFXPriorityVal =		0
+TempoTimeout =			1
+StopMusic =			3
+QueueToPlay =			$A	; used for music/sfx
+SFXSpecToPlay =			$B	; used for special sfx
+SFXUnknown =			$C	; used for (broken) sfx
