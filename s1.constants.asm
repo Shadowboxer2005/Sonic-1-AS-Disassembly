@@ -459,3 +459,12 @@ Z80_Bus_Request =		$A11100
 Z80_Reset =			$A11200
 
 Security_Addr =			$A14000
+
+; ---------------------------------------------------------------------------
+; Sound Driver addressses
+SFXPriorityVal =		0
+TempoTimeout =			1
+StopMusic =			3
+QueueToPlay =			$A	; used for music/sfx
+SFXSpecToPlay =			$B	; used for special sfx
+SFXUnknown =			$C	; used for (broken) sfx

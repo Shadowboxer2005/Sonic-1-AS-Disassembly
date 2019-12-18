@@ -1100,7 +1100,7 @@ SoundDriverLoad:			; XREF: GameClrRAM; TitleScreen
 
 
 PlaySound:
-		move.b	d0,($FFFFF00A).w
+		move.b	d0,($FFFFF000+QueueToPlay).w
 		rts		
 ; End of function PlaySound
 
@@ -1118,7 +1118,7 @@ PlaySound:
 
 
 PlaySound_Special:
-		move.b	d0,($FFFFF00B).w
+		move.b	d0,($FFFFF000+SFXSpecToPlay).w
 		rts	
 ; End of function PlaySound_Special
 
@@ -1128,7 +1128,7 @@ PlaySound_Special:
 ; ---------------------------------------------------------------------------
 
 PlaySound_Unk:
-		move.b	d0,($FFFFF00C).w
+		move.b	d0,($FFFFF000+SFXUnknown).w
 		rts	
 
 ; ---------------------------------------------------------------------------
@@ -1149,7 +1149,7 @@ PauseGame:				; XREF: Level_MainLoop; et al
 
 loc_13BE:
 		move.w	#1,(Game_paused).w ; freeze time
-		move.b	#1,($FFFFF003).w ; pause music
+		move.b	#1,($FFFFF000+StopMusic).w ; pause music
 
 loc_13CA:
 		move.b	#$10,(Vint_routine).w
@@ -1174,7 +1174,7 @@ Pause_ChkStart:				; XREF: PauseGame
 		beq.s	loc_13CA	; if not, branch
 
 loc_1404:				; XREF: PauseGame
-		move.b	#$80,($FFFFF003).w
+		move.b	#$80,($FFFFF000+StopMusic).w
 
 Unpause:				; XREF: PauseGame
 		move.w	#0,(Game_paused).w ; unpause the game
@@ -1185,7 +1185,7 @@ Pause_DoNothing:			; XREF: PauseGame
 
 Pause_SlowMo:				; XREF: PauseGame
 		move.w	#1,(Game_paused).w
-		move.b	#$80,($FFFFF003).w
+		move.b	#$80,($FFFFF000+StopMusic).w
 		rts	
 ; End of function PauseGame
 
