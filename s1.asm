@@ -23996,7 +23996,7 @@ Obj01_Index:	dc.w Obj01_Main-Obj01_Index
 ; ===========================================================================
 
 Obj01_Main:				; XREF: Obj01_Index
-		move.b	#0,($FFFFFFF7).w			; MJ: set collision to 1st
+		move.b	#0,(Collision_set).w			; MJ: set collision to 1st
 		addq.b	#2,routine(a0)
 		move.b	#$13,x_radius(a0)
 		move.b	#9,y_radius(a0)
@@ -26450,7 +26450,7 @@ Map_obj08:
 
 Sonic_AnglePos:				; XREF: Obj01_MdNormal; Obj01_MdRoll
 		move.l	($FFFFFFD0).w,($FFFFF796).w		; MJ: load first collision data location
-		tst.b	($FFFFFFF7).w				; MJ: is second sollision set to be used?
+		tst.b	(Collision_set).w				; MJ: is second sollision set to be used?
 		beq.s	+					; MJ: if not, branch
 		move.l	($FFFFFFD4).w,($FFFFF796).w		; MJ: load second collision data location
 +
@@ -26902,8 +26902,8 @@ loc_149B2:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-ColisionChkLayer:
-		tst.b	($FFFFFFF7).w				; MJ: is collision set to first?
+CollisionChkLayer:
+		tst.b	(Collision_set).w			; MJ: is collision set to first?
 		beq.s	CCL_NoChange				; MJ: if so, branch
 		move.w	d0,d4					; MJ: load block ID to d4
 		and.w	#$FFF,d0				; MJ: clear solid settings of d0
@@ -26920,7 +26920,7 @@ CCL_NoChange:
 FindFloor:				; XREF: Sonic_AnglePos; et al
 		bsr.w	Floor_ChkTile
 		move.w	(a1),d0
-		bsr.s	ColisionChkLayer			; MJ: check solid settings to use
+		bsr.s	CollisionChkLayer			; MJ: check solid settings to use
 		move.w	d0,d4
 		andi.w	#$3FF,d0
 		beq.s	loc_149DE
@@ -27002,7 +27002,7 @@ loc_14A66:
 FindFloor2:				; XREF: FindFloor
 		bsr.w	Floor_ChkTile
 		move.w	(a1),d0
-		bsr.w	ColisionChkLayer			; MJ: check solid settings to use
+		bsr.w	CollisionChkLayer			; MJ: check solid settings to use
 		move.w	d0,d4
 		andi.w	#$3FF,d0
 		beq.s	loc_14A86
@@ -27077,7 +27077,7 @@ loc_14AFC:
 FindWall:				; XREF: Sonic_WalkVertR; et al
 		bsr.w	Floor_ChkTile				; MJ: get chunk/block location
 		move.w	(a1),d0					; MJ: load block ID from chunk
-		bsr.w	ColisionChkLayer			; MJ: check solid settings to use
+		bsr.w	CollisionChkLayer			; MJ: check solid settings to use
 		move.w	d0,d4					; MJ: copy to d4
 		andi.w	#$3FF,d0				; MJ: clear flip/mirror/etc data
 		beq.s	loc_14B1E				; MJ: if it was null, branch
@@ -27159,7 +27159,7 @@ loc_14BA6:
 FindWall2:				; XREF: FindWall
 		bsr.w	Floor_ChkTile
 		move.w	(a1),d0
-		bsr.w	ColisionChkLayer			; MJ: check solid settings to use
+		bsr.w	CollisionChkLayer			; MJ: check solid settings to use
 		move.w	d0,d4
 		andi.w	#$3FF,d0
 		beq.s	loc_14BC6
@@ -37183,10 +37183,10 @@ Obj03_MainX:
 Obj03_ICX_B1:
 		btst	#0,1(a0)
 		bne.s	Obj03_ICX_B2
-		move.b	#0,($FFFFFFF7).w
+		move.b	#0,(Collision_set).w
 		btst	#3,d0
 		beq.s	Obj03_ICX_B2
-		move.b	#1,($FFFFFFF7).w
+		move.b	#1,(Collision_set).w
 
 Obj03_ICX_B2:
 		andi.w	#$7FFF,2(a1)
@@ -37218,10 +37218,10 @@ Obj03_MainX_Alt:
 Obj03_MXA_B1:
 		btst	#0,1(a0)
 		bne.s	Obj03_MXA_B2
-		move.b	#0,($FFFFFFF7).w
+		move.b	#0,(Collision_set).w
 		btst	#4,d0
 		beq.s	Obj03_MXA_B2
-		move.b	#1,($FFFFFFF7).w
+		move.b	#1,(Collision_set).w
 
 Obj03_MXA_B2:
 		andi.w	#$7FFF,2(a1)
@@ -37263,10 +37263,10 @@ Obj03_MainY:
 Obj03_MY_B1:
 		btst	#0,1(a0)
 		bne.s	Obj03_MY_B2
-		move.b	#0,($FFFFFFF7).w
+		move.b	#0,(Collision_set).w
 		btst	#3,d0
 		beq.s	Obj03_MY_B2
-		move.b	#1,($FFFFFFF7).w
+		move.b	#1,(Collision_set).w
 
 Obj03_MY_B2:
 		andi.w	#$7FFF,2(a1)
@@ -37299,10 +37299,10 @@ Obj03_MainY_Alt:
 Obj03_MYA_B1
 		btst	#0,1(a0)
 		bne.s	Obj03_MYA_B2
-		move.b	#0,($FFFFFFF7).w
+		move.b	#0,(Collision_set).w
 		btst	#4,d0
 		beq.s	Obj03_MYA_B2
-		move.b	#1,($FFFFFFF7).w
+		move.b	#1,(Collision_set).w
 
 Obj03_MYA_B2:
 		andi.w	#$7FFF,2(a1)

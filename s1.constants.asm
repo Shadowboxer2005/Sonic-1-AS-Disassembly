@@ -171,7 +171,8 @@ ramaddr function x,-(-x)&$FFFFFFFF
 ; RAM variables
 RAM_Start =			ramaddr( $FFFF0000 )	; 4 bytes ; start of RAM
 
-Chunk_Table =			ramaddr( $FFFF0000 )	; $A3FF bytes
+Chunk_Table =			ramaddr( $FFFF0000 )	; $8000 bytes
+				; $FFFF8000-$FFFFA3FF unused now
 Level_Layout =			ramaddr( $FFFFA400 )	; $3FF bytes
 TempArray_LayerDef =		ramaddr( $FFFFA800 )	; $1FF bytes ; used by some layer deformation routines
 Decomp_Buffer =			ramaddr( $FFFFAA00 )	; $1FF bytes
@@ -436,6 +437,7 @@ unk_FFEF =			ramaddr( $FFFFFFEF )	; Written to at Sonic_Floor, never read from
 Demo_mode_flag =		ramaddr( $FFFFFFF0 )	; 1 if a demo is playing (2 bytes)
 Demo_number =			ramaddr( $FFFFFFF2 )	; which demo will play next (2 bytes)
 Ending_demo_number =		ramaddr( $FFFFFFF4 )	; zone for the ending demos (2 bytes)
+Collision_set =			ramaddr( $FFFFFFF7 )	; 0 = first, 1 = second
 Graphics_Flags =		ramaddr( $FFFFFFF8 )	; misc. bitfield
 Debug_mode_flag =		ramaddr( $FFFFFFFA )	; (2 bytes)
 Checksum_fourcc =		ramaddr( $FFFFFFFC )	; (4 bytes)
