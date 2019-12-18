@@ -24546,7 +24546,7 @@ Sonic_TurnRight:
 		bgt.s	+
 		move.b	#$D,anim(a0)	; use "stopping" animation
 		bset	#0,status(a0)
-		move.w	SndID_Skid,d0
+		move.w	#SndID_Skid,d0
 		jsr	(PlaySound_Special).l ;	play stopping sound
 +
 		rts	
