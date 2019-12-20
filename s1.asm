@@ -9019,7 +9019,7 @@ Platform2:
 
 Platform3:
 		move.w	y_pos(a1),d2
-		move.b	x_radius(a1),d1
+		move.b	y_radius(a1),d1
 		ext.w	d1
 		add.w	d2,d1
 		addq.w	#4,d1
@@ -9209,7 +9209,7 @@ Obj11_MoveSonic:			; XREF: Obj11_WalkOff
 		move.w	y_pos(a2),d0
 		subq.w	#8,d0
 		moveq	#0,d1
-		move.b	x_radius(a1),d1
+		move.b	y_radius(a1),d1
 		sub.w	d1,d0
 		move.w	d0,y_pos(a1)	; change Sonic's position on y-axis
 		rts	
@@ -9378,7 +9378,7 @@ Obj15_Main:				; XREF: Obj15_Index
 		move.b	#4,1(a0)
 		move.b	#3,priority(a0)
 		move.b	#$18,width_pixels(a0)
-		move.b	#8,x_radius(a0)
+		move.b	#8,y_radius(a0)
 		move.w	y_pos(a0),$38(a0)
 		move.w	x_pos(a0),$3A(a0)
 		cmpi.b	#3,(Current_Zone).w ; check if level is SLZ
@@ -9386,7 +9386,7 @@ Obj15_Main:				; XREF: Obj15_Index
 		move.l	#Map_obj15a,4(a0) ; SLZ	specific code
 		move.w	#$43DC,2(a0)
 		move.b	#$20,width_pixels(a0)
-		move.b	#$10,x_radius(a0)
+		move.b	#$10,y_radius(a0)
 		move.b	#$99,collision_flags(a0)
 
 Obj15_NotSLZ:
@@ -9395,7 +9395,7 @@ Obj15_NotSLZ:
 		move.l	#Map_obj15b,4(a0) ; SBZ	specific code
 		move.w	#$391,2(a0)
 		move.b	#$18,width_pixels(a0)
-		move.b	#$18,x_radius(a0)
+		move.b	#$18,y_radius(a0)
 		move.b	#$86,collision_flags(a0)
 		move.b	#$C,routine(a0)
 
@@ -9470,7 +9470,7 @@ Obj15_SetSolid:				; XREF: Obj15_Index
 		moveq	#0,d1
 		move.b	width_pixels(a0),d1
 		moveq	#0,d3
-		move.b	x_radius(a0),d3
+		move.b	y_radius(a0),d3
 		bsr.w	Obj15_Solid
 
 Obj15_Action:				; XREF: Obj15_Index
@@ -9487,7 +9487,7 @@ Obj15_Action2:				; XREF: Obj15_Index
 		bsr.w	Obj15_Move
 		move.w	(sp)+,d2
 		moveq	#0,d3
-		move.b	x_radius(a0),d3
+		move.b	y_radius(a0),d3
 		addq.b	#1,d3
 		bsr.w	MvSonicOnPtfm
 		bsr.w	DisplaySprite
@@ -9529,7 +9529,7 @@ MvSonic2:
 		tst.w	(Debug_placement_mode).w
 		bne.s	locret_7B62
 		moveq	#0,d1
-		move.b	x_radius(a1),d1
+		move.b	y_radius(a1),d1
 		sub.w	d1,d0
 		move.w	d0,y_pos(a1)
 		sub.w	x_pos(a0),d2
@@ -10180,7 +10180,7 @@ Obj1A_Main:				; XREF: Obj1A_Index
 		move.b	#7,$38(a0)	; set time delay for collapse
 		move.b	#$64,width_pixels(a0)
 		move.b	subtype(a0),mapping_frame(a0)
-		move.b	#$38,x_radius(a0)
+		move.b	#$38,y_radius(a0)
 		bset	#4,1(a0)
 
 Obj1A_ChkTouch:				; XREF: Obj1A_Index
@@ -10478,7 +10478,7 @@ loc_854E:
 		move.w	y_pos(a0),d0
 		sub.w	d1,d0
 		moveq	#0,d1
-		move.b	x_radius(a1),d1
+		move.b	y_radius(a1),d1
 		sub.w	d1,d0
 		move.w	d0,y_pos(a1)
 		sub.w	x_pos(a0),d2
@@ -10637,7 +10637,7 @@ Obj1D_ChkTouch:				; XREF: Obj1D_Action
 		cmp.w	d1,d0
 		bcc.s	loc_8918
 		move.w	y_pos(a1),d2
-		move.b	x_radius(a1),d1
+		move.b	y_radius(a1),d1
 		ext.w	d1
 		add.w	d2,d1
 		move.w	y_pos(a0),d0
@@ -10812,7 +10812,7 @@ Obj44_SolidWall2:			; XREF: Obj44_SolidWall
 		add.w	d3,d3
 		cmp.w	d3,d0
 		bhi.s	loc_8B48
-		move.b	x_radius(a1),d3
+		move.b	y_radius(a1),d3
 		ext.w	d3
 		add.w	d3,d2
 		move.w	y_pos(a1),d3
@@ -10878,8 +10878,8 @@ Obj1E_Index:	dc.w Obj1E_Main-Obj1E_Index
 ; ===========================================================================
 
 Obj1E_Main:				; XREF: Obj1E_Index
-		move.b	#$13,x_radius(a0)
-		move.b	#8,y_radius(a0)
+		move.b	#$13,y_radius(a0)
+		move.b	#8,x_radius(a0)
 		move.l	#Map_obj1E,4(a0)
 		move.w	#$2302,2(a0)
 		move.b	#4,1(a0)
@@ -10954,7 +10954,7 @@ Obj20_Index:	dc.w Obj20_Main-Obj20_Index
 
 Obj20_Main:				; XREF: Obj20_Index
 		addq.b	#2,routine(a0)
-		move.b	#7,x_radius(a0)
+		move.b	#7,y_radius(a0)
 		move.l	#Map_obj1E,4(a0)
 		move.w	#$2302,2(a0)
 		move.b	#4,1(a0)
@@ -11251,7 +11251,7 @@ Obj28_Ending:				; XREF: Obj28_Index
 		move.w	(a1,d0.w),x_vel(a0)
 		move.w	2(a1,d0.w),$34(a0) ; load vertical speed
 		move.w	2(a1,d0.w),y_vel(a0)
-		move.b	#$C,x_radius(a0)
+		move.b	#$C,y_radius(a0)
 		move.b	#4,1(a0)
 		bset	#0,1(a0)
 		move.b	#6,priority(a0)
@@ -11283,7 +11283,7 @@ Obj28_FromEnemy:			; XREF: Obj28_Ending
 		move.w	#$592,2(a0)	; VRAM setting for 2nd animal
 
 loc_90C0:
-		move.b	#$C,x_radius(a0)
+		move.b	#$C,y_radius(a0)
 		move.b	#4,1(a0)
 		bset	#0,1(a0)
 		move.b	#6,priority(a0)
@@ -11647,8 +11647,8 @@ Obj1F_Index:	dc.w Obj1F_Main-Obj1F_Index
 ; ===========================================================================
 
 Obj1F_Main:				; XREF: Obj1F_Index
-		move.b	#$10,x_radius(a0)
-		move.b	#8,y_radius(a0)
+		move.b	#$10,y_radius(a0)
+		move.b	#8,x_radius(a0)
 		move.l	#Map_obj1F,4(a0)
 		move.w	#$400,2(a0)
 		move.b	#4,1(a0)
@@ -12313,8 +12313,8 @@ Obj37_Loop:
 Obj37_MakeRings:			; XREF: Obj37_CountRings
 		_move.b	#$37,0(a1)	; load bouncing	ring object
 		addq.b	#2,routine(a1)
-		move.b	#8,x_radius(a1)
 		move.b	#8,y_radius(a1)
+		move.b	#8,x_radius(a1)
 		move.w	x_pos(a0),x_pos(a1)
 		move.w	y_pos(a0),y_pos(a1)
 		move.l	#Map_obj25,4(a1)
@@ -12586,8 +12586,8 @@ Obj26_Index:	dc.w Obj26_Main-Obj26_Index
 
 Obj26_Main:				; XREF: Obj26_Index
 		addq.b	#2,routine(a0)
-		move.b	#$E,x_radius(a0)
 		move.b	#$E,y_radius(a0)
+		move.b	#$E,x_radius(a0)
 		move.l	#Map_obj26,4(a0)
 		move.w	#$680,2(a0)
 		move.b	#4,1(a0)
@@ -12892,7 +12892,7 @@ Obj26_SolidSides:			; XREF: loc_A1EC
 		add.w	d3,d3
 		cmp.w	d3,d0
 		bhi.s	loc_A4E6
-		move.b	x_radius(a1),d3
+		move.b	y_radius(a1),d3
 		ext.w	d3
 		add.w	d3,d2
 		move.w	y_pos(a1),d3
@@ -13329,8 +13329,8 @@ Obj2D_Index:	dc.w Obj2D_Main-Obj2D_Index
 
 Obj2D_Main:				; XREF: Obj2D_Index
 		addq.b	#2,routine(a0)
-		move.b	#$13,x_radius(a0)
-		move.b	#8,y_radius(a0)
+		move.b	#$13,y_radius(a0)
+		move.b	#8,x_radius(a0)
 		move.l	#Map_obj2D,4(a0)
 		move.w	#$4A6,2(a0)
 		ori.b	#4,1(a0)
@@ -13529,7 +13529,7 @@ Obj2F_Main:				; XREF: Obj2F_Index
 		move.b	(a1)+,mapping_frame(a0)
 		move.b	(a1),width_pixels(a0)
 		andi.b	#$F,subtype(a0)
-		move.b	#$40,x_radius(a0)
+		move.b	#$40,y_radius(a0)
 		bset	#4,1(a0)
 
 Obj2F_Action:				; XREF: Obj2F_Index
@@ -13903,12 +13903,12 @@ Obj30_Vars2:	dc.b 6,	0, 2
 Obj30_Main:				; XREF: Obj30_Index
 		lea	(Obj30_Vars1).l,a2
 		moveq	#1,d1
-		move.b	#$48,x_radius(a0)
+		move.b	#$48,y_radius(a0)
 		cmpi.b	#3,subtype(a0)	; is object type 0/1/2 ?
 		bcs.s	loc_B40C	; if yes, branch
 		lea	(Obj30_Vars2).l,a2
 		moveq	#1,d1
-		move.b	#$38,x_radius(a0)
+		move.b	#$38,y_radius(a0)
 
 loc_B40C:
 		movea.l	a0,a1
@@ -14250,7 +14250,7 @@ Obj31_Display:
 ; ===========================================================================
 
 loc_B7E2:				; XREF: Obj31_Index
-		move.b	#$80,x_radius(a0)
+		move.b	#$80,y_radius(a0)
 		bset	#4,1(a0)
 		movea.l	$3C(a0),a1
 		move.b	$32(a1),d0
@@ -14797,8 +14797,8 @@ Obj33_Var:	dc.b $10, 0	; object width,	frame number
 
 Obj33_Main:				; XREF: Obj33_Index
 		addq.b	#2,routine(a0)
-		move.b	#$F,x_radius(a0)
 		move.b	#$F,y_radius(a0)
+		move.b	#$F,x_radius(a0)
 		move.l	#Map_obj33,4(a0)
 		move.w	#$42B8,2(a0)	; MZ specific code
 		cmpi.b	#1,(Current_Zone).w
@@ -16787,7 +16787,7 @@ loc_D672:
 		btst	#4,d4
 		beq.s	loc_D6E8
 		moveq	#0,d0
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		move.w	y_pos(a0),d2
 		sub.w	4(a1),d2
 		move.w	d2,d1
@@ -17609,8 +17609,8 @@ Obj42_Main:				; XREF: Obj42_Index
 		move.b	#4,1(a0)
 		move.b	#4,priority(a0)
 		move.b	#$14,width_pixels(a0)
-		move.b	#$10,x_radius(a0)
-		move.b	#8,y_radius(a0)
+		move.b	#$10,y_radius(a0)
+		move.b	#8,x_radius(a0)
 
 Obj42_Action:				; XREF: Obj42_Index
 		moveq	#0,d0
@@ -17788,8 +17788,8 @@ Obj43_Index:	dc.w Obj43_Main-Obj43_Index
 ; ===========================================================================
 
 Obj43_Main:				; XREF: Obj43_Index
-		move.b	#$E,x_radius(a0)
-		move.b	#8,y_radius(a0)
+		move.b	#$E,y_radius(a0)
+		move.b	#8,x_radius(a0)
 		bsr.w	ObjectMoveAndFall
 		bsr.w	ObjHitFloor
 		tst.w	d1
@@ -18071,8 +18071,8 @@ Obj14_Speeds:	dc.w $FC00, $FB00, $FA00, $F900, $FE00
 
 Obj14_Main:				; XREF: Obj14_Index
 		addq.b	#2,routine(a0)
-		move.b	#8,x_radius(a0)
 		move.b	#8,y_radius(a0)
+		move.b	#8,x_radius(a0)
 		move.l	#Map_obj14,4(a0)
 		move.w	#$345,2(a0)
 		cmpi.b	#3,(Current_Zone).w ; check if level is SLZ
@@ -18334,8 +18334,8 @@ Obj46_Index:	dc.w Obj46_Main-Obj46_Index
 
 Obj46_Main:				; XREF: Obj46_Index
 		addq.b	#2,routine(a0)
-		move.b	#$F,x_radius(a0)
 		move.b	#$F,y_radius(a0)
+		move.b	#$F,x_radius(a0)
 		move.l	#Map_obj46,4(a0)
 		move.w	#$4000,2(a0)
 		move.b	#4,1(a0)
@@ -18949,7 +18949,7 @@ loc_EF10:				; XREF: Obj4D_Main
 		move.w	$30(a0),$30(a1)
 		addi.w	#$60,$30(a1)
 		move.b	#$93,collision_flags(a1)
-		move.b	#$80,x_radius(a1)
+		move.b	#$80,y_radius(a1)
 		bset	#4,1(a1)
 		addq.b	#4,routine(a1)
 		move.l	a0,$3C(a1)
@@ -19302,8 +19302,8 @@ Obj40_Main:				; XREF: Obj40_Index
 		move.b	#$14,width_pixels(a0)
 		tst.b	anim(a0)		; is object a smoke trail?
 		bne.s	Obj40_SetSmoke	; if yes, branch
-		move.b	#$E,x_radius(a0)
-		move.b	#8,y_radius(a0)
+		move.b	#$E,y_radius(a0)
+		move.b	#8,x_radius(a0)
 		move.b	#$C,collision_flags(a0)
 		bsr.w	ObjectMoveAndFall
 		jsr	(ObjHitFloor).l
@@ -19495,8 +19495,8 @@ Obj50_Main:				; XREF: Obj50_Index
 		move.b	#4,1(a0)
 		move.b	#4,priority(a0)
 		move.b	#$14,width_pixels(a0)
-		move.b	#$11,x_radius(a0)
-		move.b	#8,y_radius(a0)
+		move.b	#$11,y_radius(a0)
+		move.b	#8,x_radius(a0)
 		move.b	#$CC,collision_flags(a0)
 		bsr.w	ObjectMoveAndFall
 		bsr.w	ObjHitFloor
@@ -19672,7 +19672,7 @@ loc_FA94:
 		sub.b	(a2),d3
 		move.w	y_pos(a0),d5
 		sub.w	d3,d5
-		move.b	x_radius(a1),d3
+		move.b	y_radius(a1),d3
 		ext.w	d3
 		add.w	d3,d2
 		move.w	y_pos(a1),d3
@@ -19701,7 +19701,7 @@ loc_FAD0:
 		add.w	d3,d3
 		cmp.w	d3,d0
 		bhi.w	loc_FB92
-		move.b	x_radius(a1),d3
+		move.b	y_radius(a1),d3
 		ext.w	d3
 		add.w	d3,d2
 		move.w	y_pos(a1),d3
@@ -19932,8 +19932,8 @@ Obj51_Smash:				; XREF: Obj51_Solid
 		bne.s	locret_FCFC	; if not, branch
 		move.w	$34(a0),(Chain_Bonus_counter).w
 		bset	#2,status(a1)
-		move.b	#$E,x_radius(a1)
-		move.b	#7,y_radius(a1)
+		move.b	#$E,y_radius(a1)
+		move.b	#7,x_radius(a1)
 		move.b	#2,anim(a1)
 		move.w	#-$300,y_vel(a1)	; bounce Sonic upwards
 		bset	#1,status(a1)
@@ -20020,7 +20020,7 @@ Obj52_Main:				; XREF: Obj52_Index
 		bne.s	loc_FE44
 		move.l	#Map_obj52a,4(a0) ; LZ specific	code
 		move.w	#$43BC,2(a0)
-		move.b	#7,x_radius(a0)
+		move.b	#7,y_radius(a0)
 
 loc_FE44:
 		cmpi.b	#5,(Current_Zone).w ; check if level is SBZ
@@ -20272,7 +20272,7 @@ Obj55_Main:				; XREF: Obj55_Index
 		move.l	#Map_obj55,4(a0)
 		move.w	#$84B8,2(a0)
 		move.b	#4,1(a0)
-		move.b	#$C,x_radius(a0)
+		move.b	#$C,y_radius(a0)
 		move.b	#2,priority(a0)
 		move.b	#$B,collision_flags(a0)
 		move.b	#$10,width_pixels(a0)
@@ -20463,7 +20463,7 @@ loc_102C8:
 		andi.w	#$E,d0
 		lea	Obj56_Var(pc,d0.w),a2
 		move.b	(a2)+,width_pixels(a0)
-		move.b	(a2),x_radius(a0)
+		move.b	(a2),y_radius(a0)
 		lsr.w	#1,d0
 		move.b	d0,mapping_frame(a0)
 		move.w	x_pos(a0),$34(a0)
@@ -20523,7 +20523,7 @@ Obj56_Action:				; XREF: Obj56_Index
 		move.b	width_pixels(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
-		move.b	x_radius(a0),d2
+		move.b	y_radius(a0),d2
 		move.w	d2,d3
 		addq.w	#1,d3
 		bsr.w	SolidObject
@@ -20671,7 +20671,7 @@ Obj56_Type06:				; XREF: Obj56_TypeIndex
 
 loc_10500:
 		moveq	#0,d0
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		add.w	d0,d0
 		cmp.w	$3A(a0),d0
 		beq.s	loc_1052C
@@ -22081,7 +22081,7 @@ Obj71_Main:				; XREF: Obj71_Index
 		andi.w	#$F,d1		; read only the	2nd byte
 		addq.w	#1,d1
 		lsl.w	#3,d1
-		move.b	d1,x_radius(a0)	; set object height
+		move.b	d1,y_radius(a0)	; set object height
 
 Obj71_Solid:				; XREF: Obj71_Index
 		bsr.w	ChkObjOnScreen
@@ -22090,7 +22090,7 @@ Obj71_Solid:				; XREF: Obj71_Index
 		move.b	width_pixels(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
-		move.b	x_radius(a0),d2
+		move.b	y_radius(a0),d2
 		move.w	d2,d3
 		addq.w	#1,d3
 		move.w	x_pos(a0),d4
@@ -23035,7 +23035,7 @@ Obj61_Main:				; XREF: Obj61_Index
 		andi.w	#$E,d0
 		lea	Obj61_Var(pc,d0.w),a2
 		move.b	(a2)+,width_pixels(a0)
-		move.b	(a2),x_radius(a0)
+		move.b	(a2),y_radius(a0)
 		lsr.w	#1,d0
 		move.b	d0,mapping_frame(a0)
 		move.w	x_pos(a0),$34(a0)
@@ -23062,7 +23062,7 @@ Obj61_Action:				; XREF: Obj61_Index
 		move.b	width_pixels(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
-		move.b	x_radius(a0),d2
+		move.b	y_radius(a0),d2
 		move.w	d2,d3
 		addq.w	#1,d3
 		bsr.w	SolidObject
@@ -23273,8 +23273,8 @@ Obj62_NoFire:
 
 Obj62_FireBall:				; XREF: Obj62_Index
 		addq.b	#2,routine(a0)
-		move.b	#8,x_radius(a0)
 		move.b	#8,y_radius(a0)
+		move.b	#8,x_radius(a0)
 		move.l	#Map_obj62,4(a0)
 		move.w	#$2E9,2(a0)
 		ori.b	#4,1(a0)
@@ -23711,8 +23711,8 @@ Obj64_Wobble:				; XREF: Obj64_ChkWater
 		btst	#2,status(a1)
 		beq.w	Obj64_Burst
 		bclr	#2,status(a1)
-		move.b	#$13,x_radius(a1)
-		move.b	#9,y_radius(a1)
+		move.b	#$13,y_radius(a1)
+		move.b	#9,x_radius(a1)
 		subq.w	#5,y_pos(a1)
 		bra.w	Obj64_Burst
 ; ===========================================================================
@@ -24010,8 +24010,8 @@ Obj01_Index:	dc.w Obj01_Main-Obj01_Index
 
 Obj01_Main:				; XREF: Obj01_Index
 		addq.b	#2,routine(a0)
-		move.b	#$13,x_radius(a0)
-		move.b	#9,y_radius(a0)
+		move.b	#$13,y_radius(a0)
+		move.b	#9,x_radius(a0)
 		move.l	#Map_Sonic,4(a0)
 		move.w	#$780,2(a0)
 		move.b	#2,priority(a0)
@@ -24605,8 +24605,8 @@ Sonic_CheckRollStop:
 		tst.w	inertia(a0)		; is Sonic moving?
 		bne.s	Sonic_SetRollSpeeds	; if yes, branch
 		bclr	#2,status(a0)
-		move.b	#$13,x_radius(a0)
-		move.b	#9,y_radius(a0)
+		move.b	#$13,y_radius(a0)
+		move.b	#9,x_radius(a0)
 		move.b	#5,anim(a0)	; use "standing" animation
 		subq.w	#5,y_pos(a0)
 
@@ -24860,8 +24860,8 @@ Obj01_ChkRoll:
 ; ---------------------------------------------------------------------------
 Obj01_DoRoll:
 		bset	#2,status(a0)
-		move.b	#$E,x_radius(a0)
-		move.b	#7,y_radius(a0)
+		move.b	#$E,y_radius(a0)
+		move.b	#7,x_radius(a0)
 		move.b	#2,anim(a0)	; use "rolling"	animation
 		addq.w	#5,y_pos(a0)
 		move.w	#SndID_Roll,d0
@@ -24913,12 +24913,12 @@ Sonic_Jump:				; XREF: Obj01_MdNormal; Obj01_MdRoll
 		clr.b	$38(a0)
 		move.w	#SndID_Jump,d0
 		jsr	(PlaySound_Special).l ;	play jumping sound
-		move.b	#$13,x_radius(a0)
-		move.b	#9,y_radius(a0)
+		move.b	#$13,y_radius(a0)
+		move.b	#9,x_radius(a0)
 		btst	#2,status(a0)
 		bne.s	Sonic_RollJump
-		move.b	#$E,x_radius(a0)
-		move.b	#7,y_radius(a0)
+		move.b	#$E,y_radius(a0)
+		move.b	#7,x_radius(a0)
 		move.b	#2,anim(a0)	; use "jumping"	animation
 		bset	#2,status(a0)
 		addq.w	#5,y_pos(a0)
@@ -25329,8 +25329,8 @@ Sonic_ResetOnFloor_Part2:
 		btst	#2,status(a0)
 		beq.s	Sonic_ResetOnFloor_Part3
 		bclr	#2,status(a0)
-		move.b	#$13,x_radius(a0)
-		move.b	#9,y_radius(a0)
+		move.b	#$13,y_radius(a0)
+		move.b	#9,x_radius(a0)
 		move.b	#0,anim(a0)	; use running/walking animation
 		subq.w	#5,y_pos(a0)
 
@@ -26496,10 +26496,10 @@ loc_14630:
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	(Primary_Angle).w,a4
@@ -26511,10 +26511,10 @@ loc_14630:
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		neg.w	d0
 		add.w	d0,d3
@@ -26641,11 +26641,11 @@ Sonic_WalkVertR:			; XREF: Sonic_AnglePos
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		neg.w	d0
 		add.w	d0,d2
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	(Primary_Angle).w,a4
@@ -26657,10 +26657,10 @@ Sonic_WalkVertR:			; XREF: Sonic_AnglePos
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	(Secondary_Angle).w,a4
@@ -26710,11 +26710,11 @@ Sonic_WalkCeiling:			; XREF: Sonic_AnglePos
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
 		eori.w	#$F,d2
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	(Primary_Angle).w,a4
@@ -26726,11 +26726,11 @@ Sonic_WalkCeiling:			; XREF: Sonic_AnglePos
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
 		eori.w	#$F,d2
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		lea	(Secondary_Angle).w,a4
@@ -26780,10 +26780,10 @@ Sonic_WalkVertL:			; XREF: Sonic_AnglePos
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		eori.w	#$F,d3
@@ -26796,10 +26796,10 @@ Sonic_WalkVertL:			; XREF: Sonic_AnglePos
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		eori.w	#$F,d3
@@ -27403,10 +27403,10 @@ Sonic_CheckFloor:				; XREF: Sonic_DoLevelCollision
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	(Primary_Angle).w,a4
@@ -27418,10 +27418,10 @@ Sonic_CheckFloor:				; XREF: Sonic_DoLevelCollision
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		lea	(Secondary_Angle).w,a4
@@ -27490,7 +27490,7 @@ ObjHitFloor:
 ObjHitFloor2:
 		move.w	y_pos(a0),d2
 		moveq	#0,d0
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d2
 		lea	(Primary_Angle).w,a4
@@ -27516,10 +27516,10 @@ sub_14E50:				; XREF: CalcRoomOverHead
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	(Primary_Angle).w,a4
@@ -27531,10 +27531,10 @@ sub_14E50:				; XREF: CalcRoomOverHead
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	(Secondary_Angle).w,a4
@@ -27606,11 +27606,11 @@ Sonic_CheckCeiling:			; XREF: Sonic_DoLevelCollision; et al
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
 		eori.w	#$F,d2
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d3
 		lea	(Primary_Angle).w,a4
@@ -27622,11 +27622,11 @@ Sonic_CheckCeiling:			; XREF: Sonic_DoLevelCollision; et al
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
 		eori.w	#$F,d2
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		lea	(Secondary_Angle).w,a4
@@ -27661,7 +27661,7 @@ ObjHitCeiling:
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
 		eori.w	#$F,d2
@@ -27685,10 +27685,10 @@ loc_14FD6:				; XREF: CalcRoomOverHead
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d2
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		eori.w	#$F,d3
@@ -27701,10 +27701,10 @@ loc_14FD6:				; XREF: CalcRoomOverHead
 		move.w	y_pos(a0),d2
 		move.w	x_pos(a0),d3
 		moveq	#0,d0
-		move.b	y_radius(a0),d0
+		move.b	x_radius(a0),d0
 		ext.w	d0
 		add.w	d0,d2
-		move.b	x_radius(a0),d0
+		move.b	y_radius(a0),d0
 		ext.w	d0
 		sub.w	d0,d3
 		eori.w	#$F,d3
@@ -28587,7 +28587,7 @@ Obj6B_Main:				; XREF: Obj6B_Index
 		andi.w	#$1C,d0
 		lea	Obj6B_Var(pc,d0.w),a3
 		move.b	(a3)+,width_pixels(a0)
-		move.b	(a3)+,x_radius(a0)
+		move.b	(a3)+,y_radius(a0)
 		lsr.w	#2,d0
 		move.b	d0,mapping_frame(a0)
 		move.l	#Map_obj6B,4(a0)
@@ -28662,7 +28662,7 @@ Obj6B_Action:				; XREF: Obj6B_Index
 		move.b	width_pixels(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
-		move.b	x_radius(a0),d2
+		move.b	y_radius(a0),d2
 		move.w	d2,d3
 		addq.w	#1,d3
 		bsr.w	SolidObject
@@ -29325,7 +29325,7 @@ Obj70_Main:				; XREF: Obj70_Index
 		ori.b	#4,1(a0)
 		move.b	#4,priority(a0)
 		move.b	#$60,width_pixels(a0)
-		move.b	#$18,x_radius(a0)
+		move.b	#$18,y_radius(a0)
 		move.w	x_pos(a0),$32(a0)
 		move.w	y_pos(a0),$30(a0)
 		bsr.w	Obj70_Move2
@@ -29351,7 +29351,7 @@ Obj70_Solid:
 		move.b	width_pixels(a0),d1
 		addi.w	#$B,d1
 		moveq	#0,d2
-		move.b	x_radius(a0),d2
+		move.b	y_radius(a0),d2
 		move.w	d2,d3
 		addq.w	#1,d3
 		bsr.w	SolidObject
@@ -29669,8 +29669,8 @@ locret_16950:
 ; ===========================================================================
 
 Obj78_Main:				; XREF: Obj78_Index
-		move.b	#7,x_radius(a0)
-		move.b	#8,y_radius(a0)
+		move.b	#7,y_radius(a0)
+		move.b	#8,x_radius(a0)
 		jsr	(ObjectMoveAndFall).l
 		jsr	(ObjHitFloor).l
 		tst.w	d1
@@ -31823,8 +31823,8 @@ Obj74_Index:	dc.w Obj74_Main-Obj74_Index
 ; ===========================================================================
 
 Obj74_Main:				; XREF: Obj74_Index
-		move.b	#8,x_radius(a0)
 		move.b	#8,y_radius(a0)
+		move.b	#8,x_radius(a0)
 		move.l	#Map_obj14,4(a0)
 		move.w	#$345,2(a0)
 		move.b	#4,1(a0)
@@ -33385,7 +33385,7 @@ loc_19658:
 		asr.w	#2,d0
 		add.w	d0,y_pos(a0)
 		move.b	#8,width_pixels(a0)
-		move.b	#$C,x_radius(a0)
+		move.b	#$C,y_radius(a0)
 		clr.b	collision_flags(a0)
 		movea.l	$34(a0),a1
 		tst.b	collision_flags(a1)
@@ -33434,7 +33434,7 @@ Obj76_MakeBlock:			; XREF: Obj76_Main
 		move.w	#$4000,2(a1)
 		move.b	#4,1(a1)
 		move.b	#$10,width_pixels(a1)
-		move.b	#$10,x_radius(a1)
+		move.b	#$10,y_radius(a1)
 		move.b	#3,priority(a1)
 		move.w	d5,x_pos(a1)	; set x-position
 		move.w	#$582,y_pos(a1)
@@ -33508,7 +33508,7 @@ Obj76_Break:				; XREF: Obj76_Action
 		moveq	#$38,d2
 		addq.b	#2,routine(a0)
 		move.b	#8,width_pixels(a0)
-		move.b	#8,x_radius(a0)
+		move.b	#8,y_radius(a0)
 		lea	(a0),a1
 		bra.s	Obj76_MakeFrag
 ; ===========================================================================
@@ -33770,7 +33770,7 @@ Obj83_Main:				; XREF: Obj83_Index
 		move.w	#$2080,x_pos(a0)
 		move.w	#$5D0,y_pos(a0)
 		move.b	#$80,width_pixels(a0)
-		move.b	#$10,x_radius(a0)
+		move.b	#$10,y_radius(a0)
 		move.b	#4,1(a0)
 		bset	#7,1(a0)
 		moveq	#0,d4
@@ -33787,7 +33787,7 @@ Obj83_MakeBlock:
 		move.w	#$4518,2(a1)
 		move.b	#4,1(a1)
 		move.b	#$10,width_pixels(a1)
-		move.b	#$10,x_radius(a1)
+		move.b	#$10,y_radius(a1)
 		move.b	#3,priority(a1)
 		move.w	d5,x_pos(a1)	; set X	position
 		move.w	#$5D0,y_pos(a1)
@@ -33869,7 +33869,7 @@ Obj83_Break:				; XREF: loc_19C72
 		moveq	#$38,d2
 		addq.b	#2,routine(a0)
 		move.b	#8,width_pixels(a0)
-		move.b	#8,x_radius(a0)
+		move.b	#8,y_radius(a0)
 		lea	(a0),a1
 		bra.s	Obj83_MakeFrag
 ; ===========================================================================
@@ -33981,8 +33981,8 @@ Obj85_LoadBoss:				; XREF: Obj85_Main
 		move.b	(a3)+,routine(a1)
 		move.b	(a3)+,anim(a1)
 		move.b	(a3)+,priority(a1)
-		move.b	(a3)+,y_radius(a1)
 		move.b	(a3)+,x_radius(a1)
+		move.b	(a3)+,y_radius(a1)
 		move.b	#4,1(a1)
 		bset	#7,1(a0)
 		move.l	a0,$34(a1)
@@ -34140,7 +34140,7 @@ loc_19FBC:
 		move.b	#6,$34(a0)
 		move.w	#$25C0,x_pos(a0)
 		move.w	#$53C,y_pos(a0)
-		move.b	#$14,x_radius(a0)
+		move.b	#$14,y_radius(a0)
 		rts	
 ; ===========================================================================
 word_19FD6:	dc.w 0,	2, 2, 4, 4, 6, 6, 0
@@ -34179,7 +34179,7 @@ loc_1A020:
 ; ===========================================================================
 
 loc_1A02A:				; XREF: off_19E80
-		move.b	#$30,y_radius(a0)
+		move.b	#$30,x_radius(a0)
 		bset	#0,status(a0)
 		jsr	(ObjectMove).l
 		move.b	#6,mapping_frame(a0)
@@ -34188,7 +34188,7 @@ loc_1A02A:				; XREF: off_19E80
 		bcs.s	loc_1A070
 		move.w	#$59C,y_pos(a0)
 		addq.b	#2,$34(a0)
-		move.b	#$20,y_radius(a0)
+		move.b	#$20,x_radius(a0)
 		move.w	#$100,x_vel(a0)
 		move.w	#-$100,y_vel(a0)
 		addq.b	#2,(Dynamic_Resize_Routine).w
@@ -34543,10 +34543,10 @@ Obj84_Main:				; XREF: Obj84_Index
 		move.w	(a1)+,x_pos(a0)
 		move.w	(a1),y_pos(a0)
 		move.w	(a1)+,$38(a0)
-		move.b	#$20,x_radius(a0)
-		move.b	#$60,y_radius(a0)
-		move.b	#$20,width_pixels(a0)
+		move.b	#$20,y_radius(a0)
 		move.b	#$60,x_radius(a0)
+		move.b	#$20,width_pixels(a0)
+		move.b	#$60,y_radius(a0)
 		move.b	#3,priority(a0)
 		addq.b	#2,routine(a0)
 
@@ -34739,8 +34739,8 @@ Obj86_Main:				; XREF: Obj86_Index
 		move.l	#Map_obj86,4(a0)
 		move.b	#0,anim(a0)
 		move.b	#3,priority(a0)
-		move.b	#8,y_radius(a0)
 		move.b	#8,x_radius(a0)
+		move.b	#8,y_radius(a0)
 		move.b	#4,1(a0)
 		bset	#7,1(a0)
 		addq.b	#2,routine(a0)
@@ -34802,8 +34802,8 @@ Obj86_Loop:
 		move.b	#8,routine(a1)
 		move.w	#$2300,2(a1)
 		move.l	#Map_obj86a,4(a1)
-		move.b	#$C,x_radius(a1)
 		move.b	#$C,y_radius(a1)
+		move.b	#$C,x_radius(a1)
 		move.b	#0,collision_flags(a1)
 		move.b	#3,priority(a1)
 		move.w	#$3E,subtype(a1)
@@ -35188,7 +35188,7 @@ TouchResponse:				; XREF: Obj01
 		move.w	y_pos(a0),d3	; load Sonic's y-axis value
 		subq.w	#8,d2
 		moveq	#0,d5
-		move.b	x_radius(a0),d5	; load Sonic's height
+		move.b	y_radius(a0),d5	; load Sonic's height
 		subq.b	#3,d5
 		sub.w	d5,d3
 		cmpi.b	#$39,mapping_frame(a0)	; is Sonic ducking?
@@ -36355,8 +36355,8 @@ Obj09_Index:	dc.w Obj09_Main-Obj09_Index
 
 Obj09_Main:				; XREF: Obj09_Index
 		addq.b	#2,routine(a0)
-		move.b	#$E,x_radius(a0)
-		move.b	#7,y_radius(a0)
+		move.b	#$E,y_radius(a0)
+		move.b	#7,x_radius(a0)
 		move.l	#Map_Sonic,4(a0)
 		move.w	#$780,2(a0)
 		move.b	#4,1(a0)
