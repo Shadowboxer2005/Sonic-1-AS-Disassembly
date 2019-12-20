@@ -448,11 +448,19 @@ RAM_End =			ramaddr( $FFFFFFFF )
 ; VDP addressses
 VDP_data_port =			$C00000 ; (8=r/w, 16=r/w)
 VDP_control_port =		$C00004 ; (8=r/w, 16=r/w)
+PSG_input =			$C00011
 
 ; ---------------------------------------------------------------------------
 ; Z80 addresses
 Z80_RAM =			$A00000 ; start of Z80 RAM
+Z80_DAC3_Pitch =		$A000EA
+DAC_Status =			$A01FFD
+DAC_Sample =			$A01FFF
 Z80_RAM_End =			$A02000 ; end of non-reserved Z80 RAM
+YM2612_A0 =			$A04000
+YM2612_D0 =			$A04001
+YM2612_A1 =			$A04002
+YM2612_D1 =			$A04003
 Z80_Version =			$A10001
 Z80_Port_1_Data =		$A10002
 Z80_Port_1_Control =		$A10008
@@ -468,6 +476,7 @@ Security_Addr =			$A14000
 SFXPriorityVal =		0
 TempoTimeout =			1
 StopMusic =			3
-QueueToPlay =			$A	; used for music/sfx
+QueueToPlay =			9
+SFXToPlay =			$A	; used for music/sfx
 SFXSpecToPlay =			$B	; used for special sfx
 SFXUnknown =			$C	; used for (broken) sfx
