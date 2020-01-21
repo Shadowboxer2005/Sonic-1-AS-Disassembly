@@ -2799,7 +2799,7 @@ Pal_Sega2:	binclude	pallet/sega2.bin
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-PalLoad1:
+PalLoad_ForFade:
 		lea	(PalPointers).l,a1
 		lsl.w	#3,d0
 		adda.w	d0,a1
@@ -2812,13 +2812,13 @@ loc_2110:
 		move.l	(a2)+,(a3)+
 		dbf	d7,loc_2110
 		rts	
-; End of function PalLoad1
+; End of function PalLoad_ForFade
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-PalLoad2:
+PalLoad_Now:
 		lea	(PalPointers).l,a1
 		lsl.w	#3,d0
 		adda.w	d0,a1
@@ -2830,7 +2830,7 @@ loc_2128:
 		move.l	(a2)+,(a3)+
 		dbf	d7,loc_2128
 		rts	
-; End of function PalLoad2
+; End of function PalLoad_Now
 
 ; ---------------------------------------------------------------------------
 ; Underwater pallet loading subroutine
@@ -2839,7 +2839,7 @@ loc_2128:
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-PalLoad3_Water:
+PalLoad_Water_Now:
 		lea	(PalPointers).l,a1
 		lsl.w	#3,d0
 		adda.w	d0,a1
@@ -2852,13 +2852,13 @@ loc_2144:
 		move.l	(a2)+,(a3)+
 		dbf	d7,loc_2144
 		rts	
-; End of function PalLoad3_Water
+; End of function PalLoad_Water_Now
 
 
 ; ||||||||||||||| S U B	R O U T	I N E |||||||||||||||||||||||||||||||||||||||
 
 
-PalLoad4_Water:
+PalLoad_Water_ForFade:
 		lea	(PalPointers).l,a1
 		lsl.w	#3,d0
 		adda.w	d0,a1
@@ -2871,7 +2871,7 @@ loc_2160:
 		move.l	(a2)+,(a3)+
 		dbf	d7,loc_2160
 		rts	
-; End of function PalLoad4_Water
+; End of function PalLoad_Water_ForFade
 
 ; ===========================================================================
 ; ---------------------------------------------------------------------------
@@ -3157,7 +3157,7 @@ SegaScreen:				; XREF: GameModeArray
 		moveq	#$1B,d2
 		bsr.w	ShowVDPGraphics
 		moveq	#0,d0
-		bsr.w	PalLoad2	; load Sega logo pallet
+		bsr.w	PalLoad_Now	; load Sega logo pallet
 		move.w	#-$A,(PalCycle_Frame).w
 		move.w	#0,(PalCycle_Timer).w
 		move.w	#0,($FFFFF662).w
@@ -3244,7 +3244,7 @@ Title_ClrPallet:
 		dbf	d1,Title_ClrPallet ; fill pallet with 0	(black)
 
 		moveq	#3,d0		; load Sonic's pallet
-		bsr.w	PalLoad1
+		bsr.w	PalLoad_ForFade
 		move.b	#$8A,(Object_RAM+$80).w ; load "SONIC TEAM PRESENTS"	object
 		jsr	(ObjectsLoad).l
 		jsr	(BuildSprites).l
@@ -3306,7 +3306,7 @@ Title_LoadText:
 		lea	(Nem_GHZ_1st).l,a0 ; load GHZ patterns
 		bsr.w	NemDec
 		moveq	#1,d0		; load title screen pallet
-		bsr.w	PalLoad1
+		bsr.w	PalLoad_ForFade
 		move.b	#MusID_Title,d0		; play title screen music
 		bsr.w	PlaySound_Special
 		move.b	#0,(Debug_mode_flag).w ; disable debug mode
@@ -3416,7 +3416,7 @@ Title_ChkLevSel:
 		btst	#6,(Ctrl_1).w ; check if A is pressed
 		beq.w	PlayLevel	; if not, play level
 		moveq	#2,d0
-		bsr.w	PalLoad2	; load level select pallet
+		bsr.w	PalLoad_Now	; load level select pallet
 		lea	(Horiz_Scroll_Buf).w,a1
 		moveq	#0,d0
 		move.w	#$DF,d1
@@ -3882,7 +3882,7 @@ Level_LoadPal:
 		move.w	#$1E,(Air_left).w
 		move	#$2300,sr
 		moveq	#3,d0
-		bsr.w	PalLoad2	; load Sonic's pallet line
+		bsr.w	PalLoad_Now	; load Sonic's pallet line
 		cmpi.b	#1,(Current_Zone).w ; is level LZ?
 		bne.s	Level_GetBgm	; if not, branch
 		moveq	#$F,d0		; pallet number	$0F (LZ)
@@ -3891,7 +3891,7 @@ Level_LoadPal:
 		moveq	#$10,d0		; pallet number	$10 (SBZ3)
 
 Level_WaterPal:
-		bsr.w	PalLoad3_Water	; load underwater pallet (see d0)
+		bsr.w	PalLoad_Water_Now	; load underwater pallet (see d0)
 		tst.b	(Last_star_pole_hit).w
 		beq.s	Level_GetBgm
 		move.b	(Saved_Water_move).w,(Water_fullscreen_flag).w
@@ -3931,7 +3931,7 @@ Level_TtlCard:
 
 loc_3946:
 		moveq	#3,d0
-		bsr.w	PalLoad1	; load Sonic's pallet line
+		bsr.w	PalLoad_ForFade	; load Sonic's pallet line
 		bsr.w	LevelSizeLoad
 		bsr.w	DeformBgLayer
 		bset	#2,(Scroll_flags).w
@@ -4020,7 +4020,7 @@ Level_ChkWaterPal:
 		moveq	#$D,d0		; pallet $0D (SBZ3 underwater)
 
 Level_WaterPal2:
-		bsr.w	PalLoad4_Water
+		bsr.w	PalLoad_Water_ForFade
 
 Level_Delay:
 		move.w	#3,d1
@@ -4947,7 +4947,7 @@ SS_ClrNemRam:
 		clr.b	(Water_fullscreen_flag).w
 		clr.w	($FFFFFE02).w
 		moveq	#$A,d0
-		bsr.w	PalLoad1	; load special stage pallet
+		bsr.w	PalLoad_ForFade	; load special stage pallet
 		jsr	(SS_Load).l
 		move.l	#0,(Camera_X_pos).w
 		move.l	#0,(Camera_Y_pos).w
@@ -5045,7 +5045,7 @@ loc_47D4:
 		jsr	(Hud_Base).l
 		move	#$2300,sr
 		moveq	#$11,d0
-		bsr.w	PalLoad2	; load results screen pallet
+		bsr.w	PalLoad_Now	; load results screen pallet
 		moveq	#0,d0
 		bsr.w	LoadPLC2
 		moveq	#$1B,d0
@@ -5410,7 +5410,7 @@ Cont_ClrObjRam:
 		moveq	#10,d1
 		jsr	(ContScrCounter).l	; run countdown	(start from 10)
 		moveq	#$12,d0
-		bsr.w	PalLoad1	; load continue	screen pallet
+		bsr.w	PalLoad_ForFade	; load continue	screen pallet
 		move.b	#MusID_Continue,d0
 		bsr.w	PlaySound	; play continue	music
 		move.w	#659,(Demo_Time_left).w ; set time delay to 11 seconds
@@ -5740,7 +5740,7 @@ End_LoadData:
 		lea	($FFFF9400).w,a1 ; RAM address to buffer the patterns
 		bsr.w	KosDec
 		moveq	#3,d0
-		bsr.w	PalLoad1	; load Sonic's pallet
+		bsr.w	PalLoad_ForFade	; load Sonic's pallet
 		move.w	#MusID_Ending,d0
 		bsr.w	PlaySound	; play ending sequence music
 		btst	#6,(Ctrl_1).w ; is button A pressed?
@@ -5844,7 +5844,7 @@ loc_5334:
 		move.w	#$4000,d2
 		bsr.w	LoadTilesFromStart2
 		moveq	#$13,d0
-		bsr.w	PalLoad1	; load ending pallet
+		bsr.w	PalLoad_ForFade	; load ending pallet
 		bsr.w	Pal_MakeWhite
 		bra.w	End_MainLoop
 
@@ -6198,7 +6198,7 @@ Cred_ClrPallet:
 		dbf	d1,Cred_ClrPallet ; fill pallet	with black ($0000)
 
 		moveq	#3,d0
-		bsr.w	PalLoad1	; load Sonic's pallet
+		bsr.w	PalLoad_ForFade	; load Sonic's pallet
 		move.b	#$8A,(Object_RAM+$80).w ; load credits object
 		jsr	(ObjectsLoad).l
 		jsr	(BuildSprites).l
@@ -6322,7 +6322,7 @@ TryAg_ClrPallet:
 		dbf	d1,TryAg_ClrPallet ; fill pallet with black ($0000)
 
 		moveq	#$13,d0
-		bsr.w	PalLoad1	; load ending pallet
+		bsr.w	PalLoad_ForFade	; load ending pallet
 		clr.w	(Target_palette_line3).w
 		move.b	#$8B,(Object_RAM+$80).w ; load Eggman object
 		jsr	(ObjectsLoad).l
@@ -8131,7 +8131,7 @@ MLB_UsePal0E:
 		moveq	#$E,d0		; use SBZ2/FZ pallet
 
 MLB_NormalPal:
-		bsr.w	PalLoad1	; load pallet (based on	d0)
+		bsr.w	PalLoad_ForFade	; load pallet (based on	d0)
 		movea.l	(sp)+,a2
 		addq.w	#4,a2
 		moveq	#0,d0
